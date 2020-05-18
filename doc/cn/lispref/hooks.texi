@@ -3,36 +3,30 @@
 @c Copyright (C) 1990--1993, 1998, 2001--2020 Free Software Foundation,
 @c Inc.
 @c See the file elisp.texi for copying conditions.
-@node Standard Hooks
-@appendix Standard Hooks
-@cindex standard hooks
-@cindex hook variables, list of
+@node 标准钩子
+@appendix 标准钩子
+@cindex 标准钩子
+@cindex 钩子变量列表
 
-The following is a list of some hook variables that let you provide
-functions to be called from within Emacs on suitable occasions.
+以下是一些钩子变量的列表，可让您提供在合适的情况下从Emacs内部调用的函数。
 
-Most of these variables have names ending with @samp{-hook}.  They are
-@dfn{normal hooks}, run by means of @code{run-hooks}.  The value of such
-a hook is a list of functions; the functions are called with no
-arguments and their values are completely ignored.  The recommended way
-to put a new function on such a hook is to call @code{add-hook}.
-@xref{Hooks}, for more information about using hooks.
+其中大多数变量的名称以@samp{-hook}结尾。它们是@dfn{标准钩子}，通过
+@code{run-hooks}运行。这样的钩子的值是一组函数列表。调用函数时不带参数，
+其值将被完全忽略。推荐使用的新函数放在此类挂钩上的方法是调用
+@code{add-hook}。@xref{Hooks}，以获取有关使用钩子的更多信息。
 
-The variables whose names end in @samp{-functions} are usually @dfn{abnormal
-hooks} (some old code may also use the deprecated @samp{-hooks} suffix); their
-values are lists of functions, but these functions are called in a special way
-(they are passed arguments, or their return values are used).  The variables
-whose names end in @samp{-function} have single functions as their values.
+以@samp{-functions}结尾的变量通常是@dfn{不正常的钩子}一些旧代码也可能
+使用不推荐使用的@samp{-hooks}后缀）；它们的值是一组函数列表，但是这些函数
+以特殊的方式调用（它们是传递的参数，或者使用了它们的返回值）。名称以
+@samp{-function}结尾的变量具有单个函数作为其值。
 
-This is not an exhaustive list, it only covers the more general hooks.
-For example, every major mode defines a hook named
-@samp{@var{modename}-mode-hook}.  The major mode command runs this
-normal hook with @code{run-mode-hooks} as the very last thing it does.
-@xref{Mode Hooks}.  Most minor modes have mode hooks too.
+这不是一个详尽的清单，它仅涵盖更通用的钩子。例如，每个主要模式都定义一个名
+为@samp{@var{modename}-mode-hook}的钩子。主要模式命令使用最后的
+@code{run-mode-hooks}运行此普通钩子。@xref {模式钩子}。大多数次要模式也具
+有模式钩子。
 
-A special feature allows you to specify expressions to evaluate if and
-when a file is loaded (@pxref{Hooks for Loading}).  That feature is
-not exactly a hook, but does a similar job.
+一项特殊特性允许您指定表达式以评估是否以及何时加载文件（
+@pxref{加载时的钩子}）。该特性不完全是一个钩子，但可以完成类似的工作。
 
 @c We need to xref to where each hook is documented or else document it here.
 @c Add vindex for anything not indexed elsewhere.
@@ -42,32 +36,32 @@ not exactly a hook, but does a similar job.
 @table @code
 @item activate-mark-hook
 @itemx deactivate-mark-hook
-@xref{The Mark}.
+@xref{标志区}.
 
 @item after-change-functions
 @itemx before-change-functions
 @itemx first-change-hook
-@xref{Change Hooks}.
+@xref{改变钩子}.
 
 @item after-change-major-mode-hook
 @itemx change-major-mode-after-body-hook
-@xref{Mode Hooks}.
+@xref{模式钩子}.
 
 @item after-init-hook
 @itemx before-init-hook
 @itemx emacs-startup-hook
 @itemx window-setup-hook
-@xref{Init File}.
+@xref{初始化文件}.
 
 @item after-insert-file-functions
 @itemx write-region-annotate-functions
 @itemx write-region-post-annotation-function
-@xref{Format Conversion}.
+@xref{格式转换}.
 
 @item after-make-frame-functions
 @itemx before-make-frame-hook
 @itemx server-after-make-frame-hook
-@xref{Creating Frames}.
+@xref{创建帧}.
 
 @c Not general enough?
 @ignore
@@ -83,39 +77,38 @@ not exactly a hook, but does a similar job.
 @itemx before-save-hook
 @itemx write-contents-functions
 @itemx write-file-functions
-@xref{Saving Buffers}.
+@xref{保存缓写区}.
 
 @item after-setting-font-hook
 @vindex after-setting-font-hook
-Hook run after a frame's font changes.
+帧字体更改后，运行钩子。
 
 @item auto-save-hook
-@xref{Auto-Saving}.
+@xref{自动保存}.
 
 @item before-hack-local-variables-hook
 @itemx hack-local-variables-hook
-@xref{File Local Variables}.
+@xref{文件局部变量}.
 
 @item buffer-access-fontify-functions
-@xref{Lazy Properties}.
+@xref{懒属性}.
 
 @item buffer-list-update-hook
 @vindex buffer-list-update-hook
-Hook run when the buffer list changes (@pxref{Buffer List}).
+缓写区列表更改时钩子运行(@pxref{缓写区列表}).
 
 @item buffer-quit-function
 @vindex buffer-quit-function
-Function to call to quit the current buffer.
+退出当前缓写区调用的函数。
 
 @item change-major-mode-hook
-@xref{Creating Buffer-Local}.
+@xref{创建缓写区本地}.
 
 @item comint-password-function
-This abnormal hook permits a derived mode to supply a password for the
-underlying command interpreter without prompting the user.
+此异常钩子允许派生模式在不提示用户的情况下为基础命令解释器提供密码。
 
 @item command-line-functions
-@xref{Command-Line Arguments}.
+@xref{命令行参数}.
 
 @item delayed-warnings-hook
 @vindex delayed-warnings-hook
@@ -169,18 +162,18 @@ The command loop runs this soon after @code{post-command-hook} (q.v.).
 
 @item kill-buffer-hook
 @itemx kill-buffer-query-functions
-@xref{Killing Buffers}.
+@xref{杀死缓写区}.
 
 @item kill-emacs-hook
 @itemx kill-emacs-query-functions
-@xref{Killing Emacs}.
+@xref{杀死emacs}.
 
 @item menu-bar-update-hook
-@xref{Menu Bar}.
+@xref{菜单栏}.
 
 @item minibuffer-setup-hook
 @itemx minibuffer-exit-hook
-@xref{Minibuffer Misc}.
+@xref{迷你缓写区相关}.
 
 @item mouse-leave-buffer-hook
 @vindex mouse-leave-buffer-hook
