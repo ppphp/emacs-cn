@@ -177,22 +177,21 @@ The command loop runs this soon after @code{post-command-hook} (q.v.).
 
 @item mouse-leave-buffer-hook
 @vindex mouse-leave-buffer-hook
-Hook run when about to switch windows with a mouse command.
+使用鼠标命令即将切换窗口时，钩子运行。
 
 @item mouse-position-function
 @xref{Mouse Position}.
 
 @item prefix-command-echo-keystrokes-functions
 @vindex prefix-command-echo-keystrokes-functions
-An abnormal hook run by prefix commands (such as @kbd{C-u}) which
-should return a string describing the current prefix state.  For
-example, @kbd{C-u} produces @samp{C-u-} and @samp{C-u 1 2 3-}.  Each
-hook function is called with no arguments and should return a string
-describing the current prefix state, or @code{nil} if there's no
-prefix state.  @xref{Prefix Command Arguments}.
+由前缀命令（例如@kbd{C-u}）运行的异常钩子，该钩子应返回描述当前前缀状态
+的字符串。例如，@kbd{C-u}生成@samp{C-u-}和@samp{C-u 1 2 3-}。每个钩子
+函数均不带任何参数调用，并且应返回描述当前前缀状态的字符串，如果没有前缀
+状态，则返回@code{nil}。@xref{前缀命令参数}。
 
 @item prefix-command-preserve-state-hook
 @vindex prefix-command-preserve-state-hook
+当前缀命令需要通过将当前前缀命令状态传递给下一个命令来保留前缀时，钩子运行。 例如，当用户键入@kbd {C-u-}或在@kbd {C-u}后面加上数字时，@ kbd {C-u}需要将状态传递给下一个命令。
 Hook run when a prefix command needs to preserve the prefix by passing
 the current prefix command state to the next command.  For example,
 @kbd{C-u} needs to pass the state to the next command when the user
