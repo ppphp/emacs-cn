@@ -3,126 +3,104 @@
 @c Copyright (C) 1990--1994, 1999, 2001--2020 Free Software Foundation,
 @c Inc.
 @c See the file elisp.texi for copying conditions.
-@node Abbrevs
+@node 缩写
 @chapter Abbrevs and Abbrev Expansion
 @cindex abbrev
 @c  @cindex abbrev table  Redundant with "abbrev".
 
-  An abbreviation or @dfn{abbrev} is a string of characters that may be
-expanded to a longer string.  The user can insert the abbrev string and
-find it replaced automatically with the expansion of the abbrev.  This
-saves typing.
+  缩写或@dfn{abbrev}是可以扩充为一个较长的字符串的一串字符。用户可以插入缩写
+字符串后会发现它被自动替换为缩写的扩展。它省去了打字的时间。
 
-  The set of abbrevs currently in effect is recorded in an @dfn{abbrev
-table}.  Each buffer has a local abbrev table, but normally all buffers
-in the same major mode share one abbrev table.  There is also a global
-abbrev table.  Normally both are used.
+  当前有效的缩写语集记录在@dfn{缩写表}。每个缓冲区都有一个本地的缩写表，但通常
+所有的缓冲区在同一主要模式下，共享一个缩写表。还有一个全局的缩写表。通常两者都被
+使用。
 
-  An abbrev table is represented as an obarray.  @xref{Creating
-Symbols}, for information about obarrays.  Each abbreviation is
-represented by a symbol in the obarray.  The symbol's name is the
-abbreviation; its value is the expansion; its function definition is
-the hook function for performing the expansion (@pxref{Defining
-Abbrevs}); and its property list cell contains various additional
-properties, including the use count and the number of times the
-abbreviation has been expanded (@pxref{Abbrev Properties}).
+  缩写表用一个obarray表示。@xref{创建符号}，了解有关obarrays的信息。每个缩写
+在obarray中用一个符号表示。符号的名称是缩写；其值为展开；其函数定义是用于执行展
+开的钩子函数（@pxref{定义缩写}）；其属性列表单元中包含了各种附加的属性，包括使
+用次数和缩写展开次数。（@pxref{缩写属性}）。
 
-@cindex system abbrev
-  Certain abbrevs, called @dfn{system abbrevs}, are defined by a major
-mode instead of the user.  A system abbrev is identified by its
-non-@code{nil} @code{:system} property (@pxref{Abbrev Properties}).
-When abbrevs are saved to an abbrev file, system abbrevs are omitted.
-@xref{Abbrev Files}.
+@cindex 系统缩写
+  某些缩写，称为@dfn{系统缩写}，是由一个主要的模式，而不是用户。 一个系统的缩写
+是由它的非@code{nil} @code{:system} 属性 (@pxref{缩写属性})。当缩写被保存
+到缩写文件中时，系统缩写将被省略。@xref{缩写文件}.
 
-  Because the symbols used for abbrevs are not interned in the usual
-obarray, they will never appear as the result of reading a Lisp
-expression; in fact, normally they are never used except by the code
-that handles abbrevs.  Therefore, it is safe to use them in a
-nonstandard way.
+  因为用于缩写的符号并不在通常的obarray中保留，它们永远不会出现在读取Lisp表达式
+的结果中；事实上，除了处理缩写的代码，他们永远不会被使用。因此，它们以非标准方式可
+以安全地使用。
 
-  If the minor mode Abbrev mode is enabled, the buffer-local variable
-@code{abbrev-mode} is non-@code{nil}, and abbrevs are automatically
-expanded in the buffer.  For the user-level commands for abbrevs, see
+  如果启用了次要模式Abbrev模式，缓冲区本地变量@code{abbrev-mode}是非@code{nil}
+，缩写会自动地在缓冲区中展开。 关于缩写的用户级命令，请参见
 @ref{Abbrevs,, Abbrev Mode, emacs, The GNU Emacs Manual}.
 
 @menu
-* Tables: Abbrev Tables.        Creating and working with abbrev tables.
-* Defining Abbrevs::            Specifying abbreviations and their expansions.
-* Files: Abbrev Files.          Saving abbrevs in files.
-* Expansion: Abbrev Expansion.  Controlling expansion; expansion subroutines.
-* Standard Abbrev Tables::      Abbrev tables used by various major modes.
-* Abbrev Properties::           How to read and set abbrev properties.
-                                Which properties have which effect.
-* Abbrev Table Properties::     How to read and set abbrev table properties.
-                                Which properties have which effect.
+* 表格: 缩写表.        创建并使用缩写表.
+* 定义缩写::            定义缩写和展开.
+* 文件: 缩写文件.          文件中保存缩写.
+* 展开: 缩写展开.  控制展开; 展开子路线.
+* 标准缩写表::      在多种主要模式中使用的缩写表.
+* 缩写属性::           如何阅读和设置缩写属性.
+                                什么属性有什么效果.
+* 缩写表格属性::     如何阅读和设置缩写表格属性.
+                                什么属性有什么效果.
 @end menu
 
-@node Abbrev Tables
+@node 缩写表
 @section Abbrev Tables
 @cindex abbrev tables
 
-  This section describes how to create and manipulate abbrev tables.
+  本节介绍如何创建和操作缩写表。
 
 @defun make-abbrev-table &optional props
-This function creates and returns a new, empty abbrev table---an
-obarray containing no symbols.  It is a vector filled with zeros.
-@var{props} is a property list that is applied to the new table
-(@pxref{Abbrev Table Properties}).
+这个函数创建并返回一个新的、空的缩写表-------一个不包含任何符号的obarray。
+它是一个充满零的向量。@var{props}是应用于新表的属性列表。
+(@pxref{缩写表属性}).
 @end defun
 
 @defun abbrev-table-p object
-This function returns a non-@code{nil} value if @var{object} is an
-abbrev table.
+如果@var{object}是一个缩写表，则该函数返回一个非@code{nil}的值。
 @end defun
 
 @defun clear-abbrev-table abbrev-table
-This function undefines all the abbrevs in @var{abbrev-table}, leaving
-it empty.
+此函数取消定义@var{abbrev-table}中的所有缩写词，让它变成空的。
+@c 不明白为什么要这么说。
+@c 它总是返回@code{nil}。
 @c Don't see why this needs saying.
 @c It always returns @code{nil}.
 @end defun
 
 @defun copy-abbrev-table abbrev-table
-This function returns a copy of @var{abbrev-table}---a new abbrev
-table containing the same abbrev definitions.  It does @emph{not} copy
-any property lists; only the names, values, and functions.
+这个函数返回@var{abbrev-table}的副本--一个新的缩写表，其中包含相同的缩写定义。它
+@emph{不}复制任何属性列表；只有名称、值和函数。
 @end defun
 
 @defun define-abbrev-table tabname definitions &optional docstring &rest props
-This function defines @var{tabname} (a symbol) as an abbrev table
-name, i.e., as a variable whose value is an abbrev table.  It defines
-abbrevs in the table according to @var{definitions}, a list of
-elements of the form @code{(@var{abbrevname} @var{expansion}
-[@var{hook}] [@var{props}...])}.  These elements are passed as
-arguments to @code{define-abbrev}.  @c The return value is always @code{nil}.
+这个函数将@var{tabname}(一个符号)定义为一个缩写表名，比如作为一个变量，其值是一个缩
+写表。它根据@var{definitions}定义了表格中的缩写，是一个形式
+@code{(@var{abbrevname} @var{expansion}[@var{hook}] [@var{props}...])}的
+元素的列表。这些元素作为参数传递到@code{define-abbrev}。 @c 返回值总是 @code{nil}。
 
-The optional string @var{docstring} is the documentation string of the
-variable @var{tabname}.  The property list @var{props} is applied to
-the abbrev table (@pxref{Abbrev Table Properties}).
+可选的字符串@var{docstring}是变量@var{tabname}的文档字符串。属性列表@var{props}
+应用于这个缩写表（@pxref{缩写表属性}）。
 
-If this function is called more than once for the same @var{tabname},
-subsequent calls add the definitions in @var{definitions} to
-@var{tabname}, rather than overwriting the entire original contents.
-(A subsequent call only overrides abbrevs explicitly redefined or
-undefined in @var{definitions}.)
+如果这个函数对同一个@var{tabname}被调用超过一次，后续调用将@var{definitions}中的定
+义添加到@var{tabname}，而不是覆盖整个原始内容。(后续的调用只覆盖了明确重新定义的缩写或
+是在@var{definitions}中未定义的）。)
 @end defun
 
 @defvar abbrev-table-name-list
-This is a list of symbols whose values are abbrev tables.
-@code{define-abbrev-table} adds the new abbrev table name to this list.
+这是一个值为缩写表的符号列表。@code{define-abbrev-table}将新的缩写表名称添加到这个列
+表中。
 @end defvar
 
 @defun insert-abbrev-table-description name &optional human
-This function inserts before point a description of the abbrev table
-named @var{name}.  The argument @var{name} is a symbol whose value is an
-abbrev table.  @c The return value is always @code{nil}.
+该函数在点前插入名为@var{name}缩写表的描述。参数@var{name}是一个符号，它的值是个缩写表
+。 @c 返回值总是@code{nil}。
 
-If @var{human} is non-@code{nil}, the description is human-oriented.
-System abbrevs are listed and identified as such.  Otherwise the
-description is a Lisp expression---a call to @code{define-abbrev-table}
-that would define @var{name} as it is currently defined, but without
-the system abbrevs.  (The mode or package using @var{name} is supposed
-to add these to @var{name} separately.)
+如果@var{human}是非@code{nil}，则说明是面向人类的。系统缩略语会被列出来，并被识别为系统
+缩略语。否则描述是一个Lisp表达式---对@code{define-abbrev-table}的调用会按照当前的定义
+来定义@var{name}，但不包括的系统缩写。(使用 @var{name}的模式或软件包应该将这些内容分别
+添加到@var{name}中）。)
 @end defun
 
 @node Defining Abbrevs
