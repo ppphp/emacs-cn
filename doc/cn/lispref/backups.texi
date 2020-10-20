@@ -3,95 +3,77 @@
 @c Copyright (C) 1990--1995, 1999, 2001--2020 Free Software Foundation,
 @c Inc.
 @c See the file elisp.texi for copying conditions.
-@node Backups and Auto-Saving
+@node 备份和自动保存
 @chapter Backups and Auto-Saving
 @cindex backups and auto-saving
 
-  Backup files and auto-save files are two methods by which Emacs tries
-to protect the user from the consequences of crashes or of the user's
-own errors.  Auto-saving preserves the text from earlier in the current
-editing session; backup files preserve file contents prior to the
-current session.
+  备份文件和自动保存文件是Emacs试图保护用户免受崩溃或用户自己的错误影响的两种方法。
+自动保存保存的是当前编辑会话中较早的文本；备份文件保存的是当前会话之前的文件内容。
 
 @menu
-* Backup Files::   How backup files are made; how their names are chosen.
-* Auto-Saving::    How auto-save files are made; how their names are chosen.
-* Reverting::      @code{revert-buffer}, and how to customize what it does.
+* 备份文件::   备份文件如何制作；文件名称如何选择。
+* 自动保存::    自动保存文件如何制作;文件名称如何选择。
+* 恢复::      @code{revert-buffer}，如何定制行为。
 @end menu
 
-@node Backup Files
+@node 备份文件
 @section Backup Files
 @cindex backup file
 
-  A @dfn{backup file} is a copy of the old contents of a file you are
-editing.  Emacs makes a backup file the first time you save a buffer
-into its visited file.  Thus, normally, the backup file contains the
-contents of the file as it was before the current editing session.
-The contents of the backup file normally remain unchanged once it
-exists.
+  一个@dfn{备份文件}是您正在编辑的文件的旧内容的副本。Emacs会在你第一次保存缓冲区到
+其访问的文件中的时候制作一个备份文件。因此，通常情况下，备份文件包含了当前编辑会话之前
+的文件内容。备份文件一旦存在，其内容通常不会改变。
 
-  Backups are usually made by renaming the visited file to a new name.
-Optionally, you can specify that backup files should be made by copying
-the visited file.  This choice makes a difference for files with
-multiple names; it also can affect whether the edited file remains owned
-by the original owner or becomes owned by the user editing it.
+  备份通常通过将访问的文件重命名为新的名称来进行。您可以选择指定通过复制访问的文件来
+制作备份文件。这个选择对于具有多个名称的文件来说是有区别的；它也会影响到被编辑的文件
+是仍然由原来的所有者拥有还是变成由编辑它的用户拥有。
 
-  By default, Emacs makes a single backup file for each file edited.
-You can alternatively request numbered backups; then each new backup
-file gets a new name.  You can delete old numbered backups when you
-don't want them any more, or Emacs can delete them automatically.
+  默认情况下，Emacs会为每个编辑过的文件制作一个备份文件。你可以选择请求编号备份；那么
+每个新的备份文件都会得到一个新的名字。您可以在不需要旧的编号备份时删除它们，或者Emacs
+可以自动删除它们。
 
-  For performance, the operating system may not write the backup
-file's contents to secondary storage immediately, or may alias the
-backup data with the original until one or the other is later
-modified.  @xref{Files and Storage}.
+  为了保证性能，操作系统可能不会立即将备份文件的内容写入二级存储，也可能会将备份数据与
+原始数据进行别名，直到后来修改其中一个或另一个。 @xref{文件和存储}.
 
 @menu
-* Making Backups::     How Emacs makes backup files, and when.
-* Rename or Copy::     Two alternatives: renaming the old file or copying it.
-* Numbered Backups::   Keeping multiple backups for each source file.
-* Backup Names::       How backup file names are computed; customization.
+* 制作备份::    Emacs如何制作备份文件，以及何时制作。
+* 重命名或复制::     两个选择：重命名旧文件或复制它。
+* 编号备份:: 为每个源文件保留多个备份。  为每个源文件保留多个备份。
+* 备份名称::      备份文件名的计算方式；自定义。
 @end menu
 
-@node Making Backups
+@node 制作备份
 @subsection Making Backup Files
 @cindex making backup files
 
 @defun backup-buffer
-  This function makes a backup of the file visited by the current
-buffer, if appropriate.  It is called by @code{save-buffer} before
-saving the buffer the first time.
+  这个函数会在合适的时候对当前缓冲区访问的文件进行备份，在第一次保存缓冲区之前，由
+@code{save-buffer}调用。在第一次保存缓冲区之前，它被@code{save-buffer}调用。
 
-If a backup was made by renaming, the return value is a cons cell of
-the form (@var{modes} @var{extra-alist} @var{backupname}), where
-@var{modes} are the mode bits of the original file, as returned by
-@code{file-modes} (@pxref{Testing Accessibility}), @var{extra-alist}
-is an alist describing the original file's extended attributes, as
-returned by @code{file-extended-attributes} (@pxref{Extended
-Attributes}), and @var{backupname} is the name of the backup.
+如果备份是通过重命名进行的，那么返回值是一个形式为
+(@var{modes} @var{extra-alist} @var{backupname})的cons单元格，其中
+@var{modes}是原始文件的模式位，由@code{file-modes}返回。(
+@pxref{Testing Accessibility})，@var{extra-alist}是一个描述原始文件扩展属性
+的列表，由@code{file-extended-attributes}返回。(
+@pxref{Extended Attributes})，@var{backupname}是备份的名称。
 
-In all other cases (i.e., if a backup was made by copying or if no
-backup was made), this function returns @code{nil}.
+在所有其他情况下（例如，如果是通过复制进行的备份，或者没有进行备份），这个函数返回@code{nil}。
+
 @end defun
 
 @defvar buffer-backed-up
-  This buffer-local variable says whether this buffer's file has
-been backed up on account of this buffer.  If it is non-@code{nil},
-the backup file has been written.  Otherwise, the file should be backed
-up when it is next saved (if backups are enabled).  This is a
-permanent local; @code{kill-all-local-variables} does not alter@tie{}it.
+  这个缓冲区本地变量表示这个缓冲区的文件是否已经被备份到这个缓冲区上。如果是非
+@code{nil}，则备份文件已经写入。否则，在下一次保存文件时，应该对文件进行备份（如果
+启用了备份）。这是一个永久的局部，@code{kill-all-local-variables}不会改变@tie{}它。
 @end defvar
 
 @defopt make-backup-files
-This variable determines whether or not to make backup files.  If it
-is non-@code{nil}, then Emacs creates a backup of each file when it is
-saved for the first time---provided that @code{backup-inhibited}
-is @code{nil} (see below).
+这个变量决定是否要制作备份文件。如果它是非@code{nil}，那么Emacs会在第一次保存文件
+时为每个文件创建备份--前提是@code{backup-inhibited}是@code{nil}。(见下文)。
 
-The following example shows how to change the @code{make-backup-files}
-variable only in the Rmail buffers and not elsewhere.  Setting it
-@code{nil} stops Emacs from making backups of these files, which may
-save disk space.  (You would put this code in your init file.)
+下面的例子显示了如何改变@code{make-backup-files}变量，它只在Rmail缓冲区中使用，
+而不是在其他地方。将它设置为 @code{nil}，就会停止Emacs对这些文件进行备份，这样可以
+节省磁盘空间。(你可以把这段代码放在你的init文件中。)
 
 @smallexample
 @group
@@ -102,220 +84,174 @@ save disk space.  (You would put this code in your init file.)
 @end defopt
 
 @defvar backup-enable-predicate
-This variable's value is a function to be called on certain occasions to
-decide whether a file should have backup files.  The function receives
-one argument, an absolute file name to consider.  If the function returns
-@code{nil}, backups are disabled for that file.  Otherwise, the other
-variables in this section say whether and how to make backups.
+这个变量的值是在某些场合调用的一个函数，用来决定一个文件是否应该有备份文件。该函数
+接收一个参数，即一个要考虑的绝对文件名。如果函数返回@code{nil}，则该文件的备份被
+禁用。否则，本节中的其他变量说明是否进行备份以及如何进行备份。
 
 @findex normal-backup-enable-predicate
-The default value is @code{normal-backup-enable-predicate}, which checks
-for files in @code{temporary-file-directory} and
-@code{small-temporary-file-directory}.
+默认值是@code{normal-backup-enable-predicate}，检查是否是
+@code{temporary-file-directory}和@code{small-temporary-file-directory}
+的文件。
 @end defvar
 
 @defvar backup-inhibited
-If this variable is non-@code{nil}, backups are inhibited.  It records
-the result of testing @code{backup-enable-predicate} on the visited file
-name.  It can also coherently be used by other mechanisms that inhibit
-backups based on which file is visited.  For example, VC sets this
-variable non-@code{nil} to prevent making backups for files managed
-with a version control system.
+如果这个变量是非@code{nil}，则会禁止备份。它记录了对访问的文件名进行
+@code{backup-enable-predicate}测试的结果。它也可以连贯地被其他根据访问哪个文件
+来抑制备份机制使用。例如，VC将这个变量设置为非@code{nil}，以防止为使用版本控制系统
+管理的文件做备份。
 
-This is a permanent local, so that changing the major mode does not lose
-its value.  Major modes should not set this variable---they should set
-@code{make-backup-files} instead.
+这是一个永久的局部变量，所以改变主要模式不会丢失它的值。主要模式不应该设置这个
+变量---应该设置@code{make-backup-files}。
 @end defvar
 
 @defopt backup-directory-alist
-This variable's value is an alist of filename patterns and backup
-directories.  Each element looks like
+这个变量的值是一个文件名模式和备份目录的列表。每个元素看起来像
 @smallexample
 (@var{regexp} . @var{directory})
 @end smallexample
 
 @noindent
-Backups of files with names matching @var{regexp} will be made in
-@var{directory}.  @var{directory} may be relative or absolute.  If it is
-absolute, so that all matching files are backed up into the same
-directory, the file names in this directory will be the full name of the
-file backed up with all directory separators changed to @samp{!} to
-prevent clashes.  This will not work correctly if your filesystem
-truncates the resulting name.
+名称与@var{regexp}匹配的文件的备份将在@var{directory}中进行。@var{directory}
+可以是相对或绝对的。如果是绝对的，那么所有匹配的文件都会被备份到同一个目录中，这个
+目录中的文件名将是备份文件的全名，所有的目录分隔符都改为@samp{!}，以防止冲突。如果
+您的文件系统截断了所产生的名称，这将无法正常工作。
 
-For the common case of all backups going into one directory, the alist
-should contain a single element pairing @samp{"."} with the appropriate
-directory.
+对于所有备份都进入一个目录的常见情况，alist应该包含一个单元素，将@samp{"."}与适当
+的目录配对。
 
-If this variable is @code{nil} (the default), or it fails to match a
-filename, the backup is made in the original file's directory.
+如果这个变量是@code{nil}（默认值），或者它不能匹配文件名，则备份将在原始文件的目录
+中进行。
 
-On MS-DOS filesystems without long names this variable is always
-ignored.
+在没有长文件名的 MS-DOS 文件系统中，这个变量总是被忽略。
 @end defopt
 
 @defopt make-backup-file-name-function
-This variable's value is a function to use for making backup file names.
-The function @code{make-backup-file-name} calls it.
-@xref{Backup Names,, Naming Backup Files}.
+这个变量的值是用来制作备份文件名的函数。函数@code{make-backup-file-name}调用它。
+@xref{Backup Names,,Naming Backup Files}。
 
-This could be buffer-local to do something special for specific
-files.  If you change it, you may need to change
-@code{backup-file-name-p} and @code{file-name-sans-versions} too.
+这可以是缓冲区本地为特定的文件做一些特殊的事情。如果你改变它，你可能也需要改变
+@code{backup-file-name-p}和@code{file-name-sans-versions}。
 @end defopt
 
 
-@node Rename or Copy
+@node 重命名或复制
 @subsection Backup by Renaming or by Copying?
 @cindex backup files, rename or copy
 
-  There are two ways that Emacs can make a backup file:
+  Emacs有两种方式制作备份文件：
 
 @itemize @bullet
 @item
-Emacs can rename the original file so that it becomes a backup file, and
-then write the buffer being saved into a new file.  After this
-procedure, any other names (i.e., hard links) of the original file now
-refer to the backup file.  The new file is owned by the user doing the
-editing, and its group is the default for new files written by the user
-in that directory.
+Emacs会重命名原始文件，使其成为备份文件，然后将要保存的缓冲区写入一个新的文件中。在这
+个过程之后，原文件的任何其他名称（即硬链接）现在都是指备份文件。新文件由进行编辑的用户
+拥有，其组是该目录下用户写入新文件的默认组。
 
 @item
-Emacs can copy the original file into a backup file, and then overwrite
-the original file with new contents.  After this procedure, any other
-names (i.e., hard links) of the original file continue to refer to the
-current (updated) version of the file.  The file's owner and group will
-be unchanged.
+Emacs可以将原文件复制到备份文件中，然后用新内容覆盖原文件。 在这个过程之后，原始文件的
+任何其他名称（即硬链接）都会继续引用文件的当前（更新）版本。 文件的所有者和组将保持不变。
 @end itemize
 
-  The first method, renaming, is the default.
+  第一种方式，重命名，是默认方式。
 
-  The variable @code{backup-by-copying}, if non-@code{nil}, says to use
-the second method, which is to copy the original file and overwrite it
-with the new buffer contents.  The variable @code{file-precious-flag},
-if non-@code{nil}, also has this effect (as a sideline of its main
-significance).  @xref{Saving Buffers}.
+  变量@code{backup-by-copying}如果是非@code{nil}，则表示使用第二种方法，即复制原
+文件，并用新的缓冲区内容覆盖。变量@code{file-precious-flag}如果是非@code{nil}，也
+有这样的效果（作为其主要意义的副作用）。@xref{保存缓冲区}。
 
 @defopt backup-by-copying
-If this variable is non-@code{nil}, Emacs always makes backup files by
-copying.  The default is @code{nil}.
+如果这个变量是非@code{nil}，Emacs总是通过复制来制作备份文件。默认值为@code{nil}。
 @end defopt
 
-  The following three variables, when non-@code{nil}, cause the second
-method to be used in certain special cases.  They have no effect on the
-treatment of files that don't fall into the special cases.
+  以下三个变量，当非@code{nil}时，会导致第二种方法在某些特殊情况下被使用，它们对不属于
+特殊情况的文件的处理没有影响。 它们对不属于这些特殊情况的文件的处理没有影响。
 
 @defopt backup-by-copying-when-linked
-If this variable is non-@code{nil}, Emacs makes backups by copying for
-files with multiple names (hard links).  The default is @code{nil}.
+如果这个变量是非@code{nil}，Emacs会通过复制对多个名字的文件（硬链接）进行备份。默认值
+是@code{nil}。
 
-This variable is significant only if @code{backup-by-copying} is
-@code{nil}, since copying is always used when that variable is
-non-@code{nil}.
+只有当@code{backup-by-copying}是@code{nil}时，这个变量才有意义，因为当这个变量是非
+@code{nil}时，总是使用复制。
 @end defopt
 
 @defopt backup-by-copying-when-mismatch
-If this variable is non-@code{nil} (the default), Emacs makes backups
-by copying in cases where renaming would change either the owner or
-the group of the file.
+如果这个变量是非@code{nil}(默认值)，Emacs会在重命名会改变文件所有者或文件组的情况下
+通过复制进行备份。
 
-The value has no effect when renaming would not alter the owner or
-group of the file; that is, for files which are owned by the user and
-whose group matches the default for a new file created there by the
-user.
+当重命名不会改变文件的所有者或组时，也就是对于用户拥有的文件，并且其组与用户创建的新文件
+的默认值相匹配时，这个变量的值没有任何影响。
 
-This variable is significant only if @code{backup-by-copying} is
-@code{nil}, since copying is always used when that variable is
-non-@code{nil}.
+只有当@code{backup-by-copy}为@code{nil}时，这个变量才有意义，因为当这个变量为非
+@code{nil}时，总是使用复制。
 @end defopt
 
 @defopt backup-by-copying-when-privileged-mismatch
-This variable, if non-@code{nil}, specifies the same behavior as
-@code{backup-by-copying-when-mismatch}, but only for certain user-id
-and group-id values: namely, those less than or equal to a certain number.
-You set this variable to that number.
+这个变量如果是非@code{nil}，则指定与@code{backup-by-copying-when-mismatch}相同的
+行为，但只适用于特定的user-id和group-id值：即小于或等于某个数字。
+您将这个变量设置为该数字。
 
-Thus, if you set @code{backup-by-copying-when-privileged-mismatch}
-to 0, backup by copying is done for the superuser and group 0 only,
-when necessary to prevent a change in the owner of the file.
+因此，如果您将@code{backup-by-copying-when-privileged-mismatch}设置为0，则只对超级
+用户和0组进行复制备份，以防止文件的所有者发生变化。
 
-The default is 200.
+默认为200。
 @end defopt
 
-@node Numbered Backups
+@node 编号备份
 @subsection Making and Deleting Numbered Backup Files
 @cindex numbered backups
 
-  If a file's name is @file{foo}, the names of its numbered backup
-versions are @file{foo.~@var{v}~}, for various integers @var{v}, like
-this: @file{foo.~1~}, @file{foo.~2~}, @file{foo.~3~}, @dots{},
-@file{foo.~259~}, and so on.
+  如果一个文件的名字是@file{foo}，那么它的编号备份版本的名字就是@file{foo.~@var{v}~}，
+@var{v}是不同的整数，像这样。@file{foo.~1~}、@file{foo.~2~}、@file{foo.~3~}、
+@dots{}、@file{foo.~259~}等。
 
 @defopt version-control
-This variable controls whether to make a single non-numbered backup
-file or multiple numbered backups.
+此变量控制制作单个非编号的备份文件还是多个编号的备份。
 
 @table @asis
 @item @code{nil}
-Make numbered backups if the visited file already has numbered backups;
-otherwise, do not.  This is the default.
+如果访问的文件已经有编号备份，则进行编号备份；否则，不进行备份。 这是默认的。
 
 @item @code{never}
-Do not make numbered backups.
+不制作编号的备份。
 
 @item @var{anything else}
-Make numbered backups.
+制作编号的备份。
 @end table
 @end defopt
 
-  The use of numbered backups ultimately leads to a large number of
-backup versions, which must then be deleted.  Emacs can do this
-automatically or it can ask the user whether to delete them.
+  使用编号备份最终会导致大量的备份版本，然后必须将其删除。 Emacs可以自动进行删除，也可以询问
+用户是否要删除它们。
 
 @defopt kept-new-versions
-The value of this variable is the number of newest versions to keep
-when a new numbered backup is made.  The newly made backup is included
-in the count.  The default value is@tie{}2.
+此变量的值是在进行新的编号备份时要保留的最新版本数。新做的备份包含在计数中。 默认值为@tie{}2。
 @end defopt
 
 @defopt kept-old-versions
-The value of this variable is the number of oldest versions to keep
-when a new numbered backup is made.  The default value is@tie{}2.
+此变量的值是在进行新的编号备份时，要保留的最旧版本的数量，默认值是@tie{}2。
 @end defopt
 
-  If there are backups numbered 1, 2, 3, 5, and 7, and both of these
-variables have the value 2, then the backups numbered 1 and 2 are kept
-as old versions and those numbered 5 and 7 are kept as new versions;
-backup version 3 is excess.  The function @code{find-backup-file-name}
-(@pxref{Backup Names}) is responsible for determining which backup
-versions to delete, but does not delete them itself.
+  如果有编号为1、2、3、5、7的备份，且这两个变量的值都为2，那么编号为1、2的备份作为旧版本保留，
+编号为5、7的备份作为新版本保留，备份版本3是多余的。函数@code{find-backup-file-name}
+(@pxref{备份名称})负责确定要删除哪些备份版本，但自己不删除。
 
 @defopt delete-old-versions
-If this variable is @code{t}, then saving a file deletes excess
-backup versions silently.  If it is @code{nil}, that means
-to ask for confirmation before deleting excess backups.
-Otherwise, they are not deleted at all.
+如果这个变量是@code{t}，那么保存文件就会默默删除多余的备份版本。如果是@code{nil}，则意味着在
+删除多余的备份之前要求确认。否则，它们将不会被删除。
 @end defopt
 
 @defopt dired-kept-versions
-This variable specifies how many of the newest backup versions to keep
-in the Dired command @kbd{.} (@code{dired-clean-directory}).  That's the
-same thing @code{kept-new-versions} specifies when you make a new backup
-file.  The default is@tie{}2.
+这个变量指定在Dired命令中保留多少个最新的备份版本@kbd{.}。(@code{dired-clean-directory})。
+这与@code{kept-new-versions}在制作新的备份文件时指定的内容相同。默认是@tie{}2。
 @end defopt
 
-@node Backup Names
+@node 备份名称
 @subsection Naming Backup Files
 @cindex naming backup files
 
-  The functions in this section are documented mainly because you can
-customize the naming conventions for backup files by redefining them.
-If you change one, you probably need to change the rest.
+  记录本节中的功能，主要是因为您可以通过重新定义备份文件的命名约定来定制它们。如果您更改了一个，
+您可能需要更改其余的功能。
 
 @defun backup-file-name-p filename
-This function returns a non-@code{nil} value if @var{filename} is a
-possible name for a backup file.  It just checks the name, not whether
-a file with the name @var{filename} exists.
+如果@var{filename}是一个可能的备份文件名，则此函数返回一个非@code{nil}值。它只是检查文件名，
+而不检查是否存在@var{filename}这个名字的文件。
 
 @smallexample
 @group
@@ -328,7 +264,7 @@ a file with the name @var{filename} exists.
 @end group
 @end smallexample
 
-The standard definition of this function is as follows:
+这个函数的标准定义如下：
 
 @smallexample
 @group
@@ -340,22 +276,17 @@ name (numeric or not)..."
 @end smallexample
 
 @noindent
-Thus, the function returns a non-@code{nil} value if the file name ends
-with a @samp{~}.  (We use a backslash to split the documentation
-string's first line into two lines in the text, but produce just one
-line in the string itself.)
+因此，如果文件名以@samp{~}结尾，函数返回一个非@code{nil}值。(我们使用反斜杠将文件字符串的第一
+行在文本中分成两行，但在字符串本身中只产生一行)。
 
-This simple expression is placed in a separate function to make it easy
-to redefine for customization.
+这个简单的表达式被放置在一个单独的函数中，以便于重新定义进行定制。
 @end defun
 
 @defun make-backup-file-name filename
-This function returns a string that is the name to use for a
-non-numbered backup file for file @var{filename}.  On Unix, this is just
-@var{filename} with a tilde appended.
+此函数返回一个字符串，该字符串是文件@var{filename}的非编号备份文件的名称。在Unix系统中，它只不
+过在@var{filename}后面加一个浪号。
 
-The standard definition of this function, on most operating systems, is
-as follows:
+在大多数操作系统上，此函数的标准定义如下：
 
 @smallexample
 @group
@@ -365,9 +296,8 @@ as follows:
 @end group
 @end smallexample
 
-You can change the backup-file naming convention by redefining this
-function.  The following example redefines @code{make-backup-file-name}
-to prepend a @samp{.} in addition to appending a tilde:
+您可以通过重新定义这个函数来改变备份文件的命名约定。下面的例子重新定义了
+@code{make-backup-file-name}，除了附加一个浪号外，还在前面加上 @samp{.}：
 
 @smallexample
 @group
@@ -383,28 +313,21 @@ to prepend a @samp{.} in addition to appending a tilde:
 @end group
 @end smallexample
 
-Some parts of Emacs, including some Dired commands, assume that backup
-file names end with @samp{~}.  If you do not follow that convention, it
-will not cause serious problems, but these commands may give
-less-than-desirable results.
+Emacs的某些部分，包括一些Dired命令，假定备份文件名以@samp{~}结尾。如果你不遵循这一惯例，不会造成严重
+的问题，但这些命令可能会产生不理想的结果。
 @end defun
 
 @defun find-backup-file-name filename
-This function computes the file name for a new backup file for
-@var{filename}.  It may also propose certain existing backup files for
-deletion.  @code{find-backup-file-name} returns a list whose @sc{car} is
-the name for the new backup file and whose @sc{cdr} is a list of backup
-files whose deletion is proposed.  The value can also be @code{nil},
-which means not to make a backup.
+此函数为@var{filename}计算新备份文件的文件名。它也可以建议删除某些现有的备份文件。
+@code{find-backup-file-name}返回一个列表，其中@sc{car}是新备份文件的名称，@sc{cdr}是建议删除的
+备份文件列表。该值也可以是@code{nil}，表示不做备份。
 
-Two variables, @code{kept-old-versions} and @code{kept-new-versions},
-determine which backup versions should be kept.  This function keeps
-those versions by excluding them from the @sc{cdr} of the value.
-@xref{Numbered Backups}.
+两个变量@code{kept-old-versions}和@code{kept-new-versions}决定了应该保留哪些备份版本。这个函数
+通过将这些版本从@sc{cdr}的值中排除，来保留这些版本。
+@xref{编号备份}。
 
-In this example, the value says that @file{~rms/foo.~5~} is the name
-to use for the new backup file, and @file{~rms/foo.~3~} is an excess
-version that the caller should consider deleting now.
+在这个例子中，该值表示@file{~rms/foo.~5~}是新的备份文件的名称，@file{~rms/foo.~3~}是一个多余的
+版本，调用者现在应该考虑删除。
 
 @smallexample
 @group
@@ -416,30 +339,22 @@ version that the caller should consider deleting now.
 
 @c Emacs 19 feature
 @defun file-newest-backup filename
-This function returns the name of the most recent backup file for
-@var{filename}, or @code{nil} if that file has no backup files.
+此函数返回@var{filename}最近的备份文件名，如果该文件没有备份文件，则返回@code{nil}。
 
-Some file comparison commands use this function so that they can
-automatically compare a file with its most recent backup.
+一些文件比较命令会使用此函数以便自动地比较一份文件与它最近的备份文件。
 @end defun
 
-@node Auto-Saving
+@node 自动保存
 @section Auto-Saving
 @c @cindex auto-saving   Lots of symbols starting with auto-save here.
 
-  Emacs periodically saves all files that you are visiting; this is
-called @dfn{auto-saving}.  Auto-saving prevents you from losing more
-than a limited amount of work if the system crashes.  By default,
-auto-saves happen every 300 keystrokes, or after around 30 seconds of
-idle time.  @xref{Auto Save, Auto Save, Auto-Saving: Protection Against
-Disasters, emacs, The GNU Emacs Manual}, for information on auto-save
-for users.  Here we describe the functions used to implement auto-saving
-and the variables that control them.
+  Emacs 会定期保存您正在访问的所有文件，这被称为@dfn{自动保存}。自动保存可以防止你在系统崩溃时丢失超过
+有限数量的工作。默认情况下，每按300次键，或者在30秒左右的空闲时间后，就会自动保存。@xref{Auto Save, Auto
+Save, Auto-Saving: Protection Against Disasters, emacs, The GNU Emacs Manual}，为用户提供自动
+保存的信息。 这里我们介绍一下实现自动保存的函数以及控制这些函数的变量。
 
 @defvar buffer-auto-save-file-name
-This buffer-local variable is the name of the file used for
-auto-saving the current buffer.  It is @code{nil} if the buffer
-should not be auto-saved.
+这个缓冲区本地变量是用来自动保存当前缓冲区的文件名。如果缓冲区不应该被自动保存，那么这个变量就是@code{nil}。
 
 @example
 @group
@@ -450,22 +365,16 @@ buffer-auto-save-file-name
 @end defvar
 
 @deffn Command auto-save-mode arg
-This is the mode command for Auto Save mode, a buffer-local minor
-mode.  When Auto Save mode is enabled, auto-saving is enabled in the
-buffer.  The calling convention is the same as for other minor mode
-commands (@pxref{Minor Mode Conventions}).
+这是自动保存模式的模式命令，是一种缓冲区本地次要模式。启用自动保存模式后，缓冲区内的自动保存功能将被启用。调用
+约定与其他次要模式命令相同（@pxref{次要模式约定}）。
 
-Unlike most minor modes, there is no @code{auto-save-mode} variable.
-Auto Save mode is enabled if @code{buffer-auto-save-file-name} is
-non-@code{nil} and @code{buffer-saved-size} (see below) is non-zero.
+与大多数次要模式不同，这里没有@code{auto-save-mode}变量。如果@code{buffer-auto-save-file-name}是非
+@code{nil}，并且@code{buffer-saved-size}(见下文)为非零，则启用自动保存模式。
 @end deffn
 
 @defun auto-save-file-name-p filename
-This function returns a non-@code{nil} value if @var{filename} is a
-string that could be the name of an auto-save file.  It assumes
-the usual naming convention for auto-save files: a name that
-begins and ends with hash marks (@samp{#}) is a possible auto-save file
-name.  The argument @var{filename} should not contain a directory part.
+如果@var{filename}是一个可能是自动保存文件名的字符串，则此函数返回一个非@code{nil}值。它假定自动保存文件的
+命名惯例：井号(@samp{#})开头和结尾的文件名是一个可能的自动保存文件名。参数@var{filename}不应包含目录部分。
 
 @example
 @group
@@ -482,7 +391,7 @@ name.  The argument @var{filename} should not contain a directory part.
 @end group
 @end example
 
-The standard definition of this function is as follows:
+这个函数的标准定义如下：
 
 @example
 @group
@@ -492,18 +401,13 @@ The standard definition of this function is as follows:
 @end group
 @end example
 
-This function exists so that you can customize it if you wish to
-change the naming convention for auto-save files.  If you redefine it,
-be sure to redefine the function @code{make-auto-save-file-name}
-correspondingly.
+这个函数的存在，是为了让您在想改变自动保存文件的命名习惯时，可以自定义它。如果您重新定义它，请务必相应地重新定义函数
+@code{make-auto-save-file-name}。
 @end defun
 
 @defun make-auto-save-file-name
-This function returns the file name to use for auto-saving the current
-buffer.  This is just the file name with hash marks (@samp{#}) prepended
-and appended to it.  This function does not look at the variable
-@code{auto-save-visited-file-name} (described below); callers of this
-function should check that variable first.
+该函数返回用于自动保存当前缓冲区的文件名。这只是一个带上了井号（@samp{#}）的文件名。本函数不查看变量
+@code{auto-save-visited-file-name}（如下所述）；本函数的调用方应该首先检查该变量。
 
 @example
 @group
@@ -512,8 +416,7 @@ function should check that variable first.
 @end group
 @end example
 
-Here is a simplified version of the standard definition of this
-function:
+这是一个这个函数的标准定义的简化版：
 
 @example
 @group
@@ -533,277 +436,192 @@ of current buffer.."
 @end group
 @end example
 
-This exists as a separate function so that you can redefine it to
-customize the naming convention for auto-save files.  Be sure to
-change @code{auto-save-file-name-p} in a corresponding way.
+这是一个独立的函数，您可以重新定义它来定制自动保存文件的命名规则。请务必以相应的方式修改@code{auto-save-file-name-p}。
 @end defun
 
 @defopt auto-save-visited-file-name
-If this variable is non-@code{nil}, Emacs auto-saves buffers in
-the files they are visiting.  That is, the auto-save is done in the same
-file that you are editing.  Normally, this variable is @code{nil}, so
-auto-save files have distinct names that are created by
-@code{make-auto-save-file-name}.
+如果这个变量是非@code{nil}，Emacs就会自动保存缓冲区在其访问的文件中。也就是说，自动保存是在你正在编辑的同一个文件中进行
+的。通常情况下，这个变量是@code{nil}，所以自动保存的文件有不同的文件名，这些文件名是由
+@code{make-auto-save-file-name}创建。
 
-When you change the value of this variable, the new value does not take
-effect in an existing buffer until the next time auto-save mode is
-reenabled in it.  If auto-save mode is already enabled, auto-saves
-continue to go in the same file name until @code{auto-save-mode} is
-called again.
+当你改变这个变量的值时，直到下次重启自动保存模式前，新的值不会在现有的缓冲区中生效。如果已经启用了自动保存模式，那么自动保存
+将继续以相同的文件名进行，直到再次调用@code{auto-save-mode}。
 
-Note that setting this variable to a non-@code{nil} value does not
-change the fact that auto-saving is different from saving the buffer;
-e.g., the hooks described in @ref{Saving Buffers} are @emph{not} run
-when a buffer is auto-saved.
+请注意，将这个变量设置为非@code{nil}值并不会改变自动保存与保存缓冲区不同的事实；例如，当缓冲区被自动保存时，
+@ref{保存缓冲区}中描述的钩子是@emph{不}运行的。
+
 @end defopt
 
 @defun recent-auto-save-p
-This function returns @code{t} if the current buffer has been
-auto-saved since the last time it was read in or saved.
+如果当前缓冲区在上次读入或保存后被自动保存，该函数返回@code{t}。
 @end defun
 
 @defun set-buffer-auto-saved
-This function marks the current buffer as auto-saved.  The buffer will
-not be auto-saved again until the buffer text is changed again.  The
-function returns @code{nil}.
+该功能将当前的缓冲区标记为自动保存。除非缓冲区的文字被再次修改，否则缓冲区不会再被自动保存。该函数返回@code{nil}。
 @end defun
 
 @defopt auto-save-interval
-The value of this variable specifies how often to do auto-saving, in
-terms of number of input events.  Each time this many additional input
-events are read, Emacs does auto-saving for all buffers in which that is
-enabled.  Setting this to zero disables autosaving based on the
-number of characters typed.
+这个变量的值指定了自动保存的频率，以输入事件的数量为单位。每次读取这么多额外的输入事件时，Emacs就会对所有启用自动保存的缓冲区
+进行自动保存。将其设置为0，则根据输入的字符数禁止自动保存。
 @end defopt
 
 @defopt auto-save-timeout
-The value of this variable is the number of seconds of idle time that
-should cause auto-saving.  Each time the user pauses for this long,
-Emacs does auto-saving for all buffers in which that is enabled.  (If
-the current buffer is large, the specified timeout is multiplied by a
-factor that increases as the size increases; for a million-byte
-buffer, the factor is almost 4.)
+这个变量的值是导致自动保存的空闲时间的秒数。每当用户暂停这么长的时间，Emacs就会对所有启用自动保存的缓冲区进行自动保存。如果
+当前缓冲区很大，指定的超时时间会乘以一个系数，这个系数会随着缓冲区大小的增加而增加；对于百万字节的缓冲区，这个系数几乎是4。
 
-If the value is zero or @code{nil}, then auto-saving is not done as a
-result of idleness, only after a certain number of input events as
-specified by @code{auto-save-interval}.
+如果该值为0或@code{nil}，则不会因为空闲而自动保存，只有在@code{auto-save-interval}指定的输入事件达到一定数量后才会自动保存。
 @end defopt
 
 @defvar auto-save-hook
-This normal hook is run whenever an auto-save is about to happen.
+每当自动保存即将发生时，就会运行这个正常的钩子。
 @end defvar
 
 @defopt auto-save-default
-If this variable is non-@code{nil}, buffers that are visiting files
-have auto-saving enabled by default.  Otherwise, they do not.
+如果这个变量是非@code{nil}，那么正在访问文件的缓冲区默认启用自动保存功能。否则，它们不会。
 @end defopt
 
 @deffn Command do-auto-save &optional no-message current-only
-This function auto-saves all buffers that need to be auto-saved.  It
-saves all buffers for which auto-saving is enabled and that have been
-changed since the previous auto-save.
+该功能自动保存所有需要自动保存的缓冲区。它保存所有启用了自动保存功能并且在上次自动保存后发生了变化的缓冲区。
 
-If any buffers are auto-saved, @code{do-auto-save} normally displays a
-message saying @samp{Auto-saving...} in the echo area while
-auto-saving is going on.  However, if @var{no-message} is
-non-@code{nil}, the message is inhibited.
+如果有缓冲区被自动保存，@code{do-auto-save}通常会在自动保存时在回声区显示@samp{Auto-saving...}的消息。但是，如果
+@var{no-message}是非@code{nil}，则消息会被抑制。
 
-If @var{current-only} is non-@code{nil}, only the current buffer
-is auto-saved.
+如果@var{current-only}是非@code{nil}，则只自动保存当前的缓冲区。
 @end deffn
 
 @defun delete-auto-save-file-if-necessary &optional force
-This function deletes the current buffer's auto-save file if
-@code{delete-auto-save-files} is non-@code{nil}.  It is called every
-time a buffer is saved.
+如果@code{delete-auto-save-files}是非@code{nil}，则该函数将删除当前缓冲区的自动保存文件。每次保存缓冲区时都会调用这个函数。
 
-Unless @var{force} is non-@code{nil}, this function only deletes the
-file if it was written by the current Emacs session since the last
-true save.
+除非@var{force}是非@code{nil}，否则只有当文件在上次真正保存后被当前Emacs会话写入时，这个函数才会删除文件。
 @end defun
 
 @defopt delete-auto-save-files
-This variable is used by the function
-@code{delete-auto-save-file-if-necessary}.  If it is non-@code{nil},
-Emacs deletes auto-save files when a true save is done (in the visited
-file).  This saves disk space and unclutters your directory.
+这个变量被函数@code{delete-auto-save-file-if-necessary}使用。如果它是非@code{nil}，Emacs会在真正保存时（在访问的文件
+中）删除自动保存文件。 这样可以节省磁盘空间，并解除目录的混乱。
 @end defopt
 
 @defun rename-auto-save-file
-This function adjusts the current buffer's auto-save file name if the
-visited file name has changed.  It also renames an existing auto-save
-file, if it was made in the current Emacs session.  If the visited
-file name has not changed, this function does nothing.
+如果访问的文件名发生了变化，该函数将调整当前缓冲区的自动保存文件名。如果在当前Emacs会话中创建了自动保存文件，它还会重命名现有的
+自动保存文件。如果访问的文件名没有改变，这个函数什么也不做。
 @end defun
 
 @defvar buffer-saved-size
-The value of this buffer-local variable is the length of the current
-buffer, when it was last read in, saved, or auto-saved.  This is
-used to detect a substantial decrease in size, and turn off auto-saving
-in response.
+这个缓冲区局部变量的值是当最后一次读入、保存或自动保存的时候当前缓冲区的长度。这个值用于检测缓冲区的大小是否大幅减少，并关闭
+自动保存。
 
-If it is @minus{}1, that means auto-saving is temporarily shut off in
-this buffer due to a substantial decrease in size.  Explicitly saving
-the buffer stores a positive value in this variable, thus reenabling
-auto-saving.  Turning auto-save mode off or on also updates this
-variable, so that the substantial decrease in size is forgotten.
+如果是@minus{}1，则表示该缓冲区的自动保存功能因大小大幅减少而暂时关闭。显式地保存缓冲区会在这个变量中存储一个正值，从而重新
+启用自动保存。关闭或开启自动保存模式也会更新这个变量，这样就会忘记缓冲区大小的大幅减少。
 
-If it is @minus{}2, that means this buffer should disregard changes in
-buffer size; in particular, it should not shut off auto-saving
-temporarily due to changes in buffer size.
+如果是@minus{}2，意味着这个缓冲区应该无视缓冲区大小的变化，特别是不应该因为缓冲区大小的变化而暂时关闭自动保存。
 @end defvar
 
 @defvar auto-save-list-file-name
-This variable (if non-@code{nil}) specifies a file for recording the
-names of all the auto-save files.  Each time Emacs does auto-saving, it
-writes two lines into this file for each buffer that has auto-saving
-enabled.  The first line gives the name of the visited file (it's empty
-if the buffer has none), and the second gives the name of the auto-save
-file.
+这个变量(如果非@code{nil})指定了一个用于记录所有自动保存文件的名称的文件。每次Emacs进行自动保存时，它都会为每个启用了自动
+保存功能的缓冲区写入两行到这个文件中。第一行给出了被访问的文件名（如果缓冲区没有文件名的话是空的），第二个给出了自动保存的
+文件名。
 
-When Emacs exits normally, it deletes this file; if Emacs crashes, you
-can look in the file to find all the auto-save files that might contain
-work that was otherwise lost.  The @code{recover-session} command uses
-this file to find them.
+当Emacs正常退出时，它会删除这个文件；如果Emacs崩溃，你可以在文件中查找所有可能包含工作的自动保存文件，否则就会丢失。
+@code{recover-session}命令使用这个文件来查找它们。
 
-The default name for this file specifies your home directory and starts
-with @samp{.saves-}.  It also contains the Emacs process @acronym{ID} and the
-host name.
+这个文件的默认名称指定了你的主目录，并以@samp{.saves-}开头。它还包含Emacs进程@acronym{ID}和主机名。
+
 @end defvar
 
 @defopt auto-save-list-file-prefix
-After Emacs reads your init file, it initializes
-@code{auto-save-list-file-name} (if you have not already set it
-non-@code{nil}) based on this prefix, adding the host name and process
-ID@.  If you set this to @code{nil} in your init file, then Emacs does
-not initialize @code{auto-save-list-file-name}.
+Emacs读取您的init文件后，它会根据这个前缀初始化@code{auto-save-list-file-name}(如果您还没有将其设置为非
+@code{nil})，并添加主机名和进程ID@。如果您在初始化文件中设置为@code{nil}，那么Emacs不会初始化
+@code{auto-save-list-file-name}。
 @end defopt
 
-@node Reverting
+@node 恢复
 @section Reverting
 @cindex reverting buffers
 
-  If you have made extensive changes to a file and then change your mind
-about them, you can get rid of them by reading in the previous version
-of the file with the @code{revert-buffer} command.  @xref{Reverting, ,
-Reverting a Buffer, emacs, The GNU Emacs Manual}.
+  如果您对一个文件做了大量的修改，然后又改变了主意，您可以使用@code{revert-buffer}命令读取文件的前一版本来
+删除它们。@xref{Reverting, , Reverting a Buffer, emacs, The GNU Emacs Manual}.
 
 @deffn Command revert-buffer &optional ignore-auto noconfirm preserve-modes
-This command replaces the buffer text with the text of the visited
-file on disk.  This action undoes all changes since the file was visited
-or saved.
+该命令将缓冲区文本替换为磁盘上被访问文件的文本。这个操作会撤销自文件被访问或保存以来的所有更改。
 
-By default, if the latest auto-save file is more recent than the visited
-file, and the argument @var{ignore-auto} is @code{nil},
-@code{revert-buffer} asks the user whether to use that auto-save
-instead.  When you invoke this command interactively, @var{ignore-auto}
-is @code{t} if there is no numeric prefix argument; thus, the
-interactive default is not to check the auto-save file.
+默认情况下，如果最新的自动保存文件比被访问的文件更近，并且@var{ignore-auto}参数是@code{nil}，
+@code{revert-buffer}会询问用户是否使用该自动保存文件。当你交互式调用这个命令时，如果没有数字前缀参数，
+@var{ignore-auto}就是@code{t}；因此，交互式默认是不检查自动保存文件。
 
-Normally, @code{revert-buffer} asks for confirmation before it changes
-the buffer; but if the argument @var{noconfirm} is non-@code{nil},
-@code{revert-buffer} does not ask for confirmation.
+通常情况下，@code{revert-buffer}在更改缓冲区之前会要求确认；但如果参数@var{noconfirm}是非
+@code{nil}，@code{revert-buffer}就不会要求确认。
 
-Normally, this command reinitializes the buffer's major and minor modes
-using @code{normal-mode}.  But if @var{preserve-modes} is
-non-@code{nil}, the modes remain unchanged.
+通常情况下，这条命令会使用@code{normal-mode}重新初始化缓冲区的主模式和次要模式。但如果
+@var{preserve-modes}是非@code{nil}，则模式保持不变。
 
-Reverting tries to preserve marker positions in the buffer by using the
-replacement feature of @code{insert-file-contents}.  If the buffer
-contents and the file contents are identical before the revert
-operation, reverting preserves all the markers.  If they are not
-identical, reverting does change the buffer; in that case, it preserves
-the markers in the unchanged text (if any) at the beginning and end of
-the buffer.  Preserving any additional markers would be problematical.
+恢复通过使用@code{insert-file-contents}的替换功能来尝试保留缓冲区中的标记位置。如果在
+还原操作前，缓冲区内容和文件内容相同，则还原将保留所有的标记。如果它们不一样，则还原操作就
+会改变缓冲区；在这种情况下，它将保留缓冲区开始和结束处未改变的文本（如果有的话）中的标记。
+保留任何额外的标记可能有问题。
+
 @end deffn
 
 @defvar revert-buffer-in-progress-p
-@code{revert-buffer} binds this variable to a non-@code{nil} value
-while it is working.
+@code{revert-buffer}在执行时将这个变量绑定到一个非@code{nil}值。
 @end defvar
 
-You can customize how @code{revert-buffer} does its work by setting
-the variables described in the rest of this section.
+你可以通过设置本节其余部分描述的变量来定制@code{revert-buffer}的工作方式。
 
 @defopt revert-without-query
-This variable holds a list of files that should be reverted without
-query.  The value is a list of regular expressions.  If the visited file
-name matches one of these regular expressions, and the file has changed
-on disk but the buffer is not modified, then @code{revert-buffer}
-reverts the file without asking the user for confirmation.
+这个变量保存了一个无需查询就能还原的文件列表。其值是一个正则表达式的列表。如果访问的文件名
+与这些正则表达式中的一个相匹配，并且文件在磁盘上发生了变化，但缓冲区没有被修改，那么
+@code{revert-buffer}就会还原文件，而不需要用户确认。
 @end defopt
 
-  Some major modes customize @code{revert-buffer} by making
-buffer-local bindings for these variables:
+  一些主要模式通过为这些变量做缓冲区本地绑定来自定义@code{revert-buffer}。
 
 @defvar revert-buffer-function
 @anchor{Definition of revert-buffer-function}
-The value of this variable is the function to use to revert this
-buffer.  It should be a function with two optional
-arguments to do the work of reverting.  The two optional arguments,
-@var{ignore-auto} and @var{noconfirm}, are the arguments that
-@code{revert-buffer} received.
+这个变量的值是用来还原这个缓冲区的函数。它应该是一个带有两个可选参数的函数来完成还原的工作。
+这两个可选参数@var{ignore-auto}和@var{noconfirm}就是@code{revert-buffer}收到的参数。
 
-Modes such as Dired mode, in which the text being edited does not
-consist of a file's contents but can be regenerated in some other
-fashion, can give this variable a buffer-local value that is a special
-function to regenerate the contents.
+如Dired这样的模式，在这种模式下，被编辑的文本并不由文件内容组成，而是可以通过其他方式再生成，
+可以给这个变量一个缓冲区本地的值，是再生成内容的特殊函数。
 @end defvar
 
 @defvar revert-buffer-insert-file-contents-function
-The value of this variable specifies the function to use to
-insert the updated contents when reverting this buffer.  The function
-receives two arguments: first the file name to use; second, @code{t} if
-the user has asked to read the auto-save file.
+这个变量的值指定了在还原这个缓冲区时要使用的函数来插入更新的内容。该函数接收两个参数：首先
+是要使用的文件名；其次是@code{t}，如果用户要求读取自动保存的文件。
 
-The reason for a mode to change this variable instead of
-@code{revert-buffer-function} is to avoid duplicating or replacing the
-rest of what @code{revert-buffer} does: asking for confirmation,
-clearing the undo list, deciding the proper major mode, and running the
-hooks listed below.
+一个模式之所以要改变这个变量而不是@code{revert-buffer-function}，是为了避免重复或替换
+@code{revert-buffer}所做的其他工作：请求确认、清除撤销列表、决定合适的主要模式，以及运行
+下面列出的钩子。
 @end defvar
 
 @defvar before-revert-hook
-This normal hook is run by the default @code{revert-buffer-function}
-before inserting the modified contents.  A custom @code{revert-buffer-function}
-may or may not run this hook.
+这个正常钩子是由默认的@code{revert-buffer-function}在插入修改内容之前运行的。自定义
+的@code{revert-buffer-function}可以运行这个钩子，也可以不运行。
 @end defvar
 
 @defvar after-revert-hook
-This normal hook is run by the default @code{revert-buffer-function}
-after inserting the modified contents.  A custom @code{revert-buffer-function}
-may or may not run this hook.
+这个正常钩子是由默认的@code{revert-buffer-function}在插入修改内容之后运行的。自定义
+的@code{revert-buffer-function}可以运行这个钩子，也可以不运行。
 @end defvar
 
-Emacs can revert buffers automatically.  It does that by default for
-buffers visiting files.  The following describes how to add support
-for auto-reverting new types of buffers.
+Emacs可以自动还原缓冲区。对于访问文件的缓冲区，它默认是这样做的。下面介绍了如何添加对自动
+还原新类型缓冲区的支持。
 
-First, such buffers must have a suitable @code{revert-buffer-function}
-and @code{buffer-stale-function} defined.
+首先，这类缓冲区必须定义一个合适的@code{revert-buffer-function}和
+@code{buffer-stale-function}。
 
 @defvar buffer-stale-function
-The value of this variable specifies a function to call to check
-whether a buffer needs reverting.  The default value only handles
-buffers that are visiting files, by checking their modification time.
-Buffers that are not visiting files require a custom function of one
-optional argument @var{noconfirm}.  The function should return
-non-@code{nil} if the buffer should be reverted.  The buffer is
-current when this function is called.
+这个变量的值指定了一个要调用的函数来检查缓冲区是否需要还原。默认值只处理正在访问文件的缓冲
+区，通过检查它们的修改时间。不访问文件的缓冲区需要一个自定义的函数，该函数有一个可选的参数
+@var{noconfirm}。如果缓冲区应该被还原，该函数应该返回非@code{nil}。当这个函数被调用
+时，缓冲区是当前的。
 
-While this function is mainly intended for use in auto-reverting, it
-could be used for other purposes as well.  For instance, if
-auto-reverting is not enabled, it could be used to warn the user that
-the buffer needs reverting.  The idea behind the @var{noconfirm}
-argument is that it should be @code{t} if the buffer is going to be
-reverted without asking the user and @code{nil} if the function is
-just going to be used to warn the user that the buffer is out of date.
-In particular, for use in auto-reverting, @var{noconfirm} is @code{t}.
-If the function is only going to be used for auto-reverting, you can
-ignore the @var{noconfirm} argument.
+虽然这个函数主要用于自动还原，但它也可以用于其他目的。例如，如果没有启用自动还原功能，它
+可以用来警告用户需要还原缓冲区。@var{noconfirm}参数背后的想法是，如果缓冲区不需要询问
+用户就会被还原，那么它应该是@code{t}，如果函数只是用来警告用户缓冲区已经过期，那么它应该
+是@code{nil}。特别是在自动还原中使用时，@var{noconfirm}就是@code{t}。如果函数只用于
+自动还原，你可以忽略@var{noconfirm}参数。
 
-If you just want to automatically auto-revert every
-@code{auto-revert-interval} seconds (like the Buffer Menu), use:
+如果你只是想每隔@code{auto-revert-interval}秒就自动进行一次自动还原（就像缓冲区菜单
+一样），可以使用：
 
 @example
 (setq-local buffer-stale-function
@@ -811,44 +629,34 @@ If you just want to automatically auto-revert every
 @end example
 
 @noindent
-in the buffer's mode function.
+在缓冲区的模式函数里。
 
-The special return value @samp{fast} tells the caller that the need
-for reverting was not checked, but that reverting the buffer is fast.
-It also tells Auto Revert not to print any revert messages, even if
-@code{auto-revert-verbose} is non-@code{nil}.  This is important, as
-getting revert messages every @code{auto-revert-interval} seconds can
-be very annoying.  The information provided by this return value could
-also be useful if the function is consulted for purposes other than
-auto-reverting.
+特殊的返回值@samp{fast}告诉调用者，还没有检查是否需要还原，但还原缓冲区的速度很快。
+它还告诉自动还原不会打印任何还原信息，即使@code{auto-revert-verbose}是非
+@code{nil}。这一点很重要，因为每隔@code{auto-revert-interval}秒钟就会收到一次
+恢复信息，这可能会让人很烦。如果函数被用于自动回复以外的其他目的，那么这个返回值提供
+的信息也会很有用。
 @end defvar
 
-Once the buffer has a suitable @code{revert-buffer-function} and
-@code{buffer-stale-function}, several problems usually remain.
+一旦缓冲区有了合适的@code{revert-buffer-function}和
+@code{buffer-stale-function}，通常还会有几个问题。
 
-The buffer will only auto-revert if it is marked unmodified.  Hence,
-you will have to make sure that various functions mark the buffer
-modified if and only if either the buffer contains information that
-might be lost by reverting, or there is reason to believe that the user
-might be inconvenienced by auto-reverting, because he is actively
-working on the buffer.  The user can always override this by manually
-adjusting the modified status of the buffer.  To support this, calling
-the @code{revert-buffer-function} on a buffer that is marked
-unmodified should always keep the buffer marked unmodified.
+只有当缓冲区被标记为未修改时，它才会自动还原。因此，您必须确保各种函数在下列情况下才
+会标记缓冲区为修改状态：缓冲区中包含的信息可能会因为还原而丢失，或者有理由相信用户
+可能会因为自动还原而感到不便，因为他正在积极地处理缓冲区。用户总是可以通过手动调整
+缓冲区的修改状态来覆盖这一点。为了支持这一点，在一个被标记为未修改的缓冲区上调用
+@code{revert-buffer-function}，应该始终保持缓冲区的未修改状态。
 
-It is important to assure that point does not continuously jump around
-as a consequence of auto-reverting.  Of course, moving point might be
-inevitable if the buffer radically changes.
+保证点不会因为自动还原的结果而连续跳转是很重要的。 当然，如果缓冲区发生了根本性的变化
+，移动点可能是不可避免的。
 
-You should make sure that the @code{revert-buffer-function} does not
-print messages that unnecessarily duplicate Auto Revert's own messages,
-displayed if @code{auto-revert-verbose} is @code{t}, and effectively
-override a @code{nil} value for @code{auto-revert-verbose}.  Hence,
-adapting a mode for auto-reverting often involves getting rid of such
-messages.  This is especially important for buffers that automatically
-revert every @code{auto-revert-interval} seconds.
+你应该确保@code{revert-buffer-function}不会打印出不必要的重复自动恢复自身的消息
+，如果@code{auto-revert-verbose}是@code{t}，则显示的消息，并且有效地覆盖了
+@code{auto-revert-verbose}的一个@code{nil}值。因此，采用自动恢复的模式往往涉及
+到摆脱这种消息。 这对于每@code{auto-revert-interval}秒钟自动还原一次的缓冲区尤其
+重要。
 
-If the new auto-reverting is part of Emacs, you should mention it
-in the documentation string of @code{global-auto-revert-non-file-buffers}.
+如果新的自动还原是Emacs的一部分，你应该在
+@code{global-auto-revert-non-file-buffers}的文档字符串中提到它。
 
-Similarly, you should document the additions in the Emacs manual.
+同样，你应该在Emacs手册中记录新增的内容。

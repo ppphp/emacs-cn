@@ -261,7 +261,9 @@
 @end defvar
 
 @defvar last-abbrev
-这是最新展开的缩写的@code{abbrev-symbol}。这个信息是由@code{expand-abbrev}留下的，以便使用@code{unexpand-abbrev}命令(@pxref{Expanding Abbrevs,,Expanding Abbrevs, emacs, The GNU Emacs Manual})。
+这是最新展开的缩写的@code{abbrev-symbol}。这个信息是由@code{expand-abbrev}留下的，
+以便使用@code{unexpand-abbrev}命令(
+@pxref{Expanding Abbrevs,,Expanding Abbrevs, emacs, The GNU Emacs Manual})。
 @end defvar
 
 @defvar last-abbrev-location
@@ -355,72 +357,57 @@
 
 @table @code
 @item :count
-This property counts the number of times the abbrev has
-been expanded.  If not explicitly set, it is initialized to 0 by
-@code{define-abbrev}.
+此属性计算缩写被展开的次数。如果没有明确设置，则通过@code{define-abbrev}将其初始化为0。
 
 @item :system
-If non-@code{nil}, this property marks the abbrev as a system abbrev.
-Such abbrevs are not saved (@pxref{Abbrev Files}).
+如果非@code{nil}，则此属性将该缩写标记为系统缩写。这样的缩写不会被保存(
+@pxref{缩写文件})。
 
 @item :enable-function
-If non-@code{nil}, this property should be a function of no
-arguments which returns @code{nil} if the abbrev should not be used
-and @code{t} otherwise.
+如果是非@code{nil}，这个属性应该是一个没有参数的函数，这个函数在不应该使用缩写时，返回
+@code{nil}，否则返回@code{t}。
 
 @item :case-fixed
-If non-@code{nil}, this property indicates that the case of the
-abbrev's name is significant and should only match a text with the
-same pattern of capitalization.  It also disables the code that
-modifies the capitalization of the expansion.
+如果非@code{nil}，该属性表示缩写名称的大小写很重要，应该只匹配具有相同大小写模式
+的文本。它也阻止修改展开的大小写的代码。
 @end table
 
 @node 缩写表属性
 @section Abbrev Table Properties
 @cindex abbrev table properties
 
-Like abbrevs, abbrev tables have properties, some of which influence
-the way they work.  You can provide them as arguments to
-@code{define-abbrev-table}, and manipulate them with the functions:
+与缩写一样，缩写表也有属性，其中一些属性会影响它们的工作方式。您可以将它们作为参数
+提供给@code{define-abbrev-table}，并通过以下函数来操作它们。
 
 @defun abbrev-table-put table prop val
-Set the property @var{prop} of abbrev table @var{table} to value @var{val}.
+将缩写表@var{table}的属性@var{prop}设置为@var{val}。
 @end defun
 
 @defun abbrev-table-get table prop
-Return the property @var{prop} of abbrev table @var{table}, or @code{nil}
-if @var{table} has no such property.
+返回缩写表@var{table}的属性@var{prop}，如果@var{table}没有这样的属性，则返回
+@code{nil}。
 @end defun
 
-The following properties have special meaning:
+以下属性具有特殊意义:
 
 @table @code
 @item :enable-function
-This is like the @code{:enable-function} abbrev property except that
-it applies to all abbrevs in the table.  It is used before even trying
-to find the abbrev before point, so it can dynamically modify the
-abbrev table.
+这就像缩写属性@code{:enable-function}一样，只不过它适用于缩写表中的所有缩写。在
+试图找到光标前的缩写之前，就已经使用了这个属性，所以它可以动态地修改缩写表。
 
 @item :case-fixed
-This is like the @code{:case-fixed} abbrev property except that it
-applies to all abbrevs in the table.
+这和@code{:case-fixed}缩写属性一样，只不过它适用于表中的所有缩写。
 
 @item :regexp
-If non-@code{nil}, this property is a regular expression that
-indicates how to extract the name of the abbrev before point, before
-looking it up in the table.  When the regular expression matches
-before point, the abbrev name is expected to be in submatch 1.
-If this property is @code{nil}, the default is to use
-@code{backward-word} and @code{forward-word} to find the name.  This
-property allows the use of abbrevs whose name contains characters of
-non-word syntax.
+如果非@code{nil}，该属性是一个正则表达式，表示如何提取点前的缩写名称，然后再在
+表中查找。当正则表达式在点前匹配时，预计缩写名称将在子匹配1中。如果该属性为
+@code{nil}，则默认使用@code{backward-word}和@code{forward-word}来查找
+名称。此属性允许使用名称中包含非单词语法字符的缩写。
 
 @item :parents
-This property holds a list of tables from which to inherit
-other abbrevs.
+此属性保存了缩写表的列表，从中可以继承其他缩写。
 
 @item :abbrev-table-modiff
-This property holds a counter incremented each time a new abbrev is
-added to the table.
+此属性拥有一个计数器，每次向表中添加新的缩写时都会递增。
 
 @end table
