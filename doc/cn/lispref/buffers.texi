@@ -463,265 +463,207 @@ buffer-file-name
 @end defun
 
 @defun restore-buffer-modified-p flag
-Like @code{set-buffer-modified-p}, but does not force redisplay
-of mode lines.
+如同@code{set-buffer-modified-p}但是强制重新显示模式行。
 @end defun
 
 @deffn Command not-modified &optional arg
-This command marks the current buffer as unmodified, and not needing
-to be saved.  If @var{arg} is non-@code{nil}, it marks the buffer as
-modified, so that it will be saved at the next suitable occasion.
-Interactively, @var{arg} is the prefix argument.
+该命令将当前缓冲区标记为未修改，不需要保存。如果@var{arg}是非@code{nil}，则将缓冲
+区标记为已修改，以便在下一个合适的场合保存。在交互式中，@var{arg}是前缀参数。
 
-Don't use this function in programs, since it prints a message in the
-echo area; use @code{set-buffer-modified-p} (above) instead.
+不要在程序中使用这个函数，因为它会在回声区中打印一条信息；请使用
+@code{set-buffer-modified-p}(上面)代替。
+
 @end deffn
 
 @defun buffer-modified-tick &optional buffer
-This function returns @var{buffer}'s modification-count.  This is a
-counter that increments every time the buffer is modified.  If
-@var{buffer} is @code{nil} (or omitted), the current buffer is used.
+这个函数返回@var{buffer}的修改次数。这是一个每次修改缓冲区时都会递增的计数器。如果
+@var{buffer}是@code{nil}，则使用当前的缓冲区。
 @end defun
 
 @defun buffer-chars-modified-tick &optional buffer
-This function returns @var{buffer}'s character-change modification-count.
-Changes to text properties leave this counter unchanged; however, each
-time text is inserted or removed from the buffer, the counter is reset
-to the value that would be returned by @code{buffer-modified-tick}.
-By comparing the values returned by two @code{buffer-chars-modified-tick}
-calls, you can tell whether a character change occurred in that buffer
-in between the calls.  If @var{buffer} is @code{nil} (or omitted), the
-current buffer is used.
+这个函数返回@var{buffer}的字符修改计数。对文本属性的修改会使这个计数器保持不变；但
+是，每次从缓冲区中插入或删除文本时，计数器都会被重置为由
+@code{buffer-modified-tick}返回的值。通过比较两次
+@code{buffer-chars-modified-tick}调用返回的值，您可以判断在两次调用之间该缓冲
+区是否发生了字符变化。如果@var{buffer}是@code{nil}(或省略)，使用当前的缓冲区。
 @end defun
 
-Sometimes there's a need for modifying buffer in a way that doesn't
-really change its text, like if only its text properties are changed.
-If your program needs to modify a buffer without triggering any hooks
-and features that react to buffer modifications, use the
-@code{with-silent-modifications} macro.
+有时需要以一种不真正改变其文本的方式来修改缓冲区，比如只改变其文本属性。如果您的程序需
+要在不触发任何对缓冲区修改有反应的钩子和功能的情况下修改缓冲区，请使用
+@code{with-silent-modifications}宏。
 
 @defmac with-silent-modifications body@dots{}
-Execute @var{body} pretending it does not modify the buffer.  This
-includes checking whether the buffer's file is locked (@pxref{File
-Locks}), running buffer modification hooks (@pxref{Change Hooks}),
-etc.  Note that if @var{body} actually modifies the buffer text, its
-undo data may become corrupted.
+执行@var{body}，假装不修改缓冲区。这包括检查缓冲区的文件是否被锁定（
+@pxref{File Locks}），运行缓冲区修改钩子（@pxref{Change Hooks}）等。需要注意
+的是，如果@var{body}真的修改了缓冲区文本，其undo数据可能会被破坏。
 @end defmac
 
-@node Modification Time
+@node 修改时间
 @section Buffer Modification Time
 @cindex comparing file modification time
 @cindex modification time of buffer
 
-  Suppose that you visit a file and make changes in its buffer, and
-meanwhile the file itself is changed on disk.  At this point, saving the
-buffer would overwrite the changes in the file.  Occasionally this may
-be what you want, but usually it would lose valuable information.  Emacs
-therefore checks the file's modification time using the functions
-described below before saving the file.  (@xref{File Attributes},
-for how to examine a file's modification time.)
+  假设你访问了一个文件，并在它的缓冲区中做了修改，同时文件本身在磁盘上也做了修改，这
+时，保存缓冲区会覆盖文件中的修改。此时，保存缓冲区会覆盖文件中的变化。偶尔这可能是你想
+要的，但通常会丢失有价值的信息。因此，Emacs在保存文件之前，会使用下面描述的函数检查文
+件的修改时间。(@xref{File Attributes}，了解如何检查文件的修改时间。)
 
 @defun verify-visited-file-modtime &optional buffer
-This function compares what @var{buffer} (by default, the
-current-buffer) has recorded for the modification time of its visited
-file against the actual modification time of the file as recorded by the
-operating system.  The two should be the same unless some other process
-has written the file since Emacs visited or saved it.
+这个函数比较了@var{buffer}(默认情况下，是当前缓冲区)记录的被访问文件的修改时间与操
+作系统记录的文件实际修改时间。两者应该是一致的，除非Emacs访问或保存文件后，有其他进程
+写过文件。
 
-The function returns @code{t} if the last actual modification time and
-Emacs's recorded modification time are the same, @code{nil} otherwise.
-It also returns @code{t} if the buffer has no recorded last
-modification time, that is if @code{visited-file-modtime} would return
-zero.
+如果最后的实际修改时间和Emacs记录的修改时间相同，函数返回@code{t}，否则返回
+@code{nil}。如果缓冲区没有记录的最后修改时间，也就是
+@code{visited-file-modtime}将返回0，那么它也返回@code{t}。
 
-It always returns @code{t} for buffers that are not visiting a file,
-even if @code{visited-file-modtime} returns a non-zero value.  For
-instance, it always returns @code{t} for dired buffers.  It returns
-@code{t} for buffers that are visiting a file that does not exist and
-never existed, but @code{nil} for file-visiting buffers whose file has
-been deleted.
+对于没有访问文件的缓冲区，它总是返回@code{t}，即使@code{visited-file-modtime}
+返回一个非零值。例如，对于dired缓冲区，它总是返回@code{t}。对于访问不存在的文件的缓
+冲区，它返回@code{t}；对于被删除的访问文件的缓冲区，它返回@code{nil}。
 @end defun
 
 @defun clear-visited-file-modtime
-This function clears out the record of the last modification time of
-the file being visited by the current buffer.  As a result, the next
-attempt to save this buffer will not complain of a discrepancy in
-file modification times.
+这个功能清除了当前缓冲区所访问的文件的最后修改时间的记录。因此，下一次尝试保存这个缓冲
+区时，不会抱怨文件修改时间不一致。
 
-This function is called in @code{set-visited-file-name} and other
-exceptional places where the usual test to avoid overwriting a changed
-file should not be done.
+这个函数在@code{set-visited-file-name}和其他特殊的地方被调用，在这些地方不应该
+做通常的测试，以避免覆盖被修改的文件。
 @end defun
 
 @defun visited-file-modtime
-This function returns the current buffer's recorded last file
-modification time, as a Lisp timestamp (@pxref{Time of Day}).
+这个函数以Lisp时间戳（@pxref{Time of Day}）的形式返回当前缓冲区记录的最后一次文
+件修改时间。
 
-If the buffer has no recorded last modification time, this function
-returns zero.  This case occurs, for instance, if the buffer is not
-visiting a file or if the time has been explicitly cleared by
-@code{clear-visited-file-modtime}.  Note, however, that
-@code{visited-file-modtime} returns a timestamp for some non-file buffers
-too.  For instance, in a Dired buffer listing a directory, it returns
-the last modification time of that directory, as recorded by Dired.
+如果缓冲区没有记录的最后一次修改时间，这个函数返回0。这种情况会发生，例如，如果缓冲区
+没有访问文件，或者时间已经被@code{clear-visited-file-modtime}显式地清除了。然
+而，请注意，@code{visited-file-modtime}也会为一些非文件缓冲区返回一个时间戳。 例如，在Dired缓冲区中列出一个目录，它返回Dired记录的该目录的最后修改时间。
 
-If the buffer is visiting a file that doesn't exist, this function
-returns @minus{}1.
+如果缓冲区访问的是一个不存在的文件，这个函数会返回@minus{}1。
+
 @end defun
 
 @defun set-visited-file-modtime &optional time
-This function updates the buffer's record of the last modification time
-of the visited file, to the value specified by @var{time} if @var{time}
-is not @code{nil}, and otherwise to the last modification time of the
-visited file.
+如果@var{time}不是@code{nil}，则更新缓冲区中被访问文件的最后一次修改时间为
+@var{time}指定的值，否则更新为被访问文件的最后一次修改时间。
 
-If @var{time} is neither @code{nil} nor an integer flag returned
-by @code{visited-file-modtime}, it should be a Lisp time value
-(@pxref{Time of Day}).
+如果@var{time}既不是@code{nil}，也不是@code{visited-file-modtime}返回的整数
+标志，那么它应该是一个Lisp时间值（@pxref{Time of Day}）。
 
-This function is useful if the buffer was not read from the file
-normally, or if the file itself has been changed for some known benign
-reason.
+如果缓冲区不是正常地从文件中读取的，或者文件本身因为某些已知的良性原因被改变，那么这个
+函数就很有用。
 @end defun
 
 @defun ask-user-about-supersession-threat filename
-This function is used to ask a user how to proceed after an attempt to
-modify a buffer visiting file @var{filename} when the file is newer
-than the buffer text.  Emacs detects this because the modification
-time of the file on disk is newer than the last save-time and its contents
-have changed.
-This means some other program has probably altered the file.
+这个函数用于询问用户在尝试修改缓冲区访问文件@var{filename}后，当文件比缓冲区文本新
+时，如何继续。Emacs检测到这一点是因为磁盘上的文件的修改时间比上次保存时间要新，而且它
+的内容发生了变化。这意味着可能有其他程序修改了文件。
 
 @kindex file-supersession
-Depending on the user's answer, the function may return normally, in
-which case the modification of the buffer proceeds, or it may signal a
-@code{file-supersession} error with data @code{(@var{filename})}, in which
-case the proposed buffer modification is not allowed.
+根据用户的回答，函数可能会正常返回，在这种情况下，缓冲区的修改将继续进行，或者它可能会
+发出@code{file-supersession}错误信号，数据为@code{(@var{filename})}，在这种
+情况下，发起的缓冲区修改是不允许的。
 
-This function is called automatically by Emacs on the proper
-occasions.  It exists so you can customize Emacs by redefining it.
-See the file @file{userlock.el} for the standard definition.
+这个函数会在适当的场合被Emacs自动调用。它的存在是为了你可以通过重新定义它来定制
+Emacs。标准定义参见文件@file{userlock.el}。
 
-See also the file locking mechanism in @ref{File Locks}.
+也可以参考@ref{File Locks}中的文件锁定机制。
 @end defun
 
-@node Read Only Buffers
+@node 只读缓冲区
 @section Read-Only Buffers
 @cindex read-only buffer
 @cindex buffer, read-only
 
-  If a buffer is @dfn{read-only}, then you cannot change its contents,
-although you may change your view of the contents by scrolling and
-narrowing.
+  如果一个缓冲区是@dfn{read-only}，那么你就不能改变它的内容，尽管你可以通过滚动和
+缩小来改变内容的视图。
 
-  Read-only buffers are used in two kinds of situations:
+  只读缓冲区在两种情况下使用：
 
 @itemize @bullet
 @item
-A buffer visiting a write-protected file is normally read-only.
+访问写保护文件的缓冲区通常是只读的。
 
-Here, the purpose is to inform the user that editing the buffer with the
-aim of saving it in the file may be futile or undesirable.  The user who
-wants to change the buffer text despite this can do so after clearing
-the read-only flag with @kbd{C-x C-q}.
+这里的目的是告诉用户，编辑缓冲区并将其保存在文件中可能是徒劳的或不可取的。如果用户想修
+改缓冲区的文本，可以在用@kbd{C-x C-q}清除只读标志后进行修改。
 
 @item
-Modes such as Dired and Rmail make buffers read-only when altering the
-contents with the usual editing commands would probably be a mistake.
+Dired和Rmail等模式将缓冲区设为只读，如果用一般的编辑命令来改变缓冲区的内容，很可能
+是个错误。
 
-The special commands of these modes bind @code{buffer-read-only} to
-@code{nil} (with @code{let}) or bind @code{inhibit-read-only} to
-@code{t} around the places where they themselves change the text.
+这些模式的特殊命令在他们修改文本的地方周围将@code{buffer-read-only}绑定到
+@code{nil}(用@code{let})，或者将@code{inhibit-read-only}绑定到@code{t}。
 @end itemize
 
 @defvar buffer-read-only
-This buffer-local variable specifies whether the buffer is read-only.
-The buffer is read-only if this variable is non-@code{nil}.  However,
-characters that have the @code{inhibit-read-only} text property can
-still be modified.  @xref{Special Properties, inhibit-read-only}.
+这个缓冲区本地变量指定缓冲区是否为只读。如果这个变量是非@code{nil}，则缓冲区是只读
+的。但是，具有@code{inhibit-read-only}文本属性的字符仍然可以被修改。
+@xref{Special Properties，inhibit-read-only}。
 @end defvar
 
 @defvar inhibit-read-only
-If this variable is non-@code{nil}, then read-only buffers and,
-depending on the actual value, some or all read-only characters may be
-modified.  Read-only characters in a buffer are those that have a
-non-@code{nil} @code{read-only} text property.  @xref{Special
-Properties}, for more information about text properties.
+如果这个变量是非@code{nil}，那么只读缓冲区和，根据实际值，部分或全部只读字符可以被
+修改。缓冲区中的只读字符是指那些具有@code{read-only}文本属性非@code{nil}的字符。
+关于文本属性的更多信息，请参见@xref{Special Properties}。
 
-If @code{inhibit-read-only} is @code{t}, all @code{read-only} character
-properties have no effect.  If @code{inhibit-read-only} is a list, then
-@code{read-only} character properties have no effect if they are members
-of the list (comparison is done with @code{eq}).
+如果@code{inhibit-read-only}是@code{t}，那么所有@code{read-only}字符属性都
+没有效果。如果@code{inhibit-read-only}是一个列表，那么@code{read-only}字符属
+性如果是列表中的成员，那么这些属性就没有任何作用 (使用@code{eq} 进行比较)。
+
 @end defvar
 
 @deffn Command read-only-mode &optional arg
-This is the mode command for Read Only minor mode, a buffer-local
-minor mode.  When the mode is enabled, @code{buffer-read-only} is
-non-@code{nil} in the buffer; when disabled, @code{buffer-read-only}
-is @code{nil} in the buffer.  The calling convention is the same as
-for other minor mode commands (@pxref{Minor Mode Conventions}).
+这是Read Only次要模式的模式命令，是缓冲区本地的次要模式。当启用该模式时，
+@code{buffer-read-only}在缓冲区中为非@code{nil}；当禁用该模式时，
+@code{buffer-read-only}在缓冲区中为@code{nil}。调用惯例与其他小模式命令相同（
+@pxref{Minor Mode Conventions}）。
 
-This minor mode mainly serves as a wrapper for
-@code{buffer-read-only}; unlike most minor modes, there is no separate
-@code{read-only-mode} variable.  Even when Read Only mode is disabled,
-characters with non-@code{nil} @code{read-only} text properties remain
-read-only.  To temporarily ignore all read-only states, bind
-@code{inhibit-read-only}, as described above.
+这个次要模式主要是作为@code{buffer-read-only}的封装；与大多数次要模式不同，没有
+单独的@code{read-only-mode}变量。即使禁用了Read Only模式，带有非@code{nil}的
+@code{read-only}文本属性的字符也会保持只读状态。要暂时忽略所有的只读状态，请如上所
+述，绑定@code{inhibit-read-only}。
 
-When enabling Read Only mode, this mode command also enables View mode
-if the option @code{view-read-only} is non-@code{nil}.  @xref{Misc
-Buffer,,Miscellaneous Buffer Operations, emacs, The GNU Emacs Manual}.
-When disabling Read Only mode, it disables View mode if View mode was
-enabled.
+当启用Read Only模式时，如果@code{view-read-only}选项是非@code{nil}，则该模式
+命令也会启用视图模式。
+@xref{Misc Buffer,,Miscellaneous Buffer Operations, emacs, The GNU
+Emacs Manual}。当禁用只读模式时，如果启用了View模式，则禁用View模式。
 @end deffn
 
-@defun barf-if-buffer-read-only &optional position
-This function signals a @code{buffer-read-only} error if the current
-buffer is read-only.  If the text at @var{position} (which defaults to
-point) has the @code{inhibit-read-only} text property set, the error
-will not be raised.
+@defun barf-if-buffer-read-only &optional position。
+如果当前的缓冲区是只读的，这个函数会发出@code{buffer-read-only}错误信号。如果在
+@var{position}处的文本(默为point)设置了@code{inhibit-read-only}文本属性，则
+不会引发错误。
 
-@xref{Using Interactive}, for another way to signal an error if the
-current buffer is read-only.
+如果当前的缓冲区是只读的，那么@xref{Using Interactive}将以另一种方式发出错误信号
+。
 @end defun
 
-@node Buffer List
+@node 缓冲区列表
 @section The Buffer List
 @cindex buffer list
 @cindex listing all buffers
 
-  The @dfn{buffer list} is a list of all live buffers.  The order of the
-buffers in this list is based primarily on how recently each buffer has
-been displayed in a window.  Several functions, notably
-@code{other-buffer}, use this ordering.  A buffer list displayed for the
-user also follows this order.
+  @dfn{buffer list}是实时所有缓冲区的列表。列表中缓冲区的顺序主要是基于每个缓冲区
+最近在窗口中显示的时间。有几个函数，特别是@code{other-buffer}，使用了这个顺序。为
+用户显示的缓冲区列表也遵循这个顺序。
 
-  Creating a buffer adds it to the end of the buffer list, and killing
-a buffer removes it from that list.  A buffer moves to the front of
-this list whenever it is chosen for display in a window
-(@pxref{Switching Buffers}) or a window displaying it is selected
-(@pxref{Selecting Windows}).  A buffer moves to the end of the list
-when it is buried (see @code{bury-buffer}, below).  There are no
-functions available to the Lisp programmer which directly manipulate
-the buffer list.
+  创建一个缓冲区会将其添加到缓冲区列表的最后，而杀死一个缓冲区则会将其从列表中移除。
+每当一个缓冲区被选择在窗口中显示（@pxref{Switching Buffers}）或选择了显示它的窗
+口（@pxref{Selecting Windows}）时，它就会移动到这个列表的前面。埋藏缓冲区时，缓
+冲区会移动到列表的末尾（参见下面的@code{bury-buffer}）。对于Lisp程序员来说，没有
+直接操作缓冲区列表的函数。
 
-  In addition to the fundamental buffer list just described, Emacs
-maintains a local buffer list for each frame, in which the buffers that
-have been displayed (or had their windows selected) in that frame come
-first.  (This order is recorded in the frame's @code{buffer-list} frame
-parameter; see @ref{Buffer Parameters}.)  Buffers never displayed in
-that frame come afterward, ordered according to the fundamental buffer
-list.
+  除了刚才描述的基本缓冲区列表之外，Emacs还为每一窗帧维护一个本地缓冲区列表，在这个
+列表中，在该帧中已经显示（或者已经选择了它们的窗口）的缓冲区排在前面。(这个顺序记录在
+帧的@code{buffer-list}帧参数中；参见@ref{缓冲区参数}。)从未在该帧中显示的缓冲区
+则按照基本缓冲区列表的顺序排在后面。
 
 @defun buffer-list &optional frame
-This function returns the buffer list, including all buffers, even those
-whose names begin with a space.  The elements are actual buffers, not
-their names.
+该函数返回缓冲区列表，包括所有缓冲区，即使是那些名字以空格开头的缓冲区。这些元素是实际
+的缓冲区，而不是它们的名字。
 
-If @var{frame} is a frame, this returns @var{frame}'s local buffer list.
-If @var{frame} is @code{nil} or omitted, the fundamental buffer list is
-used: the buffers appear in order of most recent display or selection,
-regardless of which frames they were displayed on.
+如果@var{frame}是一个frame，则返回@var{frame}的本地缓冲区列表。如果
+@var{frame}是@code{nil}或被省略，则使用基本的缓冲区列表：缓冲区按照最近显示或选择
+的顺序显示，而不管它们是显示在哪个帧上。
 
 @example
 @group
