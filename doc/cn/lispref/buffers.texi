@@ -205,28 +205,23 @@ Lisp程序中，缓冲区是作为一种特殊的数据类型出现的。你可�
 @section Buffer Names
 @cindex buffer names
 
-  Each buffer has a unique name, which is a string.  Many of the
-functions that work on buffers accept either a buffer or a buffer name
-as an argument.  Any argument called @var{buffer-or-name} is of this
-sort, and an error is signaled if it is neither a string nor a buffer.
-Any argument called @var{buffer} must be an actual buffer
-object, not a name.
+  每个缓冲区都有一个独特的名称，是一个字符串。许多在缓冲区上工作的函数都接受一个缓冲
+区或缓冲区名作为参数。任何调用@var{buffer-or-name}的参数都是这种类型，如果它既不
+是字符串也不是缓冲区，则会发出错误信号。任何调用@var{buffer}的参数必须是一个实际的
+缓冲区对象，而不是一个名称。
 
 @cindex hidden buffers
 @cindex buffers without undo information
-  Buffers that are ephemeral and generally uninteresting to the user
-have names starting with a space, so that the @code{list-buffers} and
-@code{buffer-menu} commands don't mention them (but if such a buffer
-visits a file, it @strong{is} mentioned).  A name starting with
-space also initially disables recording undo information; see
-@ref{Undo}.
+  短暂的，通常用户对它不感兴趣的缓冲区，其名称以空格开头，因此@code{list-buffers}
+和@code{buffer-menu}命令不会提及它们（但如果这样的缓冲区访问一个文件，它就会
+@strong{is}提及）。以空格开头的名字也会在一开始就禁止记录撤销信息；参见@ref{Undo}
+。
 
 @defun buffer-name &optional buffer
-This function returns the name of @var{buffer} as a string.
-@var{buffer} defaults to the current buffer.
+本函数以字符串形式返回@var{buffer}的名称。@var{buffer}默认为当前的缓冲区。
 
-If @code{buffer-name} returns @code{nil}, it means that @var{buffer}
-has been killed.  @xref{Killing Buffers}.
+如果@code{buffer-name}返回@code{nil}，表示@var{buffer}已经被杀死。
+@xref{Killing Buffers}。
 
 @example
 @group
@@ -254,25 +249,23 @@ foo
 @end defun
 
 @deffn Command rename-buffer newname &optional unique
-This function renames the current buffer to @var{newname}.  An error
-is signaled if @var{newname} is not a string.
+此函数将当前缓冲区重命名为@var{newname}。如果@var{newname}不是一个字符串，则会发
+出错误信号。
 
 @c Emacs 19 feature
-Ordinarily, @code{rename-buffer} signals an error if @var{newname} is
-already in use.  However, if @var{unique} is non-@code{nil}, it modifies
-@var{newname} to make a name that is not in use.  Interactively, you can
-make @var{unique} non-@code{nil} with a numeric prefix argument.
-(This is how the command @code{rename-uniquely} is implemented.)
+通常，如果@var{newname}已经被使用，@code{rename-buffer}会发出错误信号。但是，
+如果@var{unique}是非@code{nil}，它就会修改@var{newname}，使其成为一个未使用的
+名字。您可以通过一个数字前缀参数使 @var{unique}非@code{nil}。这就是
+@code{rename-unique}命令的实现方式）。
 
-This function returns the name actually given to the buffer.
+这个函数返回实际赋予缓冲区的名称。
 @end deffn
 
 @defun get-buffer buffer-or-name
-This function returns the buffer specified by @var{buffer-or-name}.
-If @var{buffer-or-name} is a string and there is no buffer with that
-name, the value is @code{nil}.  If @var{buffer-or-name} is a buffer, it
-is returned as given; that is not very useful, so the argument is usually
-a name.  For example:
+本函数返回由@var{buffer-or-name}指定的缓冲区。如果@var{buffer-or-name}是一个
+字符串，并且没有同名的缓冲区，那么返回的值是@code{nil}。如果
+@var{buffer-or-name}是一个缓冲区，则返回输入；这不是很有用，所以参数通常是一个名
+称。例如：
 
 @example
 @group
@@ -289,23 +282,18 @@ a name.  For example:
 @end group
 @end example
 
-See also the function @code{get-buffer-create} in @ref{Creating Buffers}.
+也请参见@ref{创建缓冲区}中的函数@code{get-buffer-create}。
 @end defun
 
 @c Emacs 19 feature
 @defun generate-new-buffer-name starting-name &optional ignore
-This function returns a name that would be unique for a new buffer---but
-does not create the buffer.  It starts with @var{starting-name}, and
-produces a name not currently in use for any buffer by appending a
-number inside of @samp{<@dots{}>}.  It starts at 2 and keeps
-incrementing the number until it is not the name of an existing buffer.
+这个函数返回一个新的缓冲区的唯一名称--但并不创建缓冲区。它从@var{starting-name}开
+始，通过在@samp{<@dots{}>}内添加一个数字来产生一个当前没有使用的缓冲区名称。它从2
+开始，并不断递增数字，直到它不是现有缓冲区的名称。
 
-If the optional second argument @var{ignore} is non-@code{nil}, it
-should be a string, a potential buffer name.  It means to consider
-that potential buffer acceptable, if it is tried, even it is the name
-of an existing buffer (which would normally be rejected).  Thus, if
-buffers named @samp{foo}, @samp{foo<2>}, @samp{foo<3>} and
-@samp{foo<4>} exist,
+如果可选的第二个参数@var{ignore}是非@code{nil}，它应该是一个字符串，一个潜在的缓
+冲区名称。它的意思是，如果尝试了这个潜在的缓冲区，即使它是一个现有缓冲区的名称（通常会
+被拒绝），也会认为它是可以接受的。因此，如果存在名为@samp{foo}、@samp{foo<2>}、@samp{foo<3>}和@samp{foo<4>}的缓冲区。
 
 @example
 (generate-new-buffer-name "foo")
@@ -316,28 +304,24 @@ buffers named @samp{foo}, @samp{foo<2>}, @samp{foo<3>} and
      @result{} "foo<5>"
 @end example
 
-See the related function @code{generate-new-buffer} in @ref{Creating
-Buffers}.
+参见@ref{创建缓冲区}中的相关函数@code{generate-new-buffer}。
 @end defun
 
-@node Buffer File Name
+@node 缓冲区文件名
 @section Buffer File Name
 @cindex visited file
 @cindex buffer file name
 @cindex file name of buffer
 
-  The @dfn{buffer file name} is the name of the file that is visited in
-that buffer.  When a buffer is not visiting a file, its buffer file name
-is @code{nil}.  Most of the time, the buffer name is the same as the
-nondirectory part of the buffer file name, but the buffer file name and
-the buffer name are distinct and can be set independently.
+  @dfn{buffer file name}是该缓冲区中被访问的文件名。当一个缓冲区不访问某个文件
+时，它的缓冲区文件名是@code{nil}。大多数情况下，缓冲区文件名与缓冲区文件名的非目录
+部分是一样的，但缓冲区文件名和缓冲区名称是不同的，可以独立设置。
 @xref{Visiting Files}.
 
 @defun buffer-file-name &optional buffer
-This function returns the absolute file name of the file that
-@var{buffer} is visiting.  If @var{buffer} is not visiting any file,
-@code{buffer-file-name} returns @code{nil}.  If @var{buffer} is not
-supplied, it defaults to the current buffer.
+这个函数返回@var{buffer}正在访问的文件的绝对文件名。如果@var{buffer}没有访问任何
+文件，那么@code{buffer-file-name}返回@code{nil}。如果没有提供@var{buffer}，
+则默认为当前的缓冲区。
 
 @example
 @group
@@ -348,10 +332,9 @@ supplied, it defaults to the current buffer.
 @end defun
 
 @defvar buffer-file-name
-This buffer-local variable contains the name of the file being visited
-in the current buffer, or @code{nil} if it is not visiting a file.  It
-is a permanent local variable, unaffected by
-@code{kill-all-local-variables}.
+这个缓冲区本地变量包含了当前缓冲区中被访问的文件名，如果没有访问文件的话，则包含
+@code{nil}。它是一个永久的局部变量，不受@code{kill-all-local-variables}影响
+。
 
 @example
 @group
@@ -360,45 +343,35 @@ buffer-file-name
 @end group
 @end example
 
-It is risky to change this variable's value without doing various other
-things.  Normally it is better to use @code{set-visited-file-name} (see
-below); some of the things done there, such as changing the buffer name,
-are not strictly necessary, but others are essential to avoid confusing
-Emacs.
+在不做其他各种事情的情况下改变这个变量的值是有风险的。通常最好使用
+@code{set-visited-file-name}(见下文)；在那里做的一些事情，比如改变缓冲区的名称
+，严格来说并不是必须的，但其他的事情对于避免Emacs的混乱是必不可少的。
 @end defvar
 
 @defvar buffer-file-truename
-This buffer-local variable holds the abbreviated truename of the file
-visited in the current buffer, or @code{nil} if no file is visited.
-It is a permanent local, unaffected by
-@code{kill-all-local-variables}.  @xref{Truenames}, and
-@ref{abbreviate-file-name}.
+这个缓冲区本地变量保存了当前缓冲区中被访问的缩写文件名，如果没有文件被访问，则保存
+@code{nil}。它是一个永久的局部变量，不受@code{kill-all-local-variables}
+的影响。 @xref{Truenames}, 和 @ref{abbreviate-file-name}.
 @end defvar
 
 @defvar buffer-file-number
-This buffer-local variable holds the file number and directory device
-number of the file visited in the current buffer, or @code{nil} if no
-file or a nonexistent file is visited.  It is a permanent local,
-unaffected by @code{kill-all-local-variables}.
+这个缓冲区本地变量保存了当前缓冲区中被访问的文件的文件号和目录设备号，如果没有文件或者
+访问了不存在的文件，则保存@code{nil}，它是一个永久的局部变量，不受
+@code{kill-all-local-variables}影响。
 
-The value is normally a list of the form @code{(@var{filenum}
-@var{devnum})}.  This pair of numbers uniquely identifies the file among
-all files accessible on the system.  See the function
-@code{file-attributes}, in @ref{File Attributes}, for more information
-about them.
+这个值通常是一个形式为@code{(@var{filenum} @var{devnum})}的列表。这对数字在系
+统上所有可访问的文件中唯一地标识该文件。参见，在 @ref{File Attributes}中的函数
+@code{file-attributes}，了解更多关于它们的信息。
 
-If @code{buffer-file-name} is the name of a symbolic link, then both
-numbers refer to the recursive target.
+如果@code{buffer-file-name}是一个符号链接的名称，那么这两个数字都指的是递归目标。
 @end defvar
 
 @defun get-file-buffer filename
-This function returns the buffer visiting file @var{filename}.  If
-there is no such buffer, it returns @code{nil}.  The argument
-@var{filename}, which must be a string, is expanded (@pxref{File Name
-Expansion}), then compared against the visited file names of all live
-buffers.  Note that the buffer's @code{buffer-file-name} must match
-the expansion of @var{filename} exactly.  This function will not
-recognize other names for the same file.
+该函数返回访问文件@var{filename}的缓冲区，如果没有缓冲区，则返回@code{nil}。如果
+没有这样的缓冲区，则返回@code{nil}。参数@var{filename}必须是一个字符串，它会被展
+开（@pxref{File Name Expansion}），然后与所有实时缓冲区的访问文件名进行比较。注
+意，缓冲区的@code{buffer-file-name}必须与@var{filename}的扩展名完全匹配。这个
+函数不会识别同一文件的其他名称。
 
 @example
 @group
@@ -407,102 +380,80 @@ recognize other names for the same file.
 @end group
 @end example
 
-In unusual circumstances, there can be more than one buffer visiting
-the same file name.  In such cases, this function returns the first
-such buffer in the buffer list.
+在不寻常的情况下，可能会有多个缓冲区访问同一个文件名，在这种情况下，本函数返回缓冲区列
+表中的第一个缓冲区。
 @end defun
 
 @defun find-buffer-visiting filename &optional predicate
-This is like @code{get-file-buffer}, except that it can return any
-buffer visiting the file @emph{possibly under a different name}.  That
-is, the buffer's @code{buffer-file-name} does not need to match the
-expansion of @var{filename} exactly, it only needs to refer to the
-same file.  If @var{predicate} is non-@code{nil}, it should be a
-function of one argument, a buffer visiting @var{filename}.  The
-buffer is only considered a suitable return value if @var{predicate}
-returns non-@code{nil}.  If it can not find a suitable buffer to
-return, @code{find-buffer-visiting} returns @code{nil}.
+这和@code{get-file-buffer}类似，只是它可以返回访问文件@emph{可能用不同的名字}的
+任何缓冲区。也就是说，缓冲区的@code{buffer-file-name}不需要与@var{filename}的
+扩展名完全匹配，它只需要引用同一个文件。如果@var{predicate}是非@code{nil}，它应该是函数，其中只有一个参数，是访问@var{filename}的缓冲区。只有当@var{predicate}
+返回非@code{nil}时，缓冲区才被认为是一个合适的返回值。如果找不到合适的缓冲区来返回
+，@code{find-buffer-visiting}返回@code{nil}。
 @end defun
 
 @deffn Command set-visited-file-name filename &optional no-query along-with-file
-If @var{filename} is a non-empty string, this function changes the
-name of the file visited in the current buffer to @var{filename}.  (If the
-buffer had no visited file, this gives it one.)  The @emph{next time}
-the buffer is saved it will go in the newly-specified file.
+如果@var{filename}是一个非空字符串，这个函数将当前缓冲区中被访问的文件名改为
+@var{filename}。(如果缓冲区没有被访问过的文件，则给它一个。)
+@emph{next time}保存缓冲区时，它将被放在新指定的文件中。
 
-This command marks the buffer as modified, since it does not (as far
-as Emacs knows) match the contents of @var{filename}, even if it
-matched the former visited file.  It also renames the buffer to
-correspond to the new file name, unless the new name is already in
-use.
+这条命令将缓冲区标记为已修改，因为它与@var{filename}的内容不匹配(据Emacs所知)，即
+使它与以前访问过的文件符合。它也会重新命名缓冲区以对应新的文件名，除非新的文件名已经被
+使用。
 
-If @var{filename} is @code{nil} or the empty string, that stands for
-``no visited file''.  In this case, @code{set-visited-file-name} marks
-the buffer as having no visited file, without changing the buffer's
-modified flag.
+如果@var{filename}是@code{nil}或空字符串，则代表"no visited file"。在这种情
+况下，@code{set-visited-file-name}将缓冲区标记为没有访问过的文件，而不会改变缓
+冲区的修改标志。
 
-Normally, this function asks the user for confirmation if there
-already is a buffer visiting @var{filename}.  If @var{no-query} is
-non-@code{nil}, that prevents asking this question.  If there already
-is a buffer visiting @var{filename}, and the user confirms or
-@var{no-query} is non-@code{nil}, this function makes the new
-buffer name unique by appending a number inside of @samp{<@dots{}>} to
-@var{filename}.
+通常情况下，这个函数会要求用户确认是否已经有一个缓冲区在访问@var{filename}。如果
+@var{no-query}是非@code{nil}，则无法询问这个问题。如果已经有一个缓冲区访问
+@var{filename}，并且用户进行了确认，或者@var{no-query}是非@code{nil}，那么这
+个函数通过在@samp{<@dots{}>}里面添加一个数字到@var{filename}中，使新的缓冲区名
+称变得独一无二。
 
-If @var{along-with-file} is non-@code{nil}, that means to assume that
-the former visited file has been renamed to @var{filename}.  In this
-case, the command does not change the buffer's modified flag, nor the
-buffer's recorded last file modification time as reported by
-@code{visited-file-modtime} (@pxref{Modification Time}).  If
-@var{along-with-file} is @code{nil}, this function clears the recorded
-last file modification time, after which @code{visited-file-modtime}
-returns zero.
+如果@var{along-with-file}是非@code{nil}，则意味着假设以前访问过的文件已经重命名
+为@var{filename}。在这种情况下，命令不会改变缓冲区的修改标志，也不会改变由
+@code{visited-file-modtime}报告的缓冲区最后一次修改文件的时间。(
+@pxref{Modification Time})。如果@var{along-with-file}为@code{nil}，则该
+函数将清除记录的最后一次文件修改时间，之后@code{visited-file-modtime}返回0。
 
-When the function @code{set-visited-file-name} is called
-interactively, it prompts for @var{filename} in the minibuffer.
+当交互式调用函数@code{set-visited-file-name}时，它在minibuffer中会提示
+@var{filename}。
+
 @end deffn
 
 @defvar list-buffers-directory
-This buffer-local variable specifies a string to display in a buffer
-listing where the visited file name would go, for buffers that don't
-have a visited file name.  Dired buffers use this variable.
+这个缓冲区本地变量对于没有被访问的文件名的缓冲区指定了一个字符串，用于在缓冲区列表中显
+示被访问的文件名。Dired缓冲区使用这个变量。
 @end defvar
 
-@node Buffer Modification
+@node 缓冲区修改
 @section Buffer Modification
 @cindex buffer modification
 @cindex modification flag (of buffer)
 
-  Emacs keeps a flag called the @dfn{modified flag} for each buffer, to
-record whether you have changed the text of the buffer.  This flag is
-set to @code{t} whenever you alter the contents of the buffer, and
-cleared to @code{nil} when you save it.  Thus, the flag shows whether
-there are unsaved changes.  The flag value is normally shown in the mode
-line (@pxref{Mode Line Variables}), and controls saving (@pxref{Saving
-Buffers}) and auto-saving (@pxref{Auto-Saving}).
+  Emacs 为每个缓冲区保留了一个名为@dfn{modified flag}的标志，以记录你是否修改了
+缓冲区的文本。每当你修改缓冲区的内容时，这个标志就会被设置为@code{t}，而当你保存缓冲
+区时，这个标志就会被清空为@code{nil}。因此，该标志显示是否有未保存的修改。该标志值
+通常显示在模式行中（@pxref{Mode Line Variables}），并控制保存（
+@pxref{Saving Buffers}）和自动保存（@pxref{Auto-Saving}）。
 
-  Some Lisp programs set the flag explicitly.  For example, the function
-@code{set-visited-file-name} sets the flag to @code{t}, because the text
-does not match the newly-visited file, even if it is unchanged from the
-file formerly visited.
+  有些Lisp程序会显式地设置标志。例如，函数@code{set-visited-file-name}将标志设
+置为@code{t}，因为文本与新访问的文件不匹配，即使它与以前访问的文件没有变化。
 
-  The functions that modify the contents of buffers are described in
-@ref{Text}.
+  修改缓冲区内容的函数在@ref{Text}中描述。
 
 @defun buffer-modified-p &optional buffer
-This function returns @code{t} if the buffer @var{buffer} has been modified
-since it was last read in from a file or saved, or @code{nil}
-otherwise.  If @var{buffer} is not supplied, the current buffer
-is tested.
+如果@var{buffer}在最后一次从文件读入或保存后被修改，则该函数返回@code{t}，否则返
+回@code{nil}。如果@var{buffer}没有提供，则测试当前的缓冲区。
 @end defun
 
 @defun set-buffer-modified-p flag
-This function marks the current buffer as modified if @var{flag} is
-non-@code{nil}, or as unmodified if the flag is @code{nil}.
+如果@var{flag}是非@code{nil}，则该函数将当前缓冲区标记为已修改，如果flag为
+@code{nil}，则标记为未修改。
 
-Another effect of calling this function is to cause unconditional
-redisplay of the mode line for the current buffer.  In fact, the
-function @code{force-mode-line-update} works by doing this:
+调用这个函数的另一个效果是使当前缓冲区的模式行无条件的重新显示。事实上，函数
+@code{force-mode-line-update}的工作原理就是这样:
 
 @example
 @group
