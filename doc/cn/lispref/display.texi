@@ -5,130 +5,111 @@
 @node Display
 @chapter Emacs Display
 
-  This chapter describes a number of features related to the display
-that Emacs presents to the user.
+  本章介绍了一些与Emacs呈现给用户的显示相关的功能。
 
 @menu
-* Refresh Screen::      Clearing the screen and redrawing everything on it.
-* Forcing Redisplay::   Forcing redisplay.
-* Truncation::          Folding or wrapping long text lines.
-* The Echo Area::       Displaying messages at the bottom of the screen.
-* Warnings::            Displaying warning messages for the user.
-* Invisible Text::      Hiding part of the buffer text.
-* Selective Display::   Hiding part of the buffer text (the old way).
-* Temporary Displays::  Displays that go away automatically.
-* Overlays::            Use overlays to highlight parts of the buffer.
-* Size of Displayed Text::  How large displayed text is.
-* Line Height::         Controlling the height of lines.
-* Faces::               A face defines a graphics style for text characters:
-                          font, colors, etc.
-* Fringes::             Controlling window fringes.
-* Scroll Bars::         Controlling scroll bars.
-* Window Dividers::     Separating windows visually.
-* Display Property::    Images, margins, text size, etc.
-* Images::              Displaying images in Emacs buffers.
-* Xwidgets::            Displaying native widgets in Emacs buffers.
-* Buttons::             Adding clickable buttons to Emacs buffers.
-* Abstract Display::    Emacs's Widget for Object Collections.
-* Blinking::            How Emacs shows the matching open parenthesis.
-* Character Display::   How Emacs displays individual characters.
-* Beeping::             Audible signal to the user.
-* Window Systems::      Which window system is being used.
-* Tooltips::            Tooltip display in Emacs.
-* Bidirectional Display:: Display of bidirectional scripts, such as
-                             Arabic and Farsi.
+* 刷新屏幕::     清理屏幕并重新绘制屏幕上的所有内容。
+* 强制重显::     强制重显
+* 截断::         折叠或包裹长文本行。
+* 回音区::       在屏幕底部显示信息。
+* 警告::         显示用户的警告信息。
+* 隐形文本::     隐藏部分缓冲区文本。
+* 选择性显示::   隐藏部分缓冲区文字（老方法）。
+* 临时显示::     自动消失的显示。
+* 叠加::         使用叠加来突出显示缓冲区的部分内容。
+* 显示文字的大小::显示的文字的大小。 显示文字的大小。
+* 行高::        控制行的高度。
+* 字型::        一个字型定义了文本字符的图形样式，包括字体、颜色等。
+* 边缘::        控制窗口边缘。
+* 滚动条::      控制滚动条。
+* 窗口分割器::  控制窗口的分割。
+* 显示属性::    控制图像、边距、文字大小等。
+* 图像::        在Emacs缓冲区中显示图像。
+* Xwidgets::    在Emacs缓冲区中显示本地部件。
+* 按钮::        在Emacs缓冲区中添加可点击的按钮。
+* 抽象显示::    Emacs的对象集合小部件。
+* 闪烁::        Emacs如何显示匹配的开放括号。
+* 字符显示::    Emacs显示单个字符的方式。
+* 哔哔声::     给用户的声音信号。
+* 窗口系统::   正在使用的窗口系统。
+* 工具提示::   Emacs中的工具提示显示。
+* 双向显示::   显示双向文本，如阿拉伯语和波斯语。
 @end menu
 
-@node Refresh Screen
+@node 刷新屏幕
 @section Refreshing the Screen
 @cindex refresh the screen
 @cindex screen refresh
 
-  The function @code{redraw-frame} clears and redisplays the entire
-contents of a given frame (@pxref{Frames}).  This is useful if the
-screen is corrupted.
+  函数@code{redraw-frame}清除并重新显示给定窗帧（@pxref{Frames}）的全部
+内容。这在屏幕有错误时非常有用。
 
 @defun redraw-frame &optional frame
-This function clears and redisplays frame @var{frame}.  If @var{frame}
-is omitted or @code{nil}, it redraws the selected frame.
+此函数清除并重新显示@var{frame}帧。如果@var{frame}被省略或者@code{nil}被
+忽略，则重新显示当前所选的帧。
 @end defun
 
-  Even more powerful is @code{redraw-display}:
+  更强大的是@code{redraw-display}。
 
 @deffn Command redraw-display
-This function clears and redisplays all visible frames.
+这个函数清除并重新显示所有可见的帧。
 @end deffn
 
-  In Emacs, processing user input takes priority over redisplay.  If
-you call these functions when input is available, they don't redisplay
-immediately, but the requested redisplay does happen
-eventually---after all the input has been processed.
+  在Emacs中，处理用户输入比重新显示优先。如果你在有输入时调用这些函数，它
+们不会立即重新显示，但要求的重新显示最终会发生--在所有输入被处理后。
 
-  On text terminals, suspending and resuming Emacs normally also
-refreshes the screen.  Some terminal emulators record separate
-contents for display-oriented programs such as Emacs and for ordinary
-sequential display.  If you are using such a terminal, you might want
-to inhibit the redisplay on resumption.
+  在文本终端上，暂停和恢复Emacs通常也会刷新屏幕。一些终端仿真器为Emacs等
+以显示为主的程序和普通的顺序显示的程序分别记录内容。如果你使用的是这样的终
+端，你可能会想抑制恢复时的重新显示。
 
 @defopt no-redraw-on-reenter
 @cindex suspend (cf. @code{no-redraw-on-reenter})
 @cindex resume (cf. @code{no-redraw-on-reenter})
-This variable controls whether Emacs redraws the entire screen after it
-has been suspended and resumed.  Non-@code{nil} means there is no need
-to redraw, @code{nil} means redrawing is needed.  The default is @code{nil}.
+这个变量控制Emacs暂停和恢复后是否重绘整个屏幕。非@code{nil}表示不需要重绘
+，@code{nil}表示需要重绘。 默认为@code{nil}。
 @end defopt
 
-@node Forcing Redisplay
+@node 强制重显
 @section Forcing Redisplay
 @cindex forcing redisplay
 
-  Emacs normally tries to redisplay the screen whenever it waits for
-input.  With the following function, you can request an immediate
-attempt to redisplay, in the middle of Lisp code, without actually
-waiting for input.
+  Emacs正常情况会在等待输入时尝试重新显示屏幕。使用下面的函数，你可以在
+Lisp代码中间请求立即尝试重新显示屏幕，而不需要等待输入。
 
 @defun redisplay &optional force
-This function tries immediately to redisplay.  The optional argument
-@var{force}, if non-@code{nil}, forces the redisplay to be performed,
-instead of being preempted if input is pending.
+这个函数会立即尝试重新显示。可选参数@var{force}如果是非@code{nil}，则强
+制执行重新显示，而不是在输入待定的情况下被抢占。
 
-The function returns @code{t} if it actually tried to redisplay, and
-@code{nil} otherwise.  A value of @code{t} does not mean that
-redisplay proceeded to completion; it could have been preempted by
-newly arriving input.
+如果函数确实重新显示，则返回@code{t}，否则返回@code{nil}。@code{t}的值并
+不意味着重新显示已经完成；它可能已经被新到达的输入所取代。
 @end defun
 
-  Although @code{redisplay} tries immediately to redisplay, it does
-not change how Emacs decides which parts of its frame(s) to redisplay.
-By contrast, the following function adds certain windows to the
-pending redisplay work (as if their contents had completely changed),
-but does not immediately try to perform redisplay.
+  虽然@code{redisplay}会立即尝试重新显示，但它并没有改变Emacs决定重新显
+示框架中哪些部分的方式。对比之下，下面的函数将某些窗口加入到等待重新显示的
+工作中（就像它们的内容已经完全改变了一样），但并没有立即尝试执行重新显示。
 
 @defun force-window-update &optional object
-This function forces some or all windows to be updated the next time
-Emacs does a redisplay.  If @var{object} is a window, that window is
-to be updated.  If @var{object} is a buffer or buffer name, all
-windows displaying that buffer are to be updated.  If @var{object} is
-@code{nil} (or omitted), all windows are to be updated.
+这个函数强制在下次Emacs进行重新显示时更新部分或全部窗口。如果@var{object}
+是一个窗口，那么该窗口将被更新。如果@var{object}是一个缓冲区或缓冲区名称
+，那么所有显示该缓冲区的窗口都将被更新。如果@var{object}是@code{nil}。(
+或省略)，所有的窗口都将被更新。
 
-This function does not do a redisplay immediately; Emacs does that as
-it waits for input, or when the function @code{redisplay} is called.
+这个函数不会立即进行重新显示；Emacs会在等待输入时或调用函数
+@code{redisplay}时进行重新显示。
 @end defun
 
 @defvar pre-redisplay-function
-A function run just before redisplay.  It is called with one argument,
-the set of windows to be redisplayed.  The set can be @code{nil},
-meaning only the selected window, or @code{t}, meaning all the
-windows.
+在重新显示之前运行的一个函数。调用该函数时有一个参数，即要重新显示的窗口集
+。这个集合可以是@code{nil},表示只显示当前选定的窗口，也可以是@code{t},表
+示所有的窗口。
 @end defvar
 
 @defvar pre-redisplay-functions
-This hook is run just before redisplay.  It is called once in each
-window that is about to be redisplayed, with @code{current-buffer} set
-to the buffer displayed in that window.
+这个钩子是在重新显示之前运行的。它在每个即将被重新显示的窗口中被调用一次，
+@code{current-buffer}设置为该窗口中显示的缓冲区。
 @end defvar
 
-@node Truncation
+@node 截断
 @section Truncation
 @cindex line wrapping
 @cindex line truncation
@@ -224,7 +205,7 @@ This variable is automatically buffer-local in every buffer.
 @end defvar
 @end ignore
 
-@node The Echo Area
+@node 回音区
 @section The Echo Area
 @cindex error display
 @cindex echo area
@@ -656,7 +637,7 @@ maximum height for resizing minibuffer windows, also applies to the
 echo area (which is really a special use of the minibuffer window;
 @pxref{Minibuffer Windows}).
 
-@node Warnings
+@node 警告
 @section Reporting Warnings
 @cindex warnings
 
@@ -909,7 +890,7 @@ of the entries in @code{delayed-warnings-list}, in turn, and then sets
 @code{delayed-warnings-list} to @code{nil}.
 @end defvar
 
-@node Invisible Text
+@node 隐形文本
 @section Invisible Text
 
 @cindex invisible text
@@ -1072,7 +1053,7 @@ The function is called with two arguments: the first is the overlay, and
 the second is @code{nil} to make the overlay visible, or @code{t} to
 make it invisible again.
 
-@node Selective Display
+@node 选择性显示
 @section Selective Display
 @c @cindex selective display   Duplicates selective-display
 
@@ -1190,7 +1171,7 @@ You can use a display table to substitute other text for the ellipsis
 (@samp{@dots{}}).  @xref{Display Tables}.
 @end defopt
 
-@node Temporary Displays
+@node 临时显示
 @section Temporary Displays
 @cindex temporary display
 @cindex temporary buffer display
@@ -1409,7 +1390,7 @@ Type RET when done reading
 @end example
 @end defun
 
-@node Overlays
+@node 叠加
 @section Overlays
 @cindex overlays
 @c FIXME: mention intervals in this section?
@@ -1948,7 +1929,7 @@ changes.
     (point)))
 @end smallexample
 
-@node Size of Displayed Text
+@node 显示文字的大小
 @section Size of Displayed Text
 @cindex size of text on display
 @cindex character width on display
@@ -2149,7 +2130,7 @@ Windows}) if you need this information about another window.
 @end defun
 
 
-@node Line Height
+@node 行高
 @section Line Height
 @cindex line height
 @cindex height of a line
@@ -2250,7 +2231,7 @@ height.
 
   On text terminals, the line spacing cannot be altered.
 
-@node Faces
+@node 字型
 @section Faces
 @cindex faces
 
@@ -3991,7 +3972,7 @@ selected window, and @var{face} defaults to the default face in
 @var{window}.
 @end defun
 
-@node Fringes
+@node 边缘
 @section Fringes
 @cindex fringes
 
@@ -4434,7 +4415,7 @@ arrow position.  If either property is not set, the default
 is used.
 
 
-@node Scroll Bars
+@node 滚动条
 @section Scroll Bars
 @cindex scroll bars
 
@@ -4626,7 +4607,7 @@ frames.
 @end defopt
 
 
-@node Window Dividers
+@node 窗口分割器
 @section Window Dividers
 @cindex window dividers
 @cindex right dividers
@@ -4690,7 +4671,7 @@ window on a minibuffer-less frame.
 @end defun
 
 
-@node Display Property
+@node 显示属性
 @section The @code{display} Property
 @cindex display specification
 @kindex display @r{(text property)}
@@ -5137,7 +5118,7 @@ the function returns @code{(nil)}.  If @var{window} is @code{nil}, the
 selected window is used.
 @end defun
 
-@node Images
+@node 图像
 @section Images
 @cindex images in buffers
 
@@ -6620,7 +6601,7 @@ This function returns the current setting of @var{xwidget}s
 query-on-exit flag, either @code{t} or @code{nil}.
 @end defun
 
-@node Buttons
+@node 按钮
 @section Buttons
 @cindex buttons in buffers
 @cindex clickable buttons in buffers
@@ -6951,7 +6932,7 @@ Return the next button after (for @code{next-button}) or before (for
 in the search, instead of starting at the next button.
 @end defun
 
-@node Abstract Display
+@node 抽象显示
 @section Abstract Display
 @cindex ewoc
 @cindex display, abstract
@@ -7291,7 +7272,7 @@ Note that we never modify the data in each node, which is fixed when the
 ewoc is created to be either @code{nil} or an index into the vector
 @code{colorcomp-data}, the actual color components.
 
-@node Blinking
+@node 闪烁
 @section Blinking Parentheses
 @cindex parenthesis matching
 @cindex blinking parentheses
@@ -7349,7 +7330,7 @@ Here is an example of calling this function explicitly.
 @end smallexample
 @end deffn
 
-@node Character Display
+@node 字符显示
 @section Character Display
 
   This section describes how characters are actually displayed by
@@ -7785,7 +7766,7 @@ The @var{method} symbol should be one of @code{zero-width},
 the same meanings as in @code{glyphless-char-display}, above.
 @end defopt
 
-@node Beeping
+@node 哔哔声
 @section Beeping
 @cindex bell
 
@@ -7821,7 +7802,7 @@ non-@code{nil}, it takes precedence over the @code{visible-bell}
 variable.
 @end defopt
 
-@node Window Systems
+@node 窗口系统
 @section Window Systems
 
   Emacs works with several window systems, most notably the X Window
@@ -7873,7 +7854,7 @@ indicator of Emacs capabilities on a given display type.  Instead, use
 @code{display-graphic-p} or any of the other @code{display-*-p}
 predicates described in @ref{Display Feature Testing}.
 
-@node Tooltips
+@node 工具提示
 @section Tooltips
 @cindex tooltips
 @dfn{Tooltips} are special frames (@pxref{Frames}) that are used to
@@ -7950,7 +7931,7 @@ Other aspects of tooltip display are controlled by several
 customizable settings; see @ref{Tooltips,,, emacs, The GNU Emacs
 Manual}.
 
-@node Bidirectional Display
+@node 双向显示
 @section Bidirectional Display
 @cindex bidirectional display
 @cindex right-to-left text
