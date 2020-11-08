@@ -8,136 +8,109 @@
 @cindex editor command loop
 @cindex command loop
 
-  When you run Emacs, it enters the @dfn{editor command loop} almost
-immediately.  This loop reads key sequences, executes their definitions,
-and displays the results.  In this chapter, we describe how these things
-are done, and the subroutines that allow Lisp programs to do them.
+  当你运行Emacs时，它几乎立即进入@dfn{editor command loop}。这个循环读取按键序列
+，执行它们的定义，并显示结果。在本章中，我们将描述这些事情是如何完成的，以及允许Lisp程
+序完成这些事情的子程序。
 
 @menu
-* Command Overview::    How the command loop reads commands.
-* Defining Commands::   Specifying how a function should read arguments.
-* Interactive Call::    Calling a command, so that it will read arguments.
-* Distinguish Interactive::     Making a command distinguish interactive calls.
-* Command Loop Info::   Variables set by the command loop for you to examine.
-* Adjusting Point::     Adjustment of point after a command.
-* Input Events::        What input looks like when you read it.
-* Reading Input::       How to read input events from the keyboard or mouse.
-* Special Events::      Events processed immediately and individually.
-* Waiting::             Waiting for user input or elapsed time.
-* Quitting::            How @kbd{C-g} works.  How to catch or defer quitting.
-* Prefix Command Arguments::    How the commands to set prefix args work.
-* Recursive Editing::   Entering a recursive edit,
-                          and why you usually shouldn't.
-* Disabling Commands::  How the command loop handles disabled commands.
-* Command History::     How the command history is set up, and how accessed.
-* Keyboard Macros::     How keyboard macros are implemented.
+* 命令概述::   命令循环如何读取命令。
+* 定义命令::   指定一个函数应该如何读取参数。
+* 交互式调用:: 调用一个命令，使其读取参数。
+* 区分交互式:: 使一个命令与交互式调用不同。
+* 命令循环信息::令循环设置的变量，供你检查。
+* 调整点::    命令后调整光标点。
+* 输入事件:：  读取输入时的样子。
+* 读取输入:：  从键盘或鼠标读取输入事件的方法。
+* 特殊事件::  立即和单独处理的事件。
+* 等待:：     等待用户的输入或过期的时间。
+* 退出::     @kbd{C-g}的工作方式。 如何捕捉或推迟退出。
+* 前缀命令参数:: 设置前缀参数的命令如何工作。
+* 递归编辑::  进入递归编辑,以及为什么你通常不应该这样做。
+* 禁用命令：:  命令循环如何处理被禁用的命令。
+* 命令历史::  如何设置命令历史，以及如何访问。
+* 键盘宏::    键盘宏的实现方式。
 @end menu
 
-@node Command Overview
+@node 命令概述
 @section Command Loop Overview
 
-  The first thing the command loop must do is read a key sequence,
-which is a sequence of input events that translates into a command.
-It does this by calling the function @code{read-key-sequence}.  Lisp
-programs can also call this function (@pxref{Key Sequence Input}).
-They can also read input at a lower level with @code{read-key} or
-@code{read-event} (@pxref{Reading One Event}), or discard pending
-input with @code{discard-input} (@pxref{Event Input Misc}).
+  命令循环必须做的第一件事是读取一个按键序列，这是一个转换为命令的输入事件序列，它通过
+调用函数@code{read-key-sequence}来完成。Lisp程序也可以调用这个函数（
+@pxref{key Sequence Input}）。它们也可以通过@code{read-key}或
+@code{read-event}来读取更低层次的输入(@pxref{Reading One Event})，或者用
+@code{discard-input}（@pxref{Event Input Misc}）丢弃待定的输入。
 
-  The key sequence is translated into a command through the currently
-active keymaps.  @xref{Key Lookup}, for information on how this is done.
-The result should be a keyboard macro or an interactively callable
-function.  If the key is @kbd{M-x}, then it reads the name of another
-command, which it then calls.  This is done by the command
-@code{execute-extended-command} (@pxref{Interactive Call}).
+  按键序列通过当前活动键位图转化为命令。关于如何做到这一点的信息，请参见
+@xref{Key Lookup}。其结果应该是一个键盘宏或一个可交互调用的函数。如果按键是
+@kbd{M-x}，那么它就会读取另一个命令的名称，然后调用它。这是由命令
+@code{execute-extended-command}（@pxref{Interactive Call}）完成的。
 
-  Prior to executing the command, Emacs runs @code{undo-boundary} to
-create an undo boundary.  @xref{Maintaining Undo}.
+在执行命令之前，Emacs会运行@code{undo-boundary}来创建一个撤销边界。
+@xref{Maintaining Undo}。
 
-  To execute a command, Emacs first reads its arguments by calling
-@code{command-execute} (@pxref{Interactive Call}).  For commands
-written in Lisp, the @code{interactive} specification says how to read
-the arguments.  This may use the prefix argument (@pxref{Prefix
-Command Arguments}) or may read with prompting in the minibuffer
-(@pxref{Minibuffers}).  For example, the command @code{find-file} has
-an @code{interactive} specification which says to read a file name
-using the minibuffer.  The function body of @code{find-file} does not
-use the minibuffer, so if you call @code{find-file} as a function from
-Lisp code, you must supply the file name string as an ordinary Lisp
-function argument.
+要执行一个命令，Emacs首先通过调用@code{command-execute}来读取其参数。(
+@pxref{Interactive Call})。对于用Lisp编写的命令，@code{interactive}规范规定
+了是如何读取参数。 这可能使用前缀参数（@pxref{Prefix Command Arguments}），也可
+能在minibuffer中提示读取（@pxref{Minibuffers}）。例如，命令@code{find-file}有
+一个@code{interactive}规范，说是使用minibuffer读取文件名。而@code{find-file}
+的函数体并没有使用minibuffer，所以如果你从Lisp代码中调用@code{find-file}作为函数
+，你必须提供文件名字符串作为普通Lisp函数参数。
 
-  If the command is a keyboard macro (i.e., a string or vector),
-Emacs executes it using @code{execute-kbd-macro} (@pxref{Keyboard
-Macros}).
+如果命令是键盘宏(即字符串或向量)，Emacs会使用@code{execute-kbd-macro}来执行它(
+@pxref{Keyboard Macros})
 
 @defvar pre-command-hook
-This normal hook is run by the editor command loop before it executes
-each command.  At that time, @code{this-command} contains the command
-that is about to run, and @code{last-command} describes the previous
-command.  @xref{Command Loop Info}.
+这个正常的钩子是由编辑器命令循环执行每个命令之前运行的。此时，@code{this-command}包
+含即将运行的命令，@code{last-command}描述前一个命令。
+@xref{Command Loop Info}。
 @end defvar
 
 @defvar post-command-hook
-This normal hook is run by the editor command loop after it executes
-each command (including commands terminated prematurely by quitting or
-by errors).  At that time, @code{this-command} refers to the command
-that just ran, and @code{last-command} refers to the command before
-that.
+这个正常的钩子是在编辑器命令循环执行完每一条命令（包括因退出或错误而提前终止的命令）后
+，由编辑器命令循环运行的。此时，@code{this-command}指的是刚刚运行的命令，
+@code{last-command}指的是之前的命令。
 
-This hook is also run when Emacs first enters the command loop (at
-which point @code{this-command} and @code{last-command} are both
-@code{nil}).
+当Emacs第一次进入命令循环时，也会运行这个钩子（此时@code{this-command}和
+@code{last-command}都是@code{nil}）。
 @end defvar
 
-  Quitting is suppressed while running @code{pre-command-hook} and
-@code{post-command-hook}.  If an error happens while executing one of
-these hooks, it does not terminate execution of the hook; instead
-the error is silenced and the function in which the error occurred
-is removed from the hook.
+  在运行@code{pre-command-hook}和@code{post-command-hook}时，会抑制退出。如
+果在执行这些钩子中的一个钩子时发生了错误，并不会终止钩子的执行；相反，错误会被沉默，发
+生错误的函数会从钩子中移除。
 
-  A request coming into the Emacs server (@pxref{Emacs Server,,,
-emacs, The GNU Emacs Manual}) runs these two hooks just as a keyboard
-command does.
+进入Emacs服务器的请求(
+@pxref{Emacs Server,,,emacs,The GNU Emacs Manual})会像键盘命令一样运行这两
+个钩子。
 
-@node Defining Commands
+@node 定义命令
 @section Defining Commands
 @cindex defining commands
 @cindex commands, defining
 @cindex functions, making them interactive
 @cindex interactive function
 
-  The special form @code{interactive} turns a Lisp function into a
-command.  The @code{interactive} form must be located at top-level in
-the function body, usually as the first form in the body; this applies
-to both lambda expressions (@pxref{Lambda Expressions}) and
-@code{defun} forms (@pxref{Defining Functions}).  This form does
-nothing during the actual execution of the function; its presence
-serves as a flag, telling the Emacs command loop that the function can
-be called interactively.  The argument of the @code{interactive} form
-specifies how the arguments for an interactive call should be read.
-
+  特殊表单@code{interactive}可以将一个Lisp函数变成一条命令。
+@code{interactive}表单必须位于函数体的顶层，通常作为函数体的第一个表单；这适用于
+lambda表达式（@pxref{Lambda Expressions}）和@code{defun}表单（
+@pxref{Declare Form}）。此表单在实际执行函数的过程中没有任何作用；它的存在作为一个
+标志，告诉Emacs命令循环可以交互式调用函数。@code{interactive}表单的参数指定了交互
+式调用的参数应该如何读取。
 @cindex @code{interactive-form} property
-  Alternatively, an @code{interactive} form may be specified in a
-function symbol's @code{interactive-form} property.  A non-@code{nil}
-value for this property takes precedence over any @code{interactive}
-form in the function body itself.  This feature is seldom used.
-
+  另外，@code{interactive}表单可以在函数符号的@code{interactive-form}属性中指
+定。这个属性的非@code{nil}值优先于函数体中的任何@code{interactive}形式。这个特性
+很少被使用。
 @anchor{The interactive-only property}
 @cindex @code{interactive-only} property
-  Sometimes, a function is only intended to be called interactively,
-never directly from Lisp.  In that case, give the function a
-non-@code{nil} @code{interactive-only} property, either directly
-or via @code{declare} (@pxref{Declare Form}).  This causes the
-byte compiler to warn if the command is called from Lisp.  The output
-of @code{describe-function} will include similar information.
-The value of the property can be: a string, which the byte-compiler
-will use directly in its warning (it should end with a period, and not
-start with a capital, e.g., @code{"use (system-name) instead."}); @code{t}; any
-other symbol, which should be an alternative function to use in Lisp
-code.
+  有时，一个函数只打算被交互式调用，而不是直接从Lisp中调用。在这种情况下，可以给函数一
+个非@code{nil}的@code{interactive-only}属性，可以直接地或通过@code{declare}
+。(@pxref{Declare Form})。这将导致字节编译器警告说从Lisp调用命令。
+@code{describe-function}的输出将包括类似的信息。该属性的值可以是：一个字符串，字
+节编译器将在其警告中直接使用该字符串（它应该以句号结束，而不是以大写开始，例如，
+@code{"use (system-name) instead."}）；@code{t}；任何其他符号，它应该是
+一个Lisp代码中使用的替代函数。
 
-Generic functions (@pxref{Generic Functions}) cannot be turned into
-commands by adding the @code{interactive} form to them.
+通用函数（@pxref{Generic Functions}）不能通过添加@code{interactive}形式来变成
+命令。
 
 @menu
 * Using Interactive::     General rules for @code{interactive}.
@@ -616,7 +589,7 @@ alternating @code{defcustom} keywords (typically @code{:group} and
 @code{@var{command}-alternatives}.
 @end defmac
 
-@node Interactive Call
+@node 交互式调用
 @section Interactive Call
 @cindex interactive call
 
@@ -758,7 +731,7 @@ part of the prompt.
 @end example
 @end deffn
 
-@node Distinguish Interactive
+@node 区分交互式
 @section Distinguish Interactive Calls
 @cindex distinguish interactive calls
 @cindex is this call interactive
@@ -848,7 +821,7 @@ Here is another example that contrasts direct and indirect calls to
 @end group
 @end example
 
-@node Command Loop Info
+@node 命令循环信息
 @section Information from the Command Loop
 @cindex command loop variables
 
@@ -1001,7 +974,7 @@ frame, the value is the frame to which the event was redirected.
 If the last event came from a keyboard macro, the value is @code{macro}.
 @end defvar
 
-@node Adjusting Point
+@node 调整点
 @section Adjusting Point After Commands
 @cindex adjusting point
 @cindex invisible/intangible text, and point
@@ -1032,7 +1005,7 @@ If you set this variable to a non-@code{nil} value, the feature of
 moving point out of these sequences is completely turned off.
 @end defvar
 
-@node Input Events
+@node 输入事件
 @section Input Events
 @cindex events
 @cindex input events
@@ -2341,7 +2314,7 @@ the strings.
   However, most programs would do well to avoid these issues by
 following the recommendations at the beginning of this section.
 
-@node Reading Input
+@node 读取输入
 @section Reading Input
 @cindex read input
 @cindex keyboard input
@@ -2993,7 +2966,7 @@ during the sleep.
 @end example
 @end defun
 
-@node Special Events
+@node 特殊事件
 @section Special Events
 
 @cindex special events
@@ -3021,7 +2994,7 @@ The keymap which defines how to handle special events---and which
 events are special---is in the variable @code{special-event-map}
 (@pxref{Controlling Active Maps}).
 
-@node Waiting
+@node 等待
 @section Waiting for Elapsed Time or Input
 @cindex waiting
 
@@ -3082,7 +3055,7 @@ Use @code{sleep-for} when you wish to guarantee a delay.
 
   @xref{Time of Day}, for functions to get the current time.
 
-@node Quitting
+@node 退出
 @section Quitting
 @cindex @kbd{C-g}
 @cindex quitting
@@ -3208,7 +3181,7 @@ in @ref{Errors}.)
   You can specify a character other than @kbd{C-g} to use for quitting.
 See the function @code{set-input-mode} in @ref{Input Modes}.
 
-@node Prefix Command Arguments
+@node 前缀命令参数
 @section Prefix Command Arguments
 @cindex prefix argument
 @cindex raw prefix argument
@@ -3348,7 +3321,7 @@ command; its value is negated to form the new prefix argument.  Don't
 call this command yourself unless you know what you are doing.
 @end deffn
 
-@node Recursive Editing
+@node 递归编辑
 @section Recursive Editing
 @cindex recursive command loop
 @cindex recursive editing level
@@ -3467,7 +3440,7 @@ This function returns the current depth of recursive edits.  When no
 recursive edit is active, it returns 0.
 @end defun
 
-@node Disabling Commands
+@node 禁用命令
 @section Disabling Commands
 @cindex disabled command
 
@@ -3528,7 +3501,7 @@ By default, the value is a function that asks the user whether to
 proceed.
 @end defvar
 
-@node Command History
+@node 命令历史
 @section Command History
 @cindex command history
 @cindex complex command
@@ -3571,7 +3544,7 @@ previous commands.  The commands @code{repeat-complex-command}, and
 (@pxref{Repetition,,, emacs, The GNU Emacs Manual}).  Within the
 minibuffer, the usual minibuffer history commands are available.
 
-@node Keyboard Macros
+@node 键盘宏
 @section Keyboard Macros
 @cindex keyboard macros
 
