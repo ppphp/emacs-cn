@@ -113,83 +113,67 @@ lambda表达式（@pxref{Lambda Expressions}）和@code{defun}表单（
 命令。
 
 @menu
-* Using Interactive::     General rules for @code{interactive}.
-* Interactive Codes::     The standard letter-codes for reading arguments
-                             in various ways.
-* Interactive Examples::  Examples of how to read interactive arguments.
-* Generic Commands::      Select among command alternatives.
+* 使用交互式::  @code{interactive}的一般规则。
+* 交互式代码::  各种方式读取参数的标准字母代码。
+* 交互式例子::  如何读取交互式参数的例子。
+* 通用命令::    在命令替代品中进行选择。
 @end menu
 
-@node Using Interactive
+@node 使用交互式
 @subsection Using @code{interactive}
 @cindex arguments, interactive entry
 @cindex interactive spec, using
 
-  This section describes how to write the @code{interactive} form that
-makes a Lisp function an interactively-callable command, and how to
-examine a command's @code{interactive} form.
+  本节介绍了如何编写@code{interactive}形式，使一个Lisp函数成为可交互调用的命令，
+以及如何检查一个命令的@code{interactive}形式。
 
 @defspec interactive arg-descriptor
-This special form declares that a function is a command, and that it
-may therefore be called interactively (via @kbd{M-x} or by entering a
-key sequence bound to it).  The argument @var{arg-descriptor} declares
-how to compute the arguments to the command when the command is called
-interactively.
+这个特殊的表单声明一个函数是一个命令，因此它可以被交互式调用（通过@kbd{M-x}或输入一个
+与之绑定的键序）。参数@var{arg-descriptor}声明了当命令被交互式调用时，如何计算命令
+的参数。
 
-A command may be called from Lisp programs like any other function, but
-then the caller supplies the arguments and @var{arg-descriptor} has no
-effect.
+命令可以像其他函数一样从Lisp程序中调用，但这时调用者提供参数，
+@var{arg-descriptor}没有任何作用。
 
 @cindex @code{interactive-form}, symbol property
-The @code{interactive} form must be located at top-level in the
-function body, or in the function symbol's @code{interactive-form}
-property (@pxref{Symbol Properties}).  It has its effect because the
-command loop looks for it before calling the function
-(@pxref{Interactive Call}).  Once the function is called, all its body
-forms are executed; at this time, if the @code{interactive} form
-occurs within the body, the form simply returns @code{nil} without
-even evaluating its argument.
+@code{interactive}形式必须位于函数体的顶层，或者位于函数符号的
+@code{interactive-form}属性中（@pxref{Symbol Properties}）。它之所以有效果，
+是因为命令循环在调用函数之前会寻找它（@pxref{Interactive Call}）。一旦函数被调用
+，它的所有主体表单都会被执行；此时，如果@code{interactive}表单发生在主体内，该表单
+就会简单地返回@code{nil}，甚至不运算其参数。
 
-By convention, you should put the @code{interactive} form in the
-function body, as the first top-level form.  If there is an
-@code{interactive} form in both the @code{interactive-form} symbol
-property and the function body, the former takes precedence.  The
-@code{interactive-form} symbol property can be used to add an
-interactive form to an existing function, or change how its arguments
-are processed interactively, without redefining the function.
+按照惯例，你应该把@code{interactive}形式放在函数体中，作为第一个顶层形式。如果在
+@code{interactive-form}符号属性和函数体中都有@code{interactive}表单，则前者优
+先。可以使用@code{interactive-form}符号属性为现有的函数添加交互式表单，或者改变其
+参数的交互式处理方式，而无需重新定义函数。
 @end defspec
 
-There are three possibilities for the argument @var{arg-descriptor}:
+参数@var{arg-descriptor}有三种可能：
 
 @itemize @bullet
 @item
-It may be omitted or @code{nil}; then the command is called with no
-arguments.  This leads quickly to an error if the command requires one
-or more arguments.
+它可以被省略或@code{nil}，然后命令被调用时不需要任何参数。如果命令需要一个或多个参数
+，这将很快导致错误。
 
 @item
-It may be a string; its contents are a sequence of elements separated
-by newlines, one for each argument@footnote{Some elements actually
-supply two arguments.}.  Each element consists of a code character
-(@pxref{Interactive Codes}) optionally followed by a prompt (which
-some code characters use and some ignore).  Here is an example:
+它可以是一个字符串；它的内容是一个由换行符分隔的元素序列，每个参数一个
+@footnote{有些元素实际上提供了两个参数}。每个元素都由一个代码字符（
+@pxref{Interactive Codes}）组成，后面可选择地跟着一个提示符（有些代码字符使用，有
+些忽略）。下面是一个例子:
 
 @smallexample
 (interactive "P\nbFrobnicate buffer: ")
 @end smallexample
 
 @noindent
-The code letter @samp{P} sets the command's first argument to the raw
-command prefix (@pxref{Prefix Command Arguments}).  @samp{bFrobnicate
-buffer: } prompts the user with @samp{Frobnicate buffer: } to enter
-the name of an existing buffer, which becomes the second and final
-argument.
+代码字母@samp{P}将命令的第一个参数设置为原始命令前缀（
+@pxref{Prefix Command Arguments}）。@samp{bFrobnicate buffer: }用
+@samp{Frobnicate buffer: }提示用户输入现有缓冲区的名称，该名称成为第二个也是最后
+一个参数。
 
-The prompt string can use @samp{%} to include previous argument values
-(starting with the first argument) in the prompt.  This is done using
-@code{format-message} (@pxref{Formatting Strings}).  For example, here is how
-you could read the name of an existing buffer followed by a new name to
-give to that buffer:
+提示字符串可以使用@samp{%}将之前的参数值（从第一个参数开始）包含在提示中。
+这可以通过@code{format-message}来完成。(@pxref{Formatting Strings})。
+例如，以下是你可以如何读取一个现有缓冲区的名称，然后给这个缓冲区起一个新的名字:
 
 @smallexample
 @group
@@ -199,46 +183,33 @@ give to that buffer:
 
 @cindex @samp{*} in @code{interactive}
 @cindex read-only buffers in interactive
-If @samp{*} appears at the beginning of the string, then an error is
-signaled if the buffer is read-only.
+如果@samp{*}出现在字符串的开头，那么如果缓冲区是只读的，就会发出错误信号。
 
 @cindex @samp{@@} in @code{interactive}
-If @samp{@@} appears at the beginning of the string, and if the key
-sequence used to invoke the command includes any mouse events, then
-the window associated with the first of those events is selected
-before the command is run.
+如果@samp{@@}出现在字符串的开头，并且如果用于调用命令的键序包括任何鼠标事件，那么在命
+令运行之前，与第一个事件相关联的窗口被选中。
 
 @cindex @samp{^} in @code{interactive}
 @cindex shift-selection, and @code{interactive} spec
-If @samp{^} appears at the beginning of the string, and if the command
-was invoked through @dfn{shift-translation}, set the mark and activate
-the region temporarily, or extend an already active region, before the
-command is run.  If the command was invoked without shift-translation,
-and the region is temporarily active, deactivate the region before the
-command is run.  Shift-translation is controlled on the user level by
-@code{shift-select-mode}; see @ref{Shift Selection,,, emacs, The GNU
-Emacs Manual}.
+如果@samp{^}出现在字符串的开头，并且如果命令是通过@dfn{shift-translation}调用的
+，则在命令运行前设置标记并暂时激活该区域，或者拓展一个已经激活的区域。如果命令是在没有
+shift-translation的情况下调用的，并且区域暂时处于活动状态，则在命令运行前停用该区域
+。Shift-translation在用户层面由@code{shift-select-mode}控制；参见
+@ref{Shift Selection,,,,emacs,The GNU Emacs Manual}。
 
-You can use @samp{*}, @samp{@@}, and @code{^} together; the order does
-not matter.  Actual reading of arguments is controlled by the rest of
-the prompt string (starting with the first character that is not
-@samp{*}, @samp{@@}, or @samp{^}).
+您可以同时使用@samp{*},@samp{@@},和@code{^}，顺序并不重要。参数的实际读取是由提示
+字符串的其余部分控制的（从第一个不是@samp{*},@samp{@@},或@samp{^}的字符开始）。
 
 @item
-It may be a Lisp expression that is not a string; then it should be a
-form that is evaluated to get a list of arguments to pass to the
-command.  Usually this form will call various functions to read input
-from the user, most often through the minibuffer (@pxref{Minibuffers})
-or directly from the keyboard (@pxref{Reading Input}).
+它可能是一个不是字符串的Lisp表达式；那么它应该是一个表单，通过运算得到要传递给命令的参
+数列表。通常这个表单会调用各种函数来读取用户的输入，最常见的是通过迷你缓冲区（
+@pxref{Minibuffers}）或直接从键盘（@pxref{Reading Input}）读取。
 
-Providing point or the mark as an argument value is also common, but
-if you do this @emph{and} read input (whether using the minibuffer or
-not), be sure to get the integer values of point or the mark after
-reading.  The current buffer may be receiving subprocess output; if
-subprocess output arrives while the command is waiting for input, it
-could relocate point and the mark.
+提供点或标记作为参数值也是很常见的，但如果你这样@emph{和}读输入（无论是否使用迷你缓冲
+区），一定要在读完后得到点或标记的整数值。当前缓冲区可能正在接收子进程的输出；如果在命
+令等待输入时子进程的输出到达，它可能会重新定位点和标记。
 
-Here's an example of what @emph{not} to do:
+下面是一个@emph{不}要做的例子。
 
 @smallexample
 (interactive
@@ -247,8 +218,7 @@ Here's an example of what @emph{not} to do:
 @end smallexample
 
 @noindent
-Here's how to avoid the problem, by examining point and the mark after
-reading the keyboard input:
+以下是如何避免这个问题，通过阅读键盘输入后检查点和标记：
 
 @smallexample
 (interactive
@@ -256,41 +226,33 @@ reading the keyboard input:
    (list (region-beginning) (region-end) string)))
 @end smallexample
 
-@strong{Warning:} the argument values should not include any data
-types that can't be printed and then read.  Some facilities save
-@code{command-history} in a file to be read in the subsequent
-sessions; if a command's arguments contain a data type that prints
-using @samp{#<@dots{}>} syntax, those facilities won't work.
+@strong{Warning:}参数值不应该包含任何不能打印和读取的数据类型。有些设施会将
+@code{command-history}保存在一个文件中，以便在以后的会话中读取；如果一个命令的参数
+包含了使用@samp{#<@dots{}>}语法打印的数据类型，那么这些设施将无法工作。
 
-There are, however, a few exceptions: it is ok to use a limited set of
-expressions such as @code{(point)}, @code{(mark)},
-@code{(region-beginning)}, and @code{(region-end)}, because Emacs
-recognizes them specially and puts the expression (rather than its
-value) into the command history.  To see whether the expression you
-wrote is one of these exceptions, run the command, then examine
-@code{(car command-history)}.
+不过，也有一些例外：使用有限的一组表达式是可以的，比如@code{(point)}、
+@code{(mark)}、@code{(region-beginning)}和@code{(region-end)}，因为Emacs
+会特别识别它们，并将表达式（而不是其值）放入命令历史记录中。要查看您写的表达式是否属于
+这些例外情况，请运行命令，然后检查 @code{(car command-history)}。
+
 @end itemize
 
 @cindex examining the @code{interactive} form
 @defun interactive-form function
-This function returns the @code{interactive} form of @var{function}.
-If @var{function} is an interactively callable function
-(@pxref{Interactive Call}), the value is the command's
-@code{interactive} form @code{(interactive @var{spec})}, which
-specifies how to compute its arguments.  Otherwise, the value is
-@code{nil}.  If @var{function} is a symbol, its function definition is
-used.
+这个函数返回@var{function}的@code{interactive}表单。如果@var{function}是一个
+可交互调用的函数 (@pxref{Interactive Call})，那么值就是命令的@code{交互式}形式
+@code{(interactive @var{spec})}，它指定了如何计算其参数。否则，其值为
+@code{nil}。如果@var{function}是一个符号，则使用其函数定义。
 @end defun
 
-@node Interactive Codes
+@node 交互式代码
 @subsection Code Characters for @code{interactive}
 @cindex interactive code description
 @cindex description for interactive codes
 @cindex codes, interactive, description of
 @cindex characters for interactive codes
 
-  The code character descriptions below contain a number of key words,
-defined here as follows:
+  下面的代码字符描述包含一些关键词，在此定义如下：
 
 @table @b
 @item Completion
@@ -509,7 +471,7 @@ argument.  With no prefix argument, @samp{Z} provides @code{nil} as the
 argument value.  Completion, Existing, Prompt.
 @end table
 
-@node Interactive Examples
+@node 交互式例子
 @subsection Examples of Using @code{interactive}
 @cindex examples of using @code{interactive}
 @cindex @code{interactive}, examples of using
@@ -561,7 +523,7 @@ Put them into three windows, selecting the last one."
 @end group
 @end example
 
-@node Generic Commands
+@node 通用命令
 @subsection Select among Command Alternatives
 @cindex generic commands
 @cindex alternatives, defining
