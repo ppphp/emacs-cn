@@ -117,91 +117,70 @@ Lisp代码中间请求立即尝试重新显示屏幕，而不需要等待输入�
 @cindex @samp{$} in display
 @cindex @samp{\} in display
 
-  When a line of text extends beyond the right edge of a window, Emacs
-can @dfn{continue} the line (make it wrap to the next screen
-line), or @dfn{truncate} the line (limit it to one screen line).  The
-additional screen lines used to display a long text line are called
-@dfn{continuation} lines.  Continuation is not the same as filling;
-continuation happens on the screen only, not in the buffer contents,
-and it breaks a line precisely at the right margin, not at a word
-boundary.  @xref{Filling}.
+  当一行文本延伸到窗口的右边缘之外时，Emacs可以@dfn{continue}行（使它包到
+下一个屏幕行），或者@dfn{truncate}行（将它限制在一个屏幕行）。用于显示长文
+本行的额外屏幕行称为@dfn{continuation}行。延续与填充不同。续行只发生在屏幕
+上，而不是在缓冲区的内容中，而且它是在右边的空白处断行，而不是在字的边界处
+。@xref{Filling}。
 
-   On a graphical display, tiny arrow images in the window fringes
-indicate truncated and continued lines (@pxref{Fringes}).  On a text
-terminal, a @samp{$} in the rightmost column of the window indicates
-truncation; a @samp{\} on the rightmost column indicates a line that
-wraps.  (The display table can specify alternate characters to use
-for this; @pxref{Display Tables}).
+  在图形显示器上，窗口边缘的微小箭头图像表示截断和延续的行数(
+@pxref{Fringes})。在文本终端上，窗口最右边一列的@samp{$}表示截断；最右边
+一列的@samp{\}表示绕行。(显示表可以指定替代字符来使用；
+@pxref{Display Tables})。
 
 @defopt truncate-lines
-If this buffer-local variable is non-@code{nil}, lines that extend
-beyond the right edge of the window are truncated; otherwise, they are
-continued.  As a special exception, the variable
-@code{truncate-partial-width-windows} takes precedence in
-@dfn{partial-width} windows (i.e., windows that do not occupy the
-entire frame width).
+如果这个缓冲区本地变量是非@code{nil}，那么超出窗口右边缘的行将被截断；否则
+，它们将被继续。作为一个特殊的例外，@code{truncat-partial-width-windows}
+变量优先于@dfn{partial-width}窗口（即不占用整个窗帧宽度的窗口）。
 @end defopt
 
 @defopt truncate-partial-width-windows
 @cindex partial-width windows
-This variable controls line truncation in @dfn{partial-width} windows.
-A partial-width window is one that does not occupy the entire frame
-width (@pxref{Splitting Windows}).  If the value is @code{nil}, line
-truncation is determined by the variable @code{truncate-lines} (see
-above).  If the value is an integer @var{n}, lines are truncated if
-the partial-width window has fewer than @var{n} columns, regardless of
-the value of @code{truncate-lines}; if the partial-width window has
-@var{n} or more columns, line truncation is determined by
-@code{truncate-lines}.  For any other non-@code{nil} value, lines are
-truncated in every partial-width window, regardless of the value of
-@code{truncate-lines}.
+这个变量控制@dfn{partial-width}窗口的截行。局部宽度窗口是指不占用整个窗帧
+宽度的窗口(@pxref{Splitting Windows})。如果值是@code{nil}，则截断行数由
+@code{truncat-lines}变量决定。(见上文)。如果值是一个整数@var{n}，如果部分
+宽度窗口的列数少于@var{n}，则无论@code{truncat-lines}的值如何，都会对行进
+行截断；如果部分宽度窗口有@var{n}或更多的列数，则行的截断由
+@code{truncat-lines}决定。对于其他任何非@code{nil}的值，无论
+@code{truncat-lines}的值是多少，每个局部宽度窗口的行都会被截断。
 @end defopt
 
-  When horizontal scrolling (@pxref{Horizontal Scrolling}) is in use in
-a window, that forces truncation.
+  当在窗口中使用水平滚动（@pxref{Horizontal Scrolling}）时，会强制截断。
 
 @defvar wrap-prefix
-If this buffer-local variable is non-@code{nil}, it defines a
-@dfn{wrap prefix} which Emacs displays at the start of every
-continuation line.  (If lines are truncated, @code{wrap-prefix} is
-never used.)  Its value may be a string or an image (@pxref{Other
-Display Specs}), or a stretch of whitespace such as specified by the
-@code{:width} or @code{:align-to} display properties (@pxref{Specified
-Space}).  The value is interpreted in the same way as a @code{display}
-text property.  @xref{Display Property}.
+如果这个缓冲区本地变量是非@code{nil}，它就会定义一个@dfn{wrap prefix}，
+Emacs会在每一个延续行的开头显示这个变量。(如果行被截断，则不会使用
+@code{wrap-prefix}。)它的值可以是一个字符串或图像 (
+@pxref{Other Display Specs})，或者是一段空白空间，如@code{:width}或
+@code{:align-to}显示属性(@pxref{Specified Space})所指定的。该值的解释方
+式与@code{display}文本属性相同。@xref{Display Property}。
 
-A wrap prefix may also be specified for regions of text, using the
-@code{wrap-prefix} text or overlay property.  This takes precedence
-over the @code{wrap-prefix} variable.  @xref{Special Properties}.
+也可以使用@code{wrap-prefix}文本或覆盖属性，为文本区域指定一个包覆前缀。
+这优先于@code{wrap-prefix}变量。@xref{Special Properties}。
 @end defvar
 
 @defvar line-prefix
-If this buffer-local variable is non-@code{nil}, it defines a
-@dfn{line prefix} which Emacs displays at the start of every
-non-continuation line.  Its value may be a string or an image
-(@pxref{Other Display Specs}), or a stretch of whitespace such as
-specified by the @code{:width} or @code{:align-to} display properties
-(@pxref{Specified Space}).  The value is interpreted in the same way
-as a @code{display} text property.  @xref{Display Property}.
-
-A line prefix may also be specified for regions of text using the
-@code{line-prefix} text or overlay property.  This takes precedence
-over the @code{line-prefix} variable.  @xref{Special Properties}.
+如果这个缓冲区本地变量是非@code{nil}，它定义了一个
+@dfn{line prefix}，Emacs会在每一个非延续行开头显示。它的值可以是字符串
+或图像(@pxref{Other Display Specs})，也可以是一段空白，如@code{:width}
+或@code{:align-to}显示属性(@pxref{Specified Space})所指定。该值的解释
+方式与@code{display}文本属性相同。@xref{Display Property}。
+也可以使用@code{line-prefix}文本或覆盖属性为文本区域指定行前缀。这优先于
+在@code{line-prefix}变量。@xref{Special Properties}。
 @end defvar
 
 @ignore
-  If your buffer contains only very short lines, you might find it
-advisable to set @code{cache-long-scans} to @code{nil}.
+  如果您的缓冲区只包含很短的行，您可能会发现最好将@code{cache-long-scans}
+设置为@code{nil}。
 
 @defvar cache-long-scans
-If this variable is non-@code{nil} (the default), various indentation
-and motion functions, and Emacs redisplay, cache the results of
-scanning the buffer, and consult the cache to avoid rescanning regions
-of the buffer unless they are modified.
+如果该变量是非@code{nil}(默认)，则各种缩进和运动功能，以及Emacs重新显示，
+都会缓存扫描缓冲区的结果，并查阅缓存，以避免重新扫描缓冲区的区域，除非它们
+被修改。
 
-Turning off the cache speeds up processing of short lines somewhat.
+关闭缓存会在一定程度上加快短行的处理速度。
 
-This variable is automatically buffer-local in every buffer.
+这个变量在每个缓冲区中都是自动的缓冲区局部。
 @end defvar
 @end ignore
 
@@ -210,58 +189,47 @@ This variable is automatically buffer-local in every buffer.
 @cindex error display
 @cindex echo area
 
-@c FIXME: Why not use @xref{Minibuffers} directly?  --xfq
-  The @dfn{echo area} is used for displaying error messages
-(@pxref{Errors}), for messages made with the @code{message} primitive,
-and for echoing keystrokes.  It is not the same as the minibuffer,
-despite the fact that the minibuffer appears (when active) in the same
-place on the screen as the echo area.  @xref{Minibuffer,, The
-Minibuffer, emacs, The GNU Emacs Manual}.
+@c FIXME: 为什么不直接用@xref{Minibuffers}?  --xfq
+  @dfn{echo area}用于显示错误信息(@pxref{Errors})，用于显示用
+@code{message}基元编写的信息，以及用于回声击键。它与迷你缓冲区不同，尽管迷
+你缓冲区（在激活时）与回声区在屏幕上的位置相同。 @xref{Minibuffer,, The Minibuffer, emacs, The GNU Emacs Manual}.
 
-  Apart from the functions documented in this section, you can print
-Lisp objects to the echo area by specifying @code{t} as the output
-stream.  @xref{Output Streams}.
+除了本节中提到的功能外，您还可以通过指定@code{t}作为输出流，将 Lisp
+对象打印到回声区。@xref{Output Streams}。
 
 @menu
-* Displaying Messages:: Explicitly displaying text in the echo area.
-* Progress::            Informing user about progress of a long operation.
-* Logging Messages::    Echo area messages are logged for the user.
-* Echo Area Customization:: Controlling the echo area.
+* 显示信息::    在回音区明确显示文字。
+* 进度::        告知用户长时间操作的进度。
+* 记录信息::    回音区信息为用户记录。
+* 回音区自定义:: 控制回音区。
 @end menu
 
-@node Displaying Messages
+@node 显示信息
 @subsection Displaying Messages in the Echo Area
 @cindex display message in echo area
 
-  This section describes the standard functions for displaying
-messages in the echo area.
+  本节介绍在回音区显示信息的标准功能。
 
 @defun message format-string &rest arguments
-This function displays a message in the echo area.
-@var{format-string} is a format string, and @var{arguments} are the
-objects for its format specifications, like in the @code{format-message}
-function (@pxref{Formatting Strings}).  The resulting formatted string
-is displayed in the echo area; if it contains @code{face} text
-properties, it is displayed with the specified faces (@pxref{Faces}).
-The string is also added to the @file{*Messages*} buffer, but without
-text properties (@pxref{Logging Messages}).
+这个函数在回声区显示一条信息。@var{format-string}是一个格式字符串，
+@var{arguments}是参数对象它的格式规范，就像@code{format-message}函数 (
+@pxref{Formatting Strings})一样。由此产生的格式化字符串会显示在回声区；如
+果它包含@code{face}文本属性，则会以指定的字体显示(@pxref{Faces})。该字符
+串也会被添加到@file{*Messages*}缓冲区中，但不包含文本属性（
+@pxref{Logging Messages}）。
 
-Typically grave accent and apostrophe in the format translate to
-matching curved quotes, e.g., @t{"Missing `%s'"} might result in
-@t{"Missing ‘foo’"}.  @xref{Text Quoting Style}, for how to influence
-or inhibit this translation.
+通常，格式中的重音和撇号会转化为匹配的弯引号，例如，
+@t{"Missing `%s'"}可能会导致@t{"Missing ‘foo’"}。
+@xref{Text Quoting Style}，了解如何影响或抑制该翻译。
 
-In batch mode, the message is printed to the standard error stream,
-followed by a newline.
+在批处理模式下，消息会被打印到标准的错误流中，后面是一个新行。
 
-When @code{inhibit-message} is non-@code{nil}, no message will be displayed
-in the echo area, it will only be logged to @samp{*Messages*}.
+当@code{inhibit-message}是非@code{nil}时，回音区不会显示任何消息，只会记
+录到@samp{*Messages*}。
 
-If @var{format-string} is @code{nil} or the empty string,
-@code{message} clears the echo area; if the echo area has been
-expanded automatically, this brings it back to its normal size.  If
-the minibuffer is active, this brings the minibuffer contents back
-onto the screen immediately.
+如果@var{format-string}为@code{nil}或空字符串，则@code{message}会清除回
+音区；如果回音区已自动展开，这将使其恢复到正常大小。如果minibuffer处于活动
+状态，则会立即将minibuffer的内容恢复到屏幕上。
 
 @example
 @group
@@ -277,110 +245,92 @@ Reverting ‘subr.el’...
 @end group
 @end example
 
-To automatically display a message in the echo area or in a pop-buffer,
-depending on its size, use @code{display-message-or-buffer} (see below).
+要在回声区或弹出式缓冲区中按照大小自动显示信息，请使用
+@code{display-message-or-buffer}（见下文）。
 
-@strong{Warning:} If you want to use your own string as a message
-verbatim, don't just write @code{(message @var{string})}.  If
-@var{string} contains @samp{%}, @samp{`}, or @samp{'} it may be
-reformatted, with undesirable results.  Instead, use @code{(message
-"%s" @var{string})}.
+@strong{Warning:}如果您想使用您自己的字符串作为消息，请使用
+@code{display-messag-or-buffer}（见下文）。逐字逐句，不要只写
+@code{(message @var{string})}。如果@var{string}包含@samp{%}, @samp{`},
+或@samp{'},则可能是重新格式化，结果不理想。相反，使用
+@code{(message "%s" @var{string})}。
 @end defun
 
 @defvar set-message-function
-If this variable is non-@code{nil}, it should be a function of one
-argument, the text of a message to display in the echo area.  This
-function will be called by @code{message} and related functions.  If
-the function returns @code{nil}, the message is displayed in the echo
-area as usual.  If this function returns a string, that string is
-displayed in the echo area instead of the original one.  If this
-function returns other non-@code{nil} values, that means the message
-was already handled, so @code{message} will not display anything in
-the echo area.  See also @code{clear-message-function} that can be
-used to clear the message displayed by this function.
+如果这个变量是非@code{nil}，那么它应该是一个参数的函数，即在回音区显示的信
+息文本。这个函数将被@code{message}和相关函数调用。如果函数返回@code{nil}
+，则消息会像往常一样显示在回音区。如果该函数返回一个字符串，则该字符串将代
+替原来的字符串显示在回音区。如果这个函数返回其他非@code{nil}的值，意味着消
+息已经被处理了，所以@code{message}不会在回音区显示任何内容。也请参见
+@code{clear-messag-function}，它可以用来清除该函数所显示的消息。
 
-The default value is the function that displays the message at the end
-of the minibuffer when the minibuffer is active.  However, if the text
-shown in the active minibuffer has the @code{minibuffer-message} text
-property (@pxref{Special Properties}) on some character, the message
-will be displayed before the first character having that property.
+默认值是当minibuffer处于活动状态时，在minibuffer末端显示消息的函数。但是
+，如果活动的迷你缓冲区中显示的文本在某个字符上具有
+@code{minibuffer-message}文本属性(
+@pxref{Special Properties})，则消息将显示在具有该属性的第一个字符之前。
 @end defvar
 
 @defvar clear-message-function
-If this variable is non-@code{nil}, @code{message} and related
-functions call it with no arguments when their argument message is
-@code{nil} or the empty string.
+如果这个变量是非@code{nil}，那么当@code{message}和相关函数的参数信息为
+@code{nil}或空字符串时，就会调用这个没有参数的函数。
 
-Usually this function is called when the next input event arrives
-after displaying an echo-area message.  The function is expected to
-clear the message displayed by its counterpart function specified by
-@code{set-message-function}.
+通常这个函数在显示回音区消息后的下一个输入事件到来时被调用。该函数将清除由
+@code{set-messag-function}指定的对应函数所显示的消息。
 
-The default value is the function that clears the message displayed in
-an active minibuffer.
+默认值是清除活动迷你缓冲区中显示的消息的函数。
 @end defvar
 
 @defvar inhibit-message
-When this variable is non-@code{nil}, @code{message} and related functions
-will not use the Echo Area to display messages.
+当这个变量是非@code{nil}时，@code{message}和相关函数将不会使用回音区来显
+示消息。
 @end defvar
 
 @defmac with-temp-message message &rest body
-This construct displays a message in the echo area temporarily, during
-the execution of @var{body}.  It displays @var{message}, executes
-@var{body}, then returns the value of the last body form while restoring
-the previous echo area contents.
+在执行@var{body}的过程中，这个构造暂时在回声区显示一条消息。它显示
+@var{message}，执行@var{body}，然后返回最后一个body表单的值，同时恢复之前
+的回音区内容。
 @end defmac
 
 @defun message-or-box format-string &rest arguments
-This function displays a message like @code{message}, but may display it
-in a dialog box instead of the echo area.  If this function is called in
-a command that was invoked using the mouse---more precisely, if
-@code{last-nonmenu-event} (@pxref{Command Loop Info}) is either
-@code{nil} or a list---then it uses a dialog box or pop-up menu to
-display the message.  Otherwise, it uses the echo area.  (This is the
-same criterion that @code{y-or-n-p} uses to make a similar decision; see
-@ref{Yes-or-No Queries}.)
+这个函数像@code{message}一样显示一条消息，但可能会在对话框中显示，而不是在
+回音区显示。如果这个函数在使用鼠标调用的命令中被调用---更准确地说，如果
+@code{last-nonmenu-event}(@pxref{Command Loop Info})是@code{nil}或列表
+---使用对话框或弹出菜单来显示消息。否则它使用回声区。(这与@code{y-or-n-p}
+用于做出类似决定的标准相同；参见@ref{Yes-or-No Queries})。
 
-You can force use of the mouse or of the echo area by binding
-@code{last-nonmenu-event} to a suitable value around the call.
+您可以通过在调用附近将@code{last-nonmenu-event}绑定一个合适的值来强制使用
+鼠标或回声区。
 @end defun
 
 @defun message-box format-string &rest arguments
 @anchor{message-box}
-This function displays a message like @code{message}, but uses a dialog
-box (or a pop-up menu) whenever that is possible.  If it is impossible
-to use a dialog box or pop-up menu, because the terminal does not
-support them, then @code{message-box} uses the echo area, like
-@code{message}.
+这个函数显示的消息与@code{message}类似，但只要可能，就使用对话框（或弹出式
+菜单）。如果因为终端不支持对话框或弹出式菜单而无法使用，那么
+@code{message-box}就可以使用回音区，比如@code{message}。
 @end defun
 
 @defun display-message-or-buffer message &optional buffer-name action frame
-This function displays the message @var{message}, which may be either a
-string or a buffer.  If it is shorter than the maximum height of the
-echo area, as defined by @code{max-mini-window-height}, it is displayed
-in the echo area, using @code{message}.  Otherwise,
-@code{display-buffer} is used to show it in a pop-up buffer.
+该函数显示消息@var{message}，它可以是一个字符串或缓冲区。如果它比
+@code{max-mini-window-height}定义的回声区的最大高度要短，则使用
+@code{message}在回声区显示。否则，使用@code{display-buffer}将其显示在弹出
+的缓冲区中。
 
-Returns either the string shown in the echo area, or when a pop-up
-buffer is used, the window used to display it.
+返回在回声区显示的字符串，或者当使用弹出式缓冲区时，返回用于显示该字符串的
+窗口。
 
-If @var{message} is a string, then the optional argument
-@var{buffer-name} is the name of the buffer used to display it when a
-pop-up buffer is used, defaulting to @file{*Message*}.  In the case
-where @var{message} is a string and displayed in the echo area, it is
-not specified whether the contents are inserted into the buffer anyway.
+如果@var{message}是一个字符串，那么可选的参数@var{buffer-name}是用于显示
+它的缓冲区的名称，当一个使用弹出式缓冲区，默认为@file{*Message*}。在
+@var{message}是字符串并显示在回音区的情况下，都不指定是否将内容插入缓冲区
+。
 
-The optional arguments @var{action} and @var{frame} are as for
-@code{display-buffer}, and only used if a buffer is displayed.
+可选参数@var{action}和@var{frame}与@code{display-buffer}一样，仅在显示缓
+冲区时使用。
 @end defun
 
 @defun current-message
-This function returns the message currently being displayed in the
-echo area, or @code{nil} if there is none.
+该函数返回当前显示在回音区的信息，如果没有，则返回@code{nil}。
 @end defun
 
-@node Progress
+@node 进度
 @subsection Reporting Operation Progress
 @cindex progress reporting
 
@@ -539,7 +489,7 @@ You can rewrite the previous example with this macro as follows:
 @end example
 @end defmac
 
-@node Logging Messages
+@node 记录信息
 @subsection Logging Messages in @file{*Messages*}
 @cindex logging echo-area messages
 
@@ -592,7 +542,7 @@ don't have to do anything special to activate the message log
 combination feature.  It operates whenever two consecutive messages
 are logged that share a common prefix ending in @samp{...}.
 
-@node Echo Area Customization
+@node 回音区自定义
 @subsection Echo Area Customization
 @cindex echo area customization
 
