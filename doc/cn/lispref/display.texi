@@ -334,12 +334,11 @@ Reverting ‘subr.el’...
 @subsection Reporting Operation Progress
 @cindex progress reporting
 
-  When an operation can take a while to finish, you should inform the
-user about the progress it makes.  This way the user can estimate
-remaining time and clearly see that Emacs is busy working, not hung.
-A convenient way to do this is to use a @dfn{progress reporter}.
+  当一个操作可能需要一段时间才能完成时，你应该告知用户它的进度。这样用户就
+可以估计剩余的时间，并清楚地看到Emacs正在忙碌地工作，而不是挂起。一个方便
+的方法是使用@dfn{progress reporter}。
 
-  Here is a working example that does nothing useful:
+  下面是一个没有任何用处的使用例子:
 
 @smallexample
 (let ((progress-reporter
@@ -352,102 +351,79 @@ A convenient way to do this is to use a @dfn{progress reporter}.
 @end smallexample
 
 @defun make-progress-reporter message &optional min-value max-value current-value min-change min-time
-This function creates and returns a progress reporter object, which
-you will use as an argument for the other functions listed below.  The
-idea is to precompute as much data as possible to make progress
-reporting very fast.
+这个函数创建并返回一个进度报告对象，你将使用它作为下面列出的其他函数的参数
+。想法是尽可能多地预计算数据，使进度报告的速度非常快。
 
-When this progress reporter is subsequently used, it will display
-@var{message} in the echo area, followed by progress percentage.
-@var{message} is treated as a simple string.  If you need it to depend
-on a filename, for instance, use @code{format-message} before calling this
-function.
+当随后使用这个进度报告器时，它将在回声区显示@var{message}，然后是进度百分
+比。@var{message}被视为一个简单的字符串。如果您需要它依赖于一个文件名，例
+如，在调用这个函数之前使用@code{format-message}。
 
-The arguments @var{min-value} and @var{max-value} should be numbers
-standing for the starting and final states of the operation.  For
-instance, an operation that scans a buffer should set these to the
-results of @code{point-min} and @code{point-max} correspondingly.
-@var{max-value} should be greater than @var{min-value}.
+参数@var{min-value}和@var{max-value}应该是代表操作的起始和最终状态的数字
+。例如，一个扫描缓冲区的操作应该相应地设置为@code{point-min}和
+@code{point-max}的结果。@var{max-value}应该大于@var{min-value}。
 
-Alternatively, you can set @var{min-value} and @var{max-value} to
-@code{nil}.  In that case, the progress reporter does not report
-process percentages; it instead displays a ``spinner'' that rotates a
-notch each time you update the progress reporter.
+或者，您可以将@var{min-value}和@var{max-value}设置为@code{nil}。在这种情
+况下，进度报告器不会报告进程百分比，而是在每次更新进度报告器时显示一个"旋转
+器"，这个旋转器会旋转一个缺口。
 
-If @var{min-value} and @var{max-value} are numbers, you can give the
-argument @var{current-value} a numerical value specifying the initial
-progress; if omitted, this defaults to @var{min-value}.
+如果@var{min-value}和@var{max-value}是数字，可以给参数
+@var{current-value}一个数值，指定初始进度；如果省略，默认为
+@var{min-value}。
 
-The remaining arguments control the rate of echo area updates.  The
-progress reporter will wait for at least @var{min-change} more
-percents of the operation to be completed before printing next
-message; the default is one percent.  @var{min-time} specifies the
-minimum time in seconds to pass between successive prints; the default
-is 0.2 seconds.  (On some operating systems, the progress reporter may
-handle fractions of seconds with varying precision).
+其余参数控制回音区的更新速度。进度报告器将至少等待@var{min-change}更多百分
+比的操作完成后才打印下一条信息，默认为1%。@var{min-time}指定了连续打印之间
+的最小时间（以秒为单位），默认为0.2秒。在某些操作系统上，进度报告器可能会以
+不同的精度来处理秒的分数）。
 
-This function calls @code{progress-reporter-update}, so the first
-message is printed immediately.
+这个函数调用@code{progress-reporter-update}，所以第一条消息会立即打印出来
+。
 @end defun
 
 @defun progress-reporter-update reporter &optional value suffix
-This function does the main work of reporting progress of your
-operation.  It displays the message of @var{reporter}, followed by
-progress percentage determined by @var{value}.  If percentage is zero,
-or close enough according to the @var{min-change} and @var{min-time}
-arguments, then it is omitted from the output.
+这个函数主要负责报告操作的进度。它显示@var{reporter}的消息，然后是由
+@var{value}确定的进度百分比。如果百分比为零，或者根据@var{min-change}和
+@var{min-time}参数足够接近，那么它将从输出中省略。
 
-@var{reporter} must be the result of a call to
-@code{make-progress-reporter}.  @var{value} specifies the current
-state of your operation and must be between @var{min-value} and
-@var{max-value} (inclusive) as passed to
-@code{make-progress-reporter}.  For instance, if you scan a buffer,
-then @var{value} should be the result of a call to @code{point}.
+@var{reporter}必须是调用@code{make-progress-reporter}的结果。@var{value}
+指定了您的操作的当前状态，并且必须介于传递给@code{make-progress-reporter}
+的@var{min-value}和@var{max-value}之间（含）。例如，如果您扫描了一个缓冲
+区，那么@var{value}应该是调用@code{point}的结果。
 
-Optional argument @var{suffix} is a string to be displayed after
-@var{reporter}'s main message and progress text.  If @var{reporter} is
-a non-numerical reporter, then @var{value} should be @code{nil}, or a
-string to use instead of @var{suffix}.
+可选参数@var{suffix}是一个字符串，用于显示在@var{reporter}的主信息和进度
+文本之后。如果@var{reporter}是一个非数字报告器，那么@var{value}应该是
+@code{nil}，或者是一个字符串来代替@var{suffix}。
 
-This function respects @var{min-change} and @var{min-time} as passed
-to @code{make-progress-reporter} and so does not output new messages
-on every invocation.  It is thus very fast and normally you should not
-try to reduce the number of calls to it: resulting overhead will most
-likely negate your effort.
+这个函数关心会查看传递给@code{make-progress-reporter}的@var{min-change}
+和@var{min-time}，因此不会在每次调用时输出新的消息。因此，它的速度非常快，
+通常情况下，您不应该试图减少对它的调用次数：由此产生的开销很可能会抵消您的
+努力。
 @end defun
 
 @defun progress-reporter-force-update reporter &optional value new-message suffix
-This function is similar to @code{progress-reporter-update} except
-that it prints a message in the echo area unconditionally.
+这个函数类似于@code{progress-reporter-update}，只是它无条件地在echo区域打
+印一条消息。
 
-@var{reporter}, @var{value}, and @var{suffix} have the same meaning as for
-@code{progress-reporter-update}.  Optional @var{new-message} allows
-you to change the message of the @var{reporter}.  Since this function
-always updates the echo area, such a change will be immediately
-presented to the user.
+@var{reporter},@var{value},和@var{suffix}与
+@code{progress-reporter-update}的含义相同。可选的@var{new-message}允许您
+更改@var{reporter}的消息。因为这个函数总是更新回声区，所以这样的改变会立即
+呈现给用户。
 @end defun
 
 @defun progress-reporter-done reporter
-This function should be called when the operation is finished.  It
-prints the message of @var{reporter} followed by word @samp{done} in the
-echo area.
+这个函数应该在操作完成后被调用。它在回声区打印@var{reporter}的信息，后面跟
+着@samp{done}字样。
 
-You should always call this function and not hope for
-@code{progress-reporter-update} to print @samp{100%}.  Firstly, it may
-never print it, there are many good reasons for this not to happen.
-Secondly, @samp{done} is more explicit.
+您应该始终调用这个函数，而不是希望@code{progress-reporter-update}打印
+@samp{100%}。首先，它可能永远也不会打印出来，有很多充分的理由让它不发生。
+其次，@samp{done}更明确。
 @end defun
 
 @defmac dotimes-with-progress-reporter (var count [result]) reporter-or-message body@dots{}
-This is a convenience macro that works the same way as @code{dotimes}
-does, but also reports loop progress using the functions described
-above.  It allows you to save some typing.  The argument
-@var{reporter-or-message} can be either a string or a progress
-reporter object.
+这是一个方便的宏，它的工作方式与@code{dotimes}的工作方式相同，但也使用上面
+描述的函数报告循环进度。它允许您节省一些打字工作。参数
+@var{reporter-or-message}可以是一个字符串或一个进度报告对象。
 
-You can rewrite the example in the beginning of this subsection using
-this macro as follows:
-
+你可以使用这个宏重写本小节开头的例子，如下所示：
 @example
 @group
 (dotimes-with-progress-reporter
@@ -457,10 +433,9 @@ this macro as follows:
 @end group
 @end example
 
-Using a reporter object as the @var{reporter-or-message} argument is
-useful if you want to specify the optional arguments in
-@var{make-progress-reporter}.  For instance, you can write the
-previous example as follows:
+如果您想在@var{make-progress-reporter}中指定可选的参数，那么使用报告器对
+象作为@var{reporter-or-message}参数是很有用的。例如，你可以把前面的例子写
+成如下：
 
 @example
 @group
@@ -473,11 +448,10 @@ previous example as follows:
 @end defmac
 
 @defmac dolist-with-progress-reporter (var count [result]) reporter-or-message body@dots{}
-This is another convenience macro that works the same way as @code{dolist}
-does, but also reports loop progress using the functions described
-above.  As in @code{dotimes-with-progress-reporter},
-@code{reporter-or-message} can be a progress reporter or a string.
-You can rewrite the previous example with this macro as follows:
+这是另一个方便的宏，它的工作方式与@code{dolist}相同，但也使用上面描述的函
+数报告循环进度。和@code{dotimes-with-progress-reporter}一样，
+@code{reporter-or-message}可以是一个进度报告，也可以是一个字符串。你可以
+用这个宏重写前面的例子，如下:
 
 @example
 @group
@@ -493,26 +467,22 @@ You can rewrite the previous example with this macro as follows:
 @subsection Logging Messages in @file{*Messages*}
 @cindex logging echo-area messages
 
-  Almost all the messages displayed in the echo area are also recorded
-in the @file{*Messages*} buffer so that the user can refer back to
-them.  This includes all the messages that are output with
-@code{message}.  By default, this buffer is read-only and uses the major
-mode @code{messages-buffer-mode}.  Nothing prevents the user from
-killing the @file{*Messages*} buffer, but the next display of a message
-recreates it.  Any Lisp code that needs to access the
-@file{*Messages*} buffer directly and wants to ensure that it exists
-should use the function @code{messages-buffer}.
+  几乎所有显示在回音区的消息都被记录在@file{*Messages*}缓冲区中，以便用户
+可以回溯这些消息。这包括所有用@code{message}输出的消息。默认情况下，这个缓
+冲区是只读的，并使用主要模式@code{messages-buffer-mode}。没有什么可以阻止
+用户杀死@file{*Messages*}缓冲区，但下一次显示消息时会重新创建它。任何需要
+直接访问@file{*Messages*}缓冲区的Lisp代码，并希望确保它的存在，应该使用函
+数@code{messages-buffer}。
 
 @defun messages-buffer
-This function returns the @file{*Messages*} buffer.  If it does not
-exist, it creates it, and switches it to @code{messages-buffer-mode}.
+该函数返回@file{*Messages*}缓冲区。如果它不存在，则创建它，并将其切换到
+@code{messages-buffer-mode}。
 @end defun
 
 @defopt message-log-max
-This variable specifies how many lines to keep in the @file{*Messages*}
-buffer.  The value @code{t} means there is no limit on how many lines to
-keep.  The value @code{nil} disables message logging entirely.  Here's
-how to display a message and prevent it from being logged:
+这个变量用于指定在@file{*Messages*}缓冲区中保留多少行。值@code{t}表示对保
+留的行数没有限制。值@code{nil}表示完全禁用消息记录。下面是如何显示消息并防
+止其被记录的方法：
 
 @example
 (let (message-log-max)
@@ -520,311 +490,258 @@ how to display a message and prevent it from being logged:
 @end example
 @end defopt
 
-  To make @file{*Messages*} more convenient for the user, the logging
-facility combines successive identical messages.  It also combines
-successive related messages for the sake of two cases: question
-followed by answer, and a series of progress messages.
+  为了让用户更方便地使用@file{*Messages*}，日志记录功能将连续的相同消息合
+并起来。此外，它还将连续的相关消息结合起来，以便于两种情况：先问后答和一系
+列的进度消息。
 
-  A question followed by an answer has two messages like the
-ones produced by @code{y-or-n-p}: the first is @samp{@var{question}},
-and the second is @samp{@var{question}...@var{answer}}.  The first
-message conveys no additional information beyond what's in the second,
-so logging the second message discards the first from the log.
+  一个问题和之后一个答案有两条消息，就像@code{y-or-n-p}产生的消息一样：第
+一条是@samp{@var{question}}，第二条是
+@samp{@var{question}...@var{answer}}。第一条消息没有传递除第二条消息以外
+的额外信息，所以记录第二条消息时，会将第一条消息从日志中删除。
 
-  A series of progress messages has successive messages like
-those produced by @code{make-progress-reporter}.  They have the form
-@samp{@var{base}...@var{how-far}}, where @var{base} is the same each
-time, while @var{how-far} varies.  Logging each message in the series
-discards the previous one, provided they are consecutive.
+一系列的进度消息有连续的消息，就像@code{make-progress-reporter}产生的消息
+一样。它们的形式是@samp{@var{base}...@var{how-far}}，其中@var{base}每一
+个时间都是一样的，而@var{how-far}则不同。只要是连续的消息，就会丢弃前一条
+消息。
 
-  The functions @code{make-progress-reporter} and @code{y-or-n-p}
-don't have to do anything special to activate the message log
-combination feature.  It operates whenever two consecutive messages
-are logged that share a common prefix ending in @samp{...}.
+函数@code{make-progress-reporter}和@code{y-or-n-p}不需要做任何特别的事情
+就可以激活消息日志组合功能。只要有两个连续的消息被记录下来，并且共享一个以
+@samp{...} 结尾的共同前缀，它就会发挥作用。
 
 @node 回音区自定义
 @subsection Echo Area Customization
 @cindex echo area customization
 
-  These variables control details of how the echo area works.
+  这些变量控制了回音区工作的细节。
 
 @defvar cursor-in-echo-area
-This variable controls where the cursor appears when a message is
-displayed in the echo area.  If it is non-@code{nil}, then the cursor
-appears at the end of the message.  Otherwise, the cursor appears at
-point---not in the echo area at all.
+这个变量控制了在回音区显示消息时光标的位置，如果它是非@code{nil}，那么光标
+就会出现在消息的最后。如果它是非@code{nil}，那么光标就会出现在消息的最后。
+否则，光标就会出现在点上------根本不在回音区。
 
-The value is normally @code{nil}; Lisp programs bind it to @code{t}
-for brief periods of time.
+该值通常是@code{nil}；Lisp程序在短时间内将其绑定到@code{t}。
 @end defvar
 
 @defvar echo-area-clear-hook
-This normal hook is run whenever the echo area is cleared---either by
-@code{(message nil)} or for any other reason.
+每当回声区被清除时，这个正常的钩子就会被运行--无论是通过
+@code{(message nil)}还是任何其他原因。
 @end defvar
 
 @defopt echo-keystrokes
-This variable determines how much time should elapse before command
-characters echo.  Its value must be a number, and specifies the
-number of seconds to wait before echoing.  If the user types a prefix
-key (such as @kbd{C-x}) and then delays this many seconds before
-continuing, the prefix key is echoed in the echo area.  (Once echoing
-begins in a key sequence, all subsequent characters in the same key
-sequence are echoed immediately.)
+这个变量决定了命令字符回声前应该经过多少时间。它的值必须是一个数字，并指定
+在回声之前要等待的秒数。如果用户输入了一个前缀键（如@kbd{C-x}），然后在继
+续之前延迟了这么多秒，那么前缀键就会在回声区域中回声。（一旦在一个键序中开
+始回声，同一键序中的所有后续字符都会立即回声）。
 
-If the value is zero, then command input is not echoed.
+如果该值为零，则命令输入不被回声。
 @end defopt
 
 @defvar message-truncate-lines
-Normally, displaying a long message resizes the echo area to display
-the entire message.  But if the variable @code{message-truncate-lines}
-is non-@code{nil}, the echo area does not resize, and the message is
-truncated to fit it.
+通常情况下，显示一条长消息时，会调整回音区的大小以显示整条消息。但如果变量
+@code{message-truncat-lines}是非@code{nil}，则回音区不会调整大小，而是将
+消息截断以适应它。
 @end defvar
 
-  The variable @code{max-mini-window-height}, which specifies the
-maximum height for resizing minibuffer windows, also applies to the
-echo area (which is really a special use of the minibuffer window;
-@pxref{Minibuffer Windows}).
+  变量@code{max-mini-window-height}，指定了调整minibuffer窗口大小的最大
+高度，也适用于回音区（其实就是minibuffer窗口的一种特殊用途；
+@pxref{Minibuffer Windows}）。
 
 @node 警告
 @section Reporting Warnings
 @cindex warnings
 
-  @dfn{Warnings} are a facility for a program to inform the user of a
-possible problem, but continue running.
+  @dfn{Warnings}是程序通知用户可能出现的问题，但继续运行的设施。
 
 @menu
-* Warning Basics::      Warnings concepts and functions to report them.
-* Warning Variables::   Variables programs bind to customize their warnings.
-* Warning Options::     Variables users set to control display of warnings.
-* Delayed Warnings::    Deferring a warning until the end of a command.
+* 警告基础::     警告的概念和报告它们的功能。
+* 警告变量::     程序绑定的变量，用于自定义警告。
+* 警告选项::     用户设置变量来控制警告的显示。
+* 延迟警告::     将警告延迟到命令结束。
 @end menu
 
-@node Warning Basics
+@node 警告基础
 @subsection Warning Basics
 @cindex severity level
 
-  Every warning has a textual message, which explains the problem for
-the user, and a @dfn{severity level} which is a symbol.  Here are the
-possible severity levels, in order of decreasing severity, and their
-meanings:
+  每一个警告都有一个文本信息，为用户解释问题，还有一个
+@dfn{severity level}，这是一个符号。下面是可能的严重性级别，按严重性递减的
+顺序排列，以及它们的含义：
 
 @table @code
 @item :emergency
-A problem that will seriously impair Emacs operation soon
-if you do not attend to it promptly.
+如果不及时处理，很快就会严重影响Emacs的运行。
 @item :error
-A report of data or circumstances that are inherently wrong.
+报告的数据或情况本身就是错误的。
 @item :warning
-A report of data or circumstances that are not inherently wrong, but
-raise suspicion of a possible problem.
+报告的数据或情况本身没有问题，但会引起对可能问题的怀疑。
 @item :debug
-A report of information that may be useful if you are debugging.
+如果你在调试时，可能有用的信息报告。
 @end table
 
-  When your program encounters invalid input data, it can either
-signal a Lisp error by calling @code{error} or @code{signal} or report
-a warning with severity @code{:error}.  Signaling a Lisp error is the
-easiest thing to do, but it means the program cannot continue
-processing.  If you want to take the trouble to implement a way to
-continue processing despite the bad data, then reporting a warning of
-severity @code{:error} is the right way to inform the user of the
-problem.  For instance, the Emacs Lisp byte compiler can report an
-error that way and continue compiling other functions.  (If the
-program signals a Lisp error and then handles it with
-@code{condition-case}, the user won't see the error message; it could
-show the message to the user by reporting it as a warning.)
+  当你的程序遇到无效的输入数据时，它可以通过调用@code{error}或
+@code{signal}来发出Lisp错误信号，或者报告一个严重程度为@code{:error}的警
+告。发出Lisp错误信号是最简单的事情，但这意味着程序不能继续处理。如果你想费
+尽心思地实现一种在数据不好的情况下仍能继续处理的方法，那么报告一个严重程度
+为@code{:error}的警告是告知用户问题的正确方法。例如，Emacs
+Lisp字节编译器就可以这样报告错误，并继续编译其他函数。(如果程序发出Lisp错
+误信号，然后用@code{condition-case}处理，用户不会看到错误信息，它可以通过
+报告为警告的方式向用户显示该信息。)
 
-@c FIXME: Why use "(bytecomp)" instead of "'bytecomp" or simply
-@c "bytecomp" here?  The parens are part of warning-type-format but
-@c not part of the warning type. --xfq
+@c FIXME：为什么用"(bytecomp)"而不是"'bytecomp'"，或者干脆在这里用
+@c "bytecomp"？括号是警告型格式的一部分，但是不属于警告类型。--xfq
 @cindex warning type
-  Each warning has a @dfn{warning type} to classify it.  The type is a
-list of symbols.  The first symbol should be the custom group that you
-use for the program's user options.  For example, byte compiler
-warnings use the warning type @code{(bytecomp)}.  You can also
-subcategorize the warnings, if you wish, by using more symbols in the
-list.
+  每个警告都有一个@dfn{warning type}来对其进行分类。这个类型是一个符号列
+表。第一个符号应该是你用于程序用户选项的自定义组。例如，字节编译器警告使用
+警告类型@code{(bytecomp)}。如果你愿意，你也可以通过在列表中使用更多的符号
+对警告进行子分类。
 
 @defun display-warning type message &optional level buffer-name
-This function reports a warning, using @var{message} as the message
-and @var{type} as the warning type.  @var{level} should be the
-severity level, with @code{:warning} being the default.
+这个函数报告一个警告，使用@var{message}作为消息，@var{type}作为警告类型。
+@var{level}为严重程度，默认为@code{:warning}。
 
-@var{buffer-name}, if non-@code{nil}, specifies the name of the buffer
-for logging the warning.  By default, it is @file{*Warnings*}.
+@var{buffer-name}，如果非@code{nil}，则指定用于记录警告的缓冲区的名称。默
+认情况下，是@file{*Warnings*}。
 @end defun
 
 @defun lwarn type level message &rest args
-This function reports a warning using the value of @code{(format-message
-@var{message} @var{args}...)} as the message in the @file{*Warnings*}
-buffer.  In other respects it is equivalent to @code{display-warning}.
+这个函数使用@code{(format-message @var{message} @var{args}...)}的值作为
+@file{*Warnings*}缓冲区中的消息来报告一个警告。在其他方面，它相当于
+@code{display-warning}。
 @end defun
 
 @defun warn message &rest args
-This function reports a warning using the value of @code{(format-message
-@var{message} @var{args}...)} as the message, @code{(emacs)} as the
-type, and @code{:warning} as the severity level.  It exists for
-compatibility only; we recommend not using it, because you should
-specify a specific warning type.
+这个函数使用@code{(format-message @var{message} @var{args}...)}的值作为
+消息，@code{(emacs)}作为类型，@code{:warning}作为严重程度来报告一个警告。
+它的存在只是为了兼容性，我们建议不要使用它，因为你应该指定一个特定的警告类
+型。
 @end defun
 
-@node Warning Variables
+@node 警告变量
 @subsection Warning Variables
 @cindex warning variables
 
-  Programs can customize how their warnings appear by binding
-the variables described in this section.
+  程序可以通过绑定本节中描述的变量来自定义警告的显示方式。
 
 @defvar warning-levels
-This list defines the meaning and severity order of the warning
-severity levels.  Each element defines one severity level,
-and they are arranged in order of decreasing severity.
+该列表定义了警告严重程度级别的含义和严重程度顺序。每个元素定义一个严重程度
+级别，它们按严重程度递减的顺序排列。
 
-Each element has the form @code{(@var{level} @var{string}
-@var{function})}, where @var{level} is the severity level it defines.
-@var{string} specifies the textual description of this level.
-@var{string} should use @samp{%s} to specify where to put the warning
-type information, or it can omit the @samp{%s} so as not to include
-that information.
+每个元素的形式为@code{(@var{level} @var{string} @var{function})}，其中
+@var{level}是它所定义的严重程度级别。@var{string}指定了这个级别的文字描述
+。@var{string}应该使用@samp{%s}来指定将警告类型的信息放在哪里，也可以省略
+@samp{%s}，这样就不会包含这些信息。
 
-The optional @var{function}, if non-@code{nil}, is a function to call
-with no arguments, to get the user's attention.
+可选的@var{function}，如果是非@code{nil}，则是调用一个没有参数的函数，以
+引起用户的注意。
 
-Normally you should not change the value of this variable.
+通常情况下，你不应该改变这个变量的值。
 @end defvar
 
 @defvar warning-prefix-function
-If non-@code{nil}, the value is a function to generate prefix text for
-warnings.  Programs can bind the variable to a suitable function.
-@code{display-warning} calls this function with the warnings buffer
-current, and the function can insert text in it.  That text becomes
-the beginning of the warning message.
+如果非@code{nil}，则该值是一个用于生成警告前缀文本的函数。程序可以将该变量
+绑定到一个合适的函数上。@code{display-warning}在当前警告缓冲区的情况下调
+用这个函数，该函数可以在其中插入文本。该文本成为警告信息的开头。
 
-The function is called with two arguments, the severity level and its
-entry in @code{warning-levels}.  It should return a list to use as the
-entry (this value need not be an actual member of
-@code{warning-levels}).  By constructing this value, the function can
-change the severity of the warning, or specify different handling for
-a given severity level.
+调用该函数时有两个参数，即严重程度和它在@code{warning-levels}中的条目。它
+应该返回一个列表作为条目（这个值不需要是@code{warning-levels}的实际成员）
+。通过构造这个值，函数可以改变警告的严重性，或者为给定的严重性级别指定不同
+的处理方式。
 
-If the variable's value is @code{nil} then there is no function
-to call.
+如果变量的值是@code{nil}，那么就没有函数可以调用。
 @end defvar
 
 @defvar warning-series
-Programs can bind this variable to @code{t} to say that the next
-warning should begin a series.  When several warnings form a series,
-that means to leave point on the first warning of the series, rather
-than keep moving it for each warning so that it appears on the last one.
-The series ends when the local binding is unbound and
-@code{warning-series} becomes @code{nil} again.
+程序可以将这个变量绑定到@code{t}上，表示下一个警告应该开始一个系列。当几个
+警告形成一个系列时，这意味着要把点留在系列的第一个警告上，而不是为每个警告
+不断移动它，使它出现在最后一个警告上。当本地绑定被解除时，系列结束，
+@code{warning-series}又变成@code{nil}。
 
-The value can also be a symbol with a function definition.  That is
-equivalent to @code{t}, except that the next warning will also call
-the function with no arguments with the warnings buffer current.  The
-function can insert text which will serve as a header for the series
-of warnings.
+这个值也可以是一个带有函数定义的符号。这等同于@code{t}，只是下一个警告也会
+调用这个没有参数的函数，并且警告缓冲区是当前的。该函数可以插入文本，作为一
+系列警告的标题。
 
-Once a series has begun, the value is a marker which points to the
-buffer position in the warnings buffer of the start of the series.
+一旦一个系列开始，该值就是一个标记，它指向系列开始的警告缓冲区中的缓冲位置
+。
 
-The variable's normal value is @code{nil}, which means to handle
-each warning separately.
+该变量的正常值为@code{nil}，即分别处理每个警告。
 @end defvar
 
 @defvar warning-fill-prefix
-When this variable is non-@code{nil}, it specifies a fill prefix to
-use for filling each warning's text.
+当这个变量是非@code{nil}时，它指定了一个填充前缀，用于填充每个警告的文本。
 @end defvar
 
 @defvar warning-fill-column
-The column at which to fill warnings.
+填充警告的列。
 @end defvar
 
 @defvar warning-type-format
-This variable specifies the format for displaying the warning type
-in the warning message.  The result of formatting the type this way
-gets included in the message under the control of the string in the
-entry in @code{warning-levels}.  The default value is @code{" (%s)"}.
-If you bind it to @code{""} then the warning type won't appear at
-all.
+这个变量指定了在警告信息中显示警告类型的格式。在@code{warning-levels}中的
+字符串的控制下，这样格式化类型的结果会被包含在消息中。默认值是
+@code{" (%s)"}。如果您将其绑定为 @code{""}，那么警告类型将完全不会出现。
 @end defvar
 
-@node Warning Options
+@node 警告选项
 @subsection Warning Options
 @cindex warning options
 
-  These variables are used by users to control what happens
-when a Lisp program reports a warning.
+  这些变量被用户用来控制当一个Lisp程序报告一个警告时发生的事情。
 
 @defopt warning-minimum-level
-This user option specifies the minimum severity level that should be
-shown immediately to the user.  The default is @code{:warning}, which
-means to immediately display all warnings except @code{:debug}
-warnings.
+这个用户选项指定了应该立即显示给用户的最小严重程度。默认值是
+@code{:warning}，这意味着除了@code{:debug}警告之外，要立即显示所有警告。
 @end defopt
 
 @defopt warning-minimum-log-level
-This user option specifies the minimum severity level that should be
-logged in the warnings buffer.  The default is @code{:warning}, which
-means to log all warnings except @code{:debug} warnings.
+这个用户选项指定了在警告缓冲区中记录的最小严重程度。默认值是
+@code{:warning}，这意味着除了@code{:debug}之外的所有警告都会被记录。
 @end defopt
 
 @defopt warning-suppress-types
-This list specifies which warning types should not be displayed
-immediately for the user.  Each element of the list should be a list
-of symbols.  If its elements match the first elements in a warning
-type, then that warning is not displayed immediately.
+这个列表指定了哪些警告类型不应该立即为用户显示。列表中的每个元素应该是一个
+符号列表。如果它的元素与警告类型中的第一个元素相匹配，那么该警告就不会立即
+显示。
 @end defopt
 
 @defopt warning-suppress-log-types
-This list specifies which warning types should not be logged in the
-warnings buffer.  Each element of the list should be a list of
-symbols.  If it matches the first few elements in a warning type, then
-that warning is not logged.
+这个列表指定了哪些警告类型不应该被记录在警告缓冲区中。列表中的每个元素应该
+是一个符号列表。如果它与警告类型中的前几个元素相匹配，那么该警告就不会被记
+录。
 @end defopt
 
-@node Delayed Warnings
+@node 延迟警告
 @subsection Delayed Warnings
 @cindex delayed warnings
 
-Sometimes, you may wish to avoid showing a warning while a command is
-running, and only show it only after the end of the command.  You can
-use the function @code{delay-warning} for this.
+有时，您可能希望避免在命令运行时显示警告，而只在命令结束后才显示。您可以使
+用函数@code{delay-warning}来实现这一点。
 
 @defun delay-warning type message &optional level buffer-name
-This function is the delayed counterpart to @code{display-warning}
-(@pxref{Warning Basics}), and it is called with the same arguments.
-The warning message is queued into @code{delayed-warnings-list}.
+这个函数是@code{display-warning}的延迟对应函数。(
+@pxref{Warning Basics})，并以相同的参数调用它。警告信息被排入
+@code{delayed-warnings-list}。
 @end defun
 
 @defvar delayed-warnings-list
-The value of this variable is a list of warnings to be displayed after
-the current command has finished.  Each element must be a list
+这个变量的值是当前命令结束后要显示的警告列表。每个元素必须是一个列表
 
 @smallexample
 (@var{type} @var{message} [@var{level} [@var{buffer-name}]])
 @end smallexample
 
 @noindent
-with the same form, and the same meanings, as the argument list of
-@code{display-warning}.  Immediately after running
-@code{post-command-hook} (@pxref{Command Overview}), the Emacs
-command loop displays all the warnings specified by this variable,
-then resets it to @code{nil}.
+与@code{display-warning}的参数列表具有相同的形式和含义。在运行
+@code{post-command-hook}(@pxref{Command Overview})后，Emacs命令循环会
+立即显示该变量指定的所有警告，然后将其重置为@code{nil}。
 @end defvar
 
-  Programs which need to further customize the delayed warnings
-mechanism can change the variable @code{delayed-warnings-hook}:
+  需要进一步定制延迟警告机制的程序可以更改@code{delayed-warnings-hook}变
+量：
 
 @defvar delayed-warnings-hook
-This is a normal hook which is run by the Emacs command loop, after
-@code{post-command-hook}, in order to process and display delayed
-warnings.
+这是一个普通的钩子，由Emacs命令循环在@code{post-command-hook}之后运行，以
+便处理和显示延迟的警告。
 
-Its default value is a list of two functions:
+其默认值是两个函数的列表：
 
 @smallexample
 (collapse-delayed-warnings display-delayed-warnings)
@@ -833,96 +750,79 @@ Its default value is a list of two functions:
 @findex collapse-delayed-warnings
 @findex display-delayed-warnings
 @noindent
-The function @code{collapse-delayed-warnings} removes repeated entries
-from @code{delayed-warnings-list}.  The function
-@code{display-delayed-warnings} calls @code{display-warning} on each
-of the entries in @code{delayed-warnings-list}, in turn, and then sets
-@code{delayed-warnings-list} to @code{nil}.
+函数@code{collapse-delayed-warnings}删除@code{delayed-warnings-list}中
+的重复条目。函数@code{display-delayed-warnings}依次调用
+@code{display-warning}在@code{delayed-warnings-list}中的每个条目，然后将
+@code{delayed-warnings-list}设置为@code{nil}。
 @end defvar
 
 @node 隐形文本
 @section Invisible Text
 
 @cindex invisible text
-You can make characters @dfn{invisible}, so that they do not appear on
-the screen, with the @code{invisible} property.  This can be either a
-text property (@pxref{Text Properties}) or an overlay property
-(@pxref{Overlays}).  Cursor motion also partly ignores these
-characters; if the command loop finds that point is inside a range of
-invisible text after a command, it relocates point to the other side
-of the text.
+您可以使用@code{invisible}属性使@dfn{invisible}字符不出现在屏幕上。这可以
+是一个文本属性(@pxref{Text Properties})或覆盖属性(@pxref{Overlays})。光
+标运动也会部分忽略这些字符，如果命令循环在命令后发现点在不可见文本的范围内
+，就会将点重新定位到文本的另一侧。
 
-In the simplest case, any non-@code{nil} @code{invisible} property makes
-a character invisible.  This is the default case---if you don't alter
-the default value of @code{buffer-invisibility-spec}, this is how the
-@code{invisible} property works.  You should normally use @code{t}
-as the value of the @code{invisible} property if you don't plan
-to set @code{buffer-invisibility-spec} yourself.
+在最简单的情况下，任何非@code{nil}。@code{invisible}属性使一个字符不可见
+。这是默认的情况--如果你不改变@code{buffer-invisibility-spec}的默认值，这
+就是@code{invisible}属性的工作方式。如果你不打算自己设置
+@code{buffer-invisibility-spec}，通常应该使用@code{t}作为
+@code{invisible}属性的值。
 
-More generally, you can use the variable @code{buffer-invisibility-spec}
-to control which values of the @code{invisible} property make text
-invisible.  This permits you to classify the text into different subsets
-in advance, by giving them different @code{invisible} values, and
-subsequently make various subsets visible or invisible by changing the
-value of @code{buffer-invisibility-spec}.
+更一般地说，您可以使用@code{buffer-invisibility-spec}变量来控制
+@code{invisible}属性的哪些值使文本不可见。这允许您预先将文本分为不同的子集
+，赋予它们不同的@code{invisible}值，然后通过改变
+@code{buffer-invisibility-spec}的值使不同的子集可见或不可见。
 
-Controlling visibility with @code{buffer-invisibility-spec} is
-especially useful in a program to display the list of entries in a
-database.  It permits the implementation of convenient filtering
-commands to view just a part of the entries in the database.  Setting
-this variable is very fast, much faster than scanning all the text in
-the buffer looking for properties to change.
+用@code{buffer-invisibility-spec}控制可见性在显示数据库中的条目列表的程序
+中特别有用。它允许实现方便的过滤命令，只查看数据库中的一部分条目。设置这个
+变量的速度非常快，比扫描缓冲区中的所有文本寻找要改变的属性要快得多。
 
 @defvar buffer-invisibility-spec
-This variable specifies which kinds of @code{invisible} properties
-actually make a character invisible.  Setting this variable makes it
-buffer-local.
+这个变量指定了哪些@code{invisible}属性会让一个字符不可见。设置这个变量可以
+使其成为缓冲区的局部属性。
 
 @table @asis
 @item @code{t}
-A character is invisible if its @code{invisible} property is
-non-@code{nil}.  This is the default.
+如果一个字符的@code{invisible}属性是非@code{nil}，则该字符是不可见的。这是
+默认的。
 
 @item a list
-Each element of the list specifies a criterion for invisibility; if a
-character's @code{invisible} property fits any one of these criteria,
-the character is invisible.  The list can have two kinds of elements:
+列表中的每个元素都指定了一个隐形功能的标准；如果一个角色的@code{invisible}
+属性符合其中任何一个标准，那么这个角色就是隐形的。列表可以有两种元素：
 
 @table @code
 @item @var{atom}
-A character is invisible if its @code{invisible} property value is
-@var{atom} or if it is a list with @var{atom} as a member; comparison
-is done with @code{eq}.
+如果一个字符的@code{invisible}属性值是@var{atom}，或者它是一个以
+@var{atom}为成员的列表，那么这个字符是不可见的；用@code{eq}进行比较。
 
 @item (@var{atom} . t)
-A character is invisible if its @code{invisible} property value is
-@var{atom} or if it is a list with @var{atom} as a member; comparison
-is done with @code{eq}.  Moreover, a sequence of such characters
-displays as an ellipsis.
+如果一个字符的 @code{invisible} 属性值是 @var{atom}，或者它是一个以
+@var{atom}为成员的列表，那么这个字符是不可见的；比较是通过@code{eq}来完成
+的。此外，这样的字符序列会显示为省略号。
 @end table
 @end table
 @end defvar
 
-  Two functions are specifically provided for adding elements to
-@code{buffer-invisibility-spec} and removing elements from it.
+  我们特别提供了两个函数，用于向@code{buffer-invisibility-spec}中添加元素
+和从其中移除元素。
 
 @defun add-to-invisibility-spec element
-This function adds the element @var{element} to
-@code{buffer-invisibility-spec}.  If @code{buffer-invisibility-spec}
-was @code{t}, it changes to a list, @code{(t)}, so that text whose
-@code{invisible} property is @code{t} remains invisible.
+这个函数将@var{element}元素添加到@code{buffer-invisibility-spec}中。如果
+@code{buffer-invisibility-spec}是@code{t}，那么它就会变成一个列表，
+@code{(t)}，这样@code{invisible}属性为@code{t}的文本就会保持不可见。
 @end defun
 
 @defun remove-from-invisibility-spec element
-This removes the element @var{element} from
-@code{buffer-invisibility-spec}.  This does nothing if @var{element}
-is not in the list.
+从@code{buffer-invisibility-spec}中删除@var{element}元素。如果
+@var{element}不在列表中，则不做任何操作。
 @end defun
 
-  A convention for use of @code{buffer-invisibility-spec} is that a
-major mode should use the mode's own name as an element of
-@code{buffer-invisibility-spec} and as the value of the
-@code{invisible} property:
+  使用@code{buffer-invisibility-spec}的惯例是，主要模式应该使用模式本身的
+名称作为@code{buffer-invisibility-spec}的元素，并作为@code{invisible}属
+性的值：
 
 @example
 ;; @r{If you want to display an ellipsis:}
@@ -939,76 +839,57 @@ major mode should use the mode's own name as an element of
 (remove-from-invisibility-spec 'my-symbol)
 @end example
 
-  You can check for invisibility using the following function:
+  您可以使用以下功能检查隐身性：
 
 @defun invisible-p pos-or-prop
-If @var{pos-or-prop} is a marker or number, this function returns a
-non-@code{nil} value if the text at that position is currently
-invisible.
+如果@var{pos-or-prop}是一个标记或数字，如果该位置的文本当前是不可见的，则
+该函数返回一个非@code{nil}值。
 
-If @var{pos-or-prop} is any other kind of Lisp object, that is taken
-to mean a possible value of the @code{invisible} text or overlay
-property.  In that case, this function returns a non-@code{nil} value
-if that value would cause text to become invisible, based on the
-current value of @code{buffer-invisibility-spec}.
+如果@var{pos-or-prop}是任何其他类型的Lisp对象，则表示@code{invisible}文本
+或覆盖属性的可能值。在这种情况下，如果这个值会导致文本不可见，那么这个函数
+将根据@code{buffer-invisibility-spec}的当前值返回一个非@code{nil}值。
 
-The return value of this function is @code{t} if the text would be
-completely hidden on display, or a non-@code{nil}, non-@code{t} value
-if the text would be replaced by an ellipsis.
+如果文字在显示时被完全隐藏，则该函数的返回值为@code{t}，如果文字被省略号代
+替，则返回非@code{nil}、非@code{t}值。
 @end defun
 
 @vindex line-move-ignore-invisible
-  Ordinarily, functions that operate on text or move point do not care
-whether the text is invisible, they process invisible characters and
-visible characters alike.  The user-level line motion commands,
-such as @code{next-line}, @code{previous-line}, ignore invisible
-newlines if @code{line-move-ignore-invisible} is non-@code{nil} (the
-default), i.e., behave like these invisible newlines didn't exist in
-the buffer, but only because they are explicitly programmed to do so.
+  通常情况下，对文本或移动点进行操作的函数并不关心文本是否隐形，它们对隐形
+字符和可见字符都进行处理。用户级的移行命令，如@code{next-line}、
+@code{previous-line}，如果@code{line-move-ignore-invisible}是非
+@code{nil}，则会忽略不可见的新行。(默认值)，也就是说，就像这些不可见的新行
+在缓冲区中并不存在一样，只是因为它们被明确地编程为这样做。
 
-  If a command ends with point inside or at the boundary of
-invisible text, the main editing loop relocates point to one of the
-two ends of the invisible text.  Emacs chooses the direction of
-relocation so that it is the same as the overall movement direction of
-the command; if in doubt, it prefers a position where an inserted char
-would not inherit the @code{invisible} property.  Additionally, if the
-text is not replaced by an ellipsis and the command only moved within
-the invisible text, then point is moved one extra character so as to
-try and reflect the command's movement by a visible movement of the
-cursor.
+  如果一个命令的结尾点在不可见文本的内部或边界处，主编辑循环会将点重新定位
+到不可见文本的两端之一。Emacs会选择重定位的方向，使其与命令的整体移动方向
+相同；如果有疑问，它更倾向于选择插入的字符不会继承@code{invisible}属性的位
+置。此外，如果文本没有被省略号代替，而命令只是在不可见的文本中移动，那么点
+会被多移动一个字符，以便尝试通过光标的可见移动来反映命令的移动。
 
-  Thus, if the command moved point back to an invisible range (with the usual
-stickiness), Emacs moves point back to the beginning of that range.  If the
-command moved point forward into an invisible range, Emacs moves point forward
-to the first visible character that follows the invisible text and then forward
-one more character.
+  因此，如果命令将点移动到一个不可见的范围（具有通常的粘性），Emacs将点移
+动到该范围的开始。如果命令将点向前移动到一个不可见的范围，Emacs将点向前移
+动到不可见文本后面的第一个可见字符，然后再向前移动一个字符。
 
-  These @dfn{adjustments} of point that ended up in the middle of
-invisible text can be disabled by setting @code{disable-point-adjustment}
-to a non-@code{nil} value.  @xref{Adjusting Point}.
+  通过将@code{disable-point-adjustment}设置为非@code{nil}值，可以禁用这
+些最终在隐形文本中间的点的@dfn{adjustments}。@xref{Adjusting Point}。
 
-  Incremental search can make invisible overlays visible temporarily
-and/or permanently when a match includes invisible text.  To enable
-this, the overlay should have a non-@code{nil}
-@code{isearch-open-invisible} property.  The property value should be a
-function to be called with the overlay as an argument.  This function
-should make the overlay visible permanently; it is used when the match
-overlaps the overlay on exit from the search.
+  增量搜索可以使不可见的覆盖层在匹配中包含不可见文本时暂时和/或永久可见。要
+启用这个功能，覆盖层应该有一个非@code{nil}的
+@code{isearch-open-invisible}属性。属性值应该是一个以覆盖层为参数调用的函
+数。这个函数应该使覆盖层永久可见；当匹配在退出搜索时与覆盖层重叠时，就会使
+用这个函数。
 
-  During the search, such overlays are made temporarily visible by
-temporarily modifying their invisible and intangible properties.  If you
-want this to be done differently for a certain overlay, give it an
-@code{isearch-open-invisible-temporary} property which is a function.
-The function is called with two arguments: the first is the overlay, and
-the second is @code{nil} to make the overlay visible, or @code{t} to
-make it invisible again.
+  在搜索过程中，通过临时修改这些覆盖层的不可见和无形属性，使其暂时可见。如
+果你想对某个覆盖层进行不同的操作，可以给它一个
+@code{isearch-open-invisible-temporary}属性，它是一个函数。调用该函数时
+有两个参数：第一个是覆盖层，第二个是@code{nil}使覆盖层可见，或者@code{t}使
+其再次不可见。
 
 @node 选择性显示
 @section Selective Display
 @c @cindex selective display   Duplicates selective-display
 
-  @dfn{Selective display} refers to a pair of related features for
-hiding certain lines on the screen.
+  @dfn{选择性显示}指的是一对相关功能，用于隐藏屏幕上的某些行。
 
 @cindex explicit selective display
   The first variant, explicit selective display, was designed for use in a Lisp
