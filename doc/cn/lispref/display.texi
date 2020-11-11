@@ -892,63 +892,46 @@ Lisp字节编译器就可以这样报告错误，并继续编译其他函数。(
   @dfn{选择性显示}指的是一对相关功能，用于隐藏屏幕上的某些行。
 
 @cindex explicit selective display
-  The first variant, explicit selective display, was designed for use in a Lisp
-program: it controls which lines are hidden by altering the text.  This kind of
-hiding is now obsolete and deprecated; instead you should use the
-@code{invisible} property (@pxref{Invisible Text}) to get the same effect.
+  第一个变体，显式选择性显示，是为在Lisp程序中使用而设计的：它通过改变文本
+来控制哪些行被隐藏。这种隐藏方式现在已经过时并被废弃了；相反，你应该使用
+@code{invisible} 属性 (@pxref{Invisible Text}) 来获得同样的效果。
 
-  In the second variant, the choice of lines to hide is made
-automatically based on indentation.  This variant is designed to be a
-user-level feature.
+  在第二个变体中，根据缩进情况自动选择要隐藏的行。这种变体设计为用户级功能
+。
 
-  The way you control explicit selective display is by replacing a
-newline (control-j) with a carriage return (control-m).  The text that
-was formerly a line following that newline is now hidden.  Strictly
-speaking, it is temporarily no longer a line at all, since only
-newlines can separate lines; it is now part of the previous line.
+  控制显式选择性显示的方法是用回车（control-m）代替换行（control-j）。原本
+是一行的文本在换行符之后就被隐藏了。严格地说，它暂时不是一行，因为只有换行
+符才能分隔行，它现在是前一行的一部分。
 
-  Selective display does not directly affect editing commands.  For
-example, @kbd{C-f} (@code{forward-char}) moves point unhesitatingly
-into hidden text.  However, the replacement of newline characters with
-carriage return characters affects some editing commands.  For
-example, @code{next-line} skips hidden lines, since it searches only
-for newlines.  Modes that use selective display can also define
-commands that take account of the newlines, or that control which
-parts of the text are hidden.
+  选择性显示不直接影响编辑命令。例如，@kbd{C-f}。(@code{forward-char})毫
+不犹豫地将点移动到隐藏文本中。然而，用回车字符代替换行字符会影响一些编辑命
+令。例如，@code{next-line}会跳过隐藏的行，因为它只搜索换行符。使用选择性显
+示的模式也可以定义一些考虑到换行符的命令，或者控制文本的哪些部分被隐藏。
 
-  When you write a selectively displayed buffer into a file, all the
-control-m's are output as newlines.  This means that when you next read
-in the file, it looks OK, with nothing hidden.  The selective display
-effect is seen only within Emacs.
+  当你把一个有选择地显示的缓冲区写入文件时，所有的control-m都以换行符的形
+式输出。这意味着当你下一次读入文件时，它看起来是OK的，没有任何隐藏。选择性
+显示效果只有在Emacs中才能看到。
 
 @defvar selective-display
-This buffer-local variable enables selective display.  This means that
-lines, or portions of lines, may be made hidden.
+这个缓冲区局部变量可以实现选择性显示。这意味着行或行的一部分可以被隐藏。
 
 @itemize @bullet
 @item
-If the value of @code{selective-display} is @code{t}, then the character
-control-m marks the start of hidden text; the control-m, and the rest
-of the line following it, are not displayed.  This is explicit selective
-display.
+如果@code{selective-display}的值是@code{t}，那么字符control-m标志着隐藏
+文本的开始；control-m以及它后面的其余行都不显示。这就是显式选择性显示。
 
 @item
-If the value of @code{selective-display} is a positive integer, then
-lines that start with more than that many columns of indentation are not
-displayed.
+如果@code{selective-display}的值是一个正整数，则不显示以多于该列缩进开始
+的行。
 @end itemize
 
-When some portion of a buffer is hidden, the vertical movement
-commands operate as if that portion did not exist, allowing a single
-@code{next-line} command to skip any number of hidden lines.
-However, character movement commands (such as @code{forward-char}) do
-not skip the hidden portion, and it is possible (if tricky) to insert
-or delete text in a hidden portion.
+当缓冲区的某些部分被隐藏时，垂直移动命令的操作就像该部分不存在一样，允许一
+个@code{next-line}命令跳过任何数量的隐藏行。然而，字符移动命令（如
+@code{forward-char}）并不跳过隐藏部分，而且可以在隐藏部分中插入或删除文本
+（尽管很取巧）。
 
-In the examples below, we show the @emph{display appearance} of the
-buffer @code{foo}, which changes with the value of
-@code{selective-display}.  The @emph{contents} of the buffer do not
-change.
+在下面的示例中，我们展示了缓冲区@code{foo}的@emph{显示外观}，它随着
+@code{selective-display}的值而改变。缓冲区的@emph{内容}不会改变。
 
 @example
 @group
@@ -980,9 +963,8 @@ change.
 @end defvar
 
 @defopt selective-display-ellipses
-If this buffer-local variable is non-@code{nil}, then Emacs displays
-@samp{@dots{}} at the end of a line that is followed by hidden text.
-This example is a continuation of the previous one.
+如果这个缓冲区本地变量是非@code{nil}，那么Emacs会在行末的隐藏文本后面显示
+出@samp{@dots{}}。这个例子是上一个例子的延续。
 
 @example
 @group
@@ -998,8 +980,8 @@ This example is a continuation of the previous one.
 @end group
 @end example
 
-You can use a display table to substitute other text for the ellipsis
-(@samp{@dots{}}).  @xref{Display Tables}.
+您可以使用一个显示表格来代替省略号的其他文本（@samp{@dots{}}）。
+@xref{Display Tables}。
 @end defopt
 
 @node 临时显示
@@ -1007,41 +989,35 @@ You can use a display table to substitute other text for the ellipsis
 @cindex temporary display
 @cindex temporary buffer display
 
-  Temporary displays are used by Lisp programs to put output into a
-buffer and then present it to the user for perusal rather than for
-editing.  Many help commands use this feature.
+  临时显示被Lisp程序用来将输出放入缓冲区，然后呈现给用户浏览而不是编辑。许
+多帮助命令都使用了这个功能。
 
 @defmac with-output-to-temp-buffer buffer-name body@dots{}
-This function executes the forms in @var{body} while arranging to insert
-any output they print into the buffer named @var{buffer-name}, which is
-first created if necessary, and put into Help mode.  (See the similar
-form @code{with-temp-buffer-window} below.)  Finally, the buffer is
-displayed in some window, but that window is not selected.
+这个函数执行@var{body}中的窗体，同时安排将它们打印的任何输出插入到名为
+@var{buffer-name}的缓冲区中，必要时首先创建该缓冲区，并将其放入Help模式。
+(参见下面类似的窗体@code{with-temp-buffer-window})最后，在某个窗口中显示
+缓冲区，但该窗口没有被选中。(参见下面类似的窗体
+@code{with-temp-buffer-window}。)最后，缓冲区会显示在某个窗口中，但该窗口
+不被选中。
 
-If the forms in @var{body} do not change the major mode in the output
-buffer, so that it is still Help mode at the end of their execution,
-then @code{with-output-to-temp-buffer} makes this buffer read-only at
-the end, and also scans it for function and variable names to make them
-into clickable cross-references.  @xref{Docstring hyperlinks, , Tips for
-Documentation Strings}, in particular the item on hyperlinks in
-documentation strings, for more details.
+如果@var{body}中的表单没有改变输出缓冲区的主要模式，使其在执行结束时仍然是
+Help模式，那么@code{with-output-to-temp-buffer}就会使这个缓冲区在最后变成
+只读模式，并且还会扫描其中的函数和变量名，使其成为可点击的交叉引用。
+@xref{Docstring hyperlinks, , Tips for Documentation Strings}，特别是关
+于文档字符串中的超链接这一项，了解更多细节。
 
-The string @var{buffer-name} specifies the temporary buffer, which need
-not already exist.  The argument must be a string, not a buffer.  The
-buffer is erased initially (with no questions asked), and it is marked
-as unmodified after @code{with-output-to-temp-buffer} exits.
+字符串@var{buffer-name}指定临时缓冲区，它不需要已经存在。参数必须是一个字
+符串，而不是一个缓冲区。缓冲区最初会被擦除（不问任何问题），在
+@code{with-output-to-temp-buffer}退出后，它被标记为未修改。
 
-@code{with-output-to-temp-buffer} binds @code{standard-output} to the
-temporary buffer, then it evaluates the forms in @var{body}.  Output
-using the Lisp output functions within @var{body} goes by default to
-that buffer (but screen display and messages in the echo area, although
-they are ``output'' in the general sense of the word, are not affected).
-@xref{Output Functions}.
+@code{with-output-to-temp-buffer}将@code{standard-output}绑定到临时缓冲
+区，然后它运行@var{body}中的表单。使用@var{body}中的Lisp输出函数的输出，
+默认会进入该缓冲区(但屏幕显示和回声区中的信息，尽管它们在一般意义上是"输出"
+，但不受影响)。@xref{Output Functions}.
 
-Several hooks are available for customizing the behavior
-of this construct; they are listed below.
+有几个钩子可用于自定义该构造的行为；它们被列在下面。
 
-The value of the last form in @var{body} is returned.
+@var{body}中最后一个表单的值会返回。
 
 @example
 @group
@@ -1068,129 +1044,108 @@ The value of the last form in @var{body} is returned.
 @end defmac
 
 @defopt temp-buffer-show-function
-If this variable is non-@code{nil}, @code{with-output-to-temp-buffer}
-calls it as a function to do the job of displaying a help buffer.  The
-function gets one argument, which is the buffer it should display.
+如果这个变量是非@code{nil}，@code{with-output-to-temp-buffer}就会以函数
+的形式调用它来完成显示帮助缓冲区的工作。该函数得到一个参数，即它应该显示的
+缓冲区。
 
-It is a good idea for this function to run @code{temp-buffer-show-hook}
-just as @code{with-output-to-temp-buffer} normally would, inside of
-@code{save-selected-window} and with the chosen window and buffer
-selected.
+这个函数最好和@code{with-output-to-temp-buffer}正常情况一样，
+@code{save-selected-window}和当前选择的窗口和缓冲区内部运行
+@code{temp-buffer-show-hook}。
 @end defopt
 
 @defvar temp-buffer-setup-hook
-This normal hook is run by @code{with-output-to-temp-buffer} before
-evaluating @var{body}.  When the hook runs, the temporary buffer is
-current.  This hook is normally set up with a function to put the
-buffer in Help mode.
+这个正常的钩子是由@code{with-output-to-temp-buffer}在评估@var{body}之前
+运行的。当这个钩子运行时，临时缓冲区是当前的。这个钩子通常与一个函数一起设
+置，以使缓冲区进入帮助模式。
 @end defvar
 
 @defvar temp-buffer-show-hook
-This normal hook is run by @code{with-output-to-temp-buffer} after
-displaying the temporary buffer.  When the hook runs, the temporary buffer
-is current, and the window it was displayed in is selected.
+这个正常的钩子是由@code{with-output-to-temp-buffer}在显示临时缓冲区后运行
+的。当该钩子运行时，临时缓冲区是当前的，并且它所显示的窗口被选中。
 @end defvar
 
 @defmac with-temp-buffer-window buffer-or-name action quit-function body@dots{}
-This macro is similar to @code{with-output-to-temp-buffer}.  Like that
-construct, it executes @var{body} while arranging to insert any output
-it prints into the buffer named @var{buffer-or-name} and displays that
-buffer in some window.  Unlike @code{with-output-to-temp-buffer},
-however, it does not automatically switch that buffer to Help mode.
+这个宏类似于@code{with-output-to-temp-buffer}。和那个构造一样，它在执行
+@var{body}的同时，安排将它打印的任何输出插入到名为@var{buffer-or-name}的
+缓冲区中，并在某个窗口中显示该缓冲区。但与
+@code{with-output-to-temp-buffer}不同的是，它不会自动将该缓冲区切换到Help
+模式。
 
-The argument @var{buffer-or-name} specifies the temporary buffer.  It
-can be either a buffer, which must already exist, or a string, in which
-case a buffer of that name is created, if necessary.  The buffer is
-marked as unmodified and read-only when @code{with-temp-buffer-window}
-exits.
+参数@var{buffer-or-name}指定了临时缓冲区。它可以是一个已经存在的缓冲区，也
+可以是一个字符串，在这种情况下，如果需要的话，会创建一个同名的缓冲区。当
+@code{with-temp-buffer-window}退出时，缓冲区被标记为未修改和只读。
 
-This macro does not call @code{temp-buffer-show-function}.  Rather, it
-passes the @var{action} argument to @code{display-buffer}
-(@pxref{Choosing Window}) in order to display the buffer.
+这个宏没有调用@code{temp-buffer-show-function}，而是将@var{action}参数传
+递给@code{display-buffer}。而是将@var{action}参数传递给
+@code{display-buffer}。(@pxref{Choosing Window})，以便显示缓冲区。
 
-The value of the last form in @var{body} is returned, unless the
-argument @var{quit-function} is specified.  In that case, it is called
-with two arguments: the window showing the buffer and the result of
-@var{body}.  The final return value is then whatever @var{quit-function}
-returns.
+除非指定了参数@var{quit-function}，否则将返回@var{body}中最后一个表单的值
+。在这种情况下，调用它时有两个参数：显示缓冲区的窗口和@var{body}的结果。最
+后的返回值就是@var{quit-function}所返回的值。
 
 @vindex temp-buffer-window-setup-hook
 @vindex temp-buffer-window-show-hook
-This macro uses the normal hooks @code{temp-buffer-window-setup-hook}
-and @code{temp-buffer-window-show-hook} in place of the analogous hooks
-run by @code{with-output-to-temp-buffer}.
+这个宏使用普通的钩子@code{temp-buffer-window-setup-hook}和
+@code{temp-buffer-window-show-hook}来代替
+@code{with-output-to-temp-buffer}运行的类似钩子。
 @end defmac
 
-The two constructs described next are mostly identical to
-@code{with-temp-buffer-window} but differ from it as specified:
+接下来描述的两个构造与@code{with-temp-buffer-window}大部分相同，但与它的
+不同之处在于以下的规定:
 
 @defmac with-current-buffer-window buffer-or-name action quit-function &rest body
-This macro is like @code{with-temp-buffer-window} but unlike that makes
-the buffer specified by @var{buffer-or-name} current for running
-@var{body}.
+这个宏和@code{with-temp-buffer-window}类似，但不同的是，它使
+@var{buffer-or-name}指定的缓冲区成为运行@var{body}的当前缓冲区。
 @end defmac
 
-A window showing a temporary buffer can be fitted to the size of that
-buffer using the following mode:
+一个显示临时缓冲区的窗口，可以使用以下模式将该缓冲区的大小装入：
 
 @defopt temp-buffer-resize-mode
-When this minor mode is enabled, windows showing a temporary buffer are
-automatically resized to fit their buffer's contents.
+启用该次要模式后，显示临时缓冲区的窗口会自动调整大小以适应缓冲区的内容。
 
-A window is resized if and only if it has been specially created for the
-buffer.  In particular, windows that have shown another buffer before
-are not resized.  By default, this mode uses @code{fit-window-to-buffer}
-(@pxref{Resizing Windows}) for resizing.  You can specify a different
-function by customizing the options @code{temp-buffer-max-height} and
-@code{temp-buffer-max-width} below.
+如果且仅当一个窗口是为缓冲区专门创建的，那么它就会被调整大小。特别是，之前
+显示过其他缓冲区的窗口不会被调整大小。默认情况下，该模式使用
+@code{fit-window-to-buffer}(@pxref{Resizing Windows})来调整大小。您可以
+通过自定义下面的@code{temp-buffer-max-height}和
+@code{temp-buffer-max-width}选项来指定不同的函数。
 @end defopt
 
 @defopt temp-buffer-max-height
-This option specifies the maximum height (in lines) of a window
-displaying a temporary buffer when @code{temp-buffer-resize-mode} is
-enabled.  It can also be a function to be called to choose the height
-for such a buffer.  It gets one argument, the buffer, and should return
-a positive integer.  At the time the function is called, the window to
-be resized is selected.
+这个选项指定了当@code{temp-buffer-resize-mode}被启用时，窗口显示临时缓冲
+区的最大高度（以行为单位）。它也可以作为一个函数被调用来选择这样一个缓冲区
+的高度。它得到一个参数，即缓冲区，并且应该返回一个正整数。在调用该函数时，
+需要调整大小的窗口被选中。
 @end defopt
 
 @defopt temp-buffer-max-width
-This option specifies the maximum width of a window (in columns)
-displaying a temporary buffer when @code{temp-buffer-resize-mode} is
-enabled.  It can also be a function to be called to choose the width for
-such a buffer.  It gets one argument, the buffer, and should return a
-positive integer.  At the time the function is called, the window to be
-resized is selected.
+这个选项指定了当@code{temp-buffer-resize-mode}被启用时，窗口显示临时缓冲
+区的最大宽度（以列为单位）。它也可以作为一个函数被调用来选择缓冲区的宽度。
+它得到一个参数，即缓冲区，并且应该返回一个正整数。在调用该函数时，需要调整
+大小的窗口被选中。
 @end defopt
 
-The following function uses the current buffer for temporary display:
+以下功能使用当前缓冲区进行临时显示：
 
 @defun momentary-string-display string position &optional char message
-This function momentarily displays @var{string} in the current buffer at
-@var{position}.  It has no effect on the undo list or on the buffer's
-modification status.
+这个函数在当前缓冲区的@var{position}处暂时显示@var{string}。它对撤销列表
+或缓冲区的修改状态没有影响。
 
-The momentary display remains until the next input event.  If the next
-input event is @var{char}, @code{momentary-string-display} ignores it
-and returns.  Otherwise, that event remains buffered for subsequent use
-as input.  Thus, typing @var{char} will simply remove the string from
-the display, while typing (say) @kbd{C-f} will remove the string from
-the display and later (presumably) move point forward.  The argument
-@var{char} is a space by default.
+在下一个输入事件发生之前，瞬时显示一直保持。如果下一个输入事件是@var{char}
+，@code{momentary-string-display}会忽略它并返回。否则，该事件仍将被缓冲，
+以便后续作为输入使用。因此，键入@var{char}将简单地从显示中移除字符串，而键
+入 (比如)@kbd{C-f}将从显示中移除字符串，并在之后(大概)将点向前移动。参数
+@var{char}默认是一个空格。
 
-The return value of @code{momentary-string-display} is not meaningful.
+@code{momentary-string-display}的返回值是没有意义的。
 
-If the string @var{string} does not contain control characters, you can
-do the same job in a more general way by creating (and then subsequently
-deleting) an overlay with a @code{before-string} property.
-@xref{Overlay Properties}.
+如果字符串@var{string}不包含控制字符，您可以通过使用@code{before-string}
+属性创建（然后随后删除）一个覆盖层，以更通用的方式完成同样的工作。
+@xref{Overlay Properties}。
 
-If @var{message} is non-@code{nil}, it is displayed in the echo area
-while @var{string} is displayed in the buffer.  If it is @code{nil}, a
-default message says to type @var{char} to continue.
+如果@var{message}是非@code{nil}，则显示在回音区，而@var{string}则显示在缓
+冲区。如果是@code{nil}，则默认消息说要输入@var{char}来继续。
 
-In this example, point is initially located at the beginning of the
-second line:
+在这个例子中，点最初位于第二行的开头:
 
 @example
 @group
@@ -1224,48 +1179,37 @@ Type RET when done reading
 @node 叠加
 @section Overlays
 @cindex overlays
-@c FIXME: mention intervals in this section?
+@c FIXME：在本节中提到间隔？
 
-You can use @dfn{overlays} to alter the appearance of a buffer's text on
-the screen, for the sake of presentation features.  An overlay is an
-object that belongs to a particular buffer, and has a specified
-beginning and end.  It also has properties that you can examine and set;
-these affect the display of the text within the overlay.
+您可以使用@dfn{overlays}来改变一个缓冲区的文字在屏幕上的外观，以达到展示特
+性的目的。叠加是一个属于特定缓冲区的对象，它有一个指定的开始和结束。它也有
+你可以检查和设置的属性，这些属性会影响覆盖层中文本的显示。
 
 @cindex scalability of overlays
 @cindex overlays, scalability
-The visual effect of an overlay is the same as of the corresponding
-text property (@pxref{Text Properties}).  However, due to a different
-implementation, overlays generally don't scale well (many operations
-take a time that is proportional to the number of overlays in the
-buffer).  If you need to affect the visual appearance of many portions
-in the buffer, we recommend using text properties.
+叠加的视觉效果与对应的文本属性(@pxref{Text Properties})是一样的。然而，由
+于实现方式不同，覆盖层通常不能很好地扩展（许多操作所需的时间与缓冲区中覆盖
+层的数量成正比）。如果您需要影响缓冲区中许多部分的视觉外观，我们建议使用文
+本属性。
 
-An overlay uses markers to record its beginning and end; thus,
-editing the text of the buffer adjusts the beginning and end of each
-overlay so that it stays with the text.  When you create the overlay,
-you can specify whether text inserted at the beginning should be
-inside the overlay or outside, and likewise for the end of the overlay.
+叠加使用标记来记录它的开头和结尾，因此，编辑缓冲区的文本会调整每个叠加的开头和结尾，使其与文本保持一致。在创建叠加时，您可以指定在开头插入的文本应该在叠加内还是在叠加外，同样也可以指定叠加的结尾。
 
 @menu
-* Managing Overlays::   Creating and moving overlays.
-* Overlay Properties::  How to read and set properties.
-                          What properties do to the screen display.
-* Finding Overlays::    Searching for overlays.
+* 管理叠加::   创建和移动叠加。
+* 叠加属性::   如何读取和设置属性。属性对屏幕显示的作用。
+* 寻找叠加::   搜索叠加。
 @end menu
 
-@node Managing Overlays
+@node 管理叠加
 @subsection Managing Overlays
 @cindex managing overlays
 @cindex overlays, managing
 
-  This section describes the functions to create, delete and move
-overlays, and to examine their contents.  Overlay changes are not
-recorded in the buffer's undo list, since the overlays are not
-part of the buffer's contents.
+  本节介绍了创建、删除、移动叠加以及检查叠加内容的功能。由于叠加不是缓冲区
+内容的一部分，因此叠加的更改不会记录在缓冲区的撤销列表中。
 
 @defun overlayp object
-This function returns @code{t} if @var{object} is an overlay.
+如果@var{object}是，则该函数返回@code{t}。
 @end defun
 
 @defun make-overlay start end &optional buffer front-advance rear-advance
@@ -1425,7 +1369,7 @@ near @var{pos}, but slower for positions far away from @var{pos}.
   A loop that scans the buffer forwards, creating overlays, can run
 faster if you do @code{(overlay-recenter (point-max))} first.
 
-@node Overlay Properties
+@node 叠加属性
 @subsection Overlay Properties
 @cindex overlay properties
 
@@ -1692,7 +1636,7 @@ the string.  To bind special mouse events for the string, assign it a
 @code{keymap} or @code{local-map} text property.  @xref{Special
 Properties}.
 
-@node Finding Overlays
+@node 寻找叠加
 @subsection Searching for Overlays
 @cindex searching for overlays
 @cindex overlays, searching for
