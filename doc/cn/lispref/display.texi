@@ -1213,95 +1213,77 @@ Type RET when done reading
 @end defun
 
 @defun make-overlay start end &optional buffer front-advance rear-advance
-This function creates and returns an overlay that belongs to
-@var{buffer} and ranges from @var{start} to @var{end}.  Both @var{start}
-and @var{end} must specify buffer positions; they may be integers or
-markers.  If @var{buffer} is omitted, the overlay is created in the
-current buffer.
+此函数创建并返回一个属于@var{buffer}的覆盖层，覆盖范围从@var{start}到
+@var{end}。@var{start}和@var{end}都必须指定缓冲区的位置，它们可以是整数或
+标记。如果省略了@var{buffer}，则会在当前的缓冲区中创建覆盖层。
 
 @cindex empty overlay
 @cindex overlay, empty
-An overlay whose @var{start} and @var{end} specify the same buffer
-position is known as @dfn{empty}.  A non-empty overlay can become
-empty if the text between its @var{start} and @var{end} is deleted.
-When that happens, the overlay is by default not deleted, but you can
-cause it to be deleted by giving it the @samp{evaporate} property
-(@pxref{Overlay Properties, evaporate property}).
+一个覆盖层的@var{start}和@var{end}指定了相同的缓冲区位置，称为@dfn{empty}
+。如果@var{start}和@var{end}之间的文本被删除，一个非空的覆盖层就会变成空的
+。当这种情况发生时，默认情况下，覆盖层不会被删除，但您可以通过给它设置
+@samp{evaporate}属性(@pxref{Overlay Properties, evaporate property})来
+使它被删除。
 
-The arguments @var{front-advance} and @var{rear-advance} specify the
-marker insertion type for the start of the overlay and for the end of
-the overlay, respectively.  @xref{Marker Insertion Types}.  If they
-are both @code{nil}, the default, then the overlay extends to include
-any text inserted at the beginning, but not text inserted at the end.
-If @var{front-advance} is non-@code{nil}, text inserted at the
-beginning of the overlay is excluded from the overlay.  If
-@var{rear-advance} is non-@code{nil}, text inserted at the end of the
-overlay is included in the overlay.
+参数@var{front-advance}和@var{rear-advance}分别指定了叠加开始和叠加结束
+的标记插入类型@xref{Marker Insertion Types}。如果它们都是@code{nil}，也
+就是默认值，那么覆盖层将扩展到包括任何在开头插入的文本，但不包括在结尾插入
+的文本。如果@var{front-advance}是非@code{nil}，那么在叠加开始处插入的文本
+将被排除在叠加之外。如果@var{rear-advance}是非@code{nil}，那么在覆载结束
+时插入的文本将被包含在覆载中。
 @end defun
 
 @defun overlay-start overlay
-This function returns the position at which @var{overlay} starts,
-as an integer.
+此函数以整数形式返回@var{overlay}的起始位置。
 @end defun
 
 @defun overlay-end overlay
-This function returns the position at which @var{overlay} ends,
-as an integer.
+此函数以整数形式返回@var{overlay}结束的位置。
 @end defun
 
 @defun overlay-buffer overlay
-This function returns the buffer that @var{overlay} belongs to.  It
-returns @code{nil} if @var{overlay} has been deleted.
+此函数返回@var{overlay}所属的缓冲区，如果@var{overlay}已被删除，则返回
+@code{nil}。
 @end defun
 
 @defun delete-overlay overlay
-This function deletes @var{overlay}.  The overlay continues to exist as
-a Lisp object, and its property list is unchanged, but it ceases to be
-attached to the buffer it belonged to, and ceases to have any effect on
-display.
+这个函数删除了@var{overlay}。覆盖层作为一个Lisp对象继续存在，它的属性列表
+没有变化，但它不再附着在它所属的缓冲区上，也不再对显示有任何影响。
 
-A deleted overlay is not permanently disconnected.  You can give it a
-position in a buffer again by calling @code{move-overlay}.
+被删除的叠加不会被永久断开。你可以通过调用@code{move-overlay}来重新给它在
+缓冲区中的位置。
 @end defun
 
 @defun move-overlay overlay start end &optional buffer
-This function moves @var{overlay} to @var{buffer}, and places its bounds
-at @var{start} and @var{end}.  Both arguments @var{start} and @var{end}
-must specify buffer positions; they may be integers or markers.
+这个函数将@var{overlay}移动到@var{buffer}，并将其边界置于@var{start}和
+@var{end}。参数@var{start}和@var{end}都必须指定缓冲区的位置，可以是整数，
+也可以是标记。
 
-If @var{buffer} is omitted, @var{overlay} stays in the same buffer it
-was already associated with; if @var{overlay} was deleted, it goes into
-the current buffer.
+如果省略了@var{buffer}，@var{overlay}会停留在它已经关联的那个缓冲区中；如
+果删除了@var{overlay}，它就会进入当前的缓冲区。
 
-The return value is @var{overlay}.
+返回值是@var{overlay}。
 
-This is the only valid way to change the endpoints of an overlay.  Do
-not try modifying the markers in the overlay by hand, as that fails to
-update other vital data structures and can cause some overlays to be
-lost.
+这是更改覆盖图端点的唯一有效方法。不要尝试手动修改叠加中的标记，因为这样做
+无法更新其他重要的数据结构，并可能导致一些叠加丢失。
 @end defun
 
 @defun remove-overlays &optional start end name value
-This function removes all the overlays between @var{start} and
-@var{end} whose property @var{name} has the value @var{value}.  It can
-move the endpoints of the overlays in the region, or split them.
+这个函数可以删除@var{start}和@var{end}之间所有属性@var{name}的值为
+@var{value}的覆盖层。它可以移动区域内覆盖层的端点，或者分割它们。
 
-If @var{name} is omitted or @code{nil}, it means to delete all overlays in
-the specified region.  If @var{start} and/or @var{end} are omitted or
-@code{nil}, that means the beginning and end of the buffer respectively.
-Therefore, @code{(remove-overlays)} removes all the overlays in the
-current buffer.
+如果省略@var{name}或者@code{nil}，表示删除指定区域的所有覆盖层。如果
+@var{start}和/或@var{end}被省略或@code{nil}，表示分别删除缓冲区的开始和结
+束。因此，@code{(remove-overlays)}删除了当前缓冲区中的所有覆盖。
 @end defun
 
 @defun copy-overlay overlay
-This function returns a copy of @var{overlay}.  The copy has the same
-endpoints and properties as @var{overlay}.  However, the marker
-insertion type for the start of the overlay and for the end of the
-overlay are set to their default values (@pxref{Marker Insertion
-Types}).
+此函数返回@var{overlay}的副本。这个副本的端点和属性与@var{overlay}相同。
+但是，覆盖层开始和结束的标记插入类型被设置为默认值（
+@pxref{Marker Insertion Types}）。
 @end defun
 
-  Here are some examples:
+  下面是一些例子：
 
 @example
 ;; @r{Create an overlay.}
@@ -1354,120 +1336,97 @@ foo
      @result{} t
 @end example
 
-  Emacs stores the overlays of each buffer in two lists, divided
-around an arbitrary center position.  One list extends backwards
-through the buffer from that center position, and the other extends
-forwards from that center position.  The center position can be anywhere
-in the buffer.
+  Emacs将每个缓冲区的覆盖存储在两个列表中，围绕一个任意的中心位置进行划分
+。一个列表从中心位置向后延伸，另一个列表从中心位置向前延伸。中心位置可以是
+缓冲区的任何位置。
 
 @defun overlay-recenter pos
-This function recenters the overlays of the current buffer around
-position @var{pos}.  That makes overlay lookup faster for positions
-near @var{pos}, but slower for positions far away from @var{pos}.
+这个函数将当前缓冲区中@var{pos}位置周围的覆盖层进行更新。这样一来，对于靠
+近@var{pos}的位置，覆盖查找的速度会更快，但对于远离@var{pos}的位置，覆盖查
+找的速度会更慢。
 @end defun
 
-  A loop that scans the buffer forwards, creating overlays, can run
-faster if you do @code{(overlay-recenter (point-max))} first.
+  循环向前扫描缓冲区，创建叠加，如果先做
+@code{(overlay-recenter (point-max))}，可以运行得更快。
 
 @node 叠加属性
 @subsection Overlay Properties
 @cindex overlay properties
 
-  Overlay properties are like text properties in that the properties that
-alter how a character is displayed can come from either source.  But in
-most respects they are different.  @xref{Text Properties}, for comparison.
+  覆盖属性和文本属性一样，改变字符显示方式的属性可以来自任何一个来源。但在
+大多数方面，它们是不同的。@xref{Text Properties}，作为比较。
 
-  Text properties are considered a part of the text; overlays and
-their properties are specifically considered not to be part of the
-text.  Thus, copying text between various buffers and strings
-preserves text properties, but does not try to preserve overlays.
-Changing a buffer's text properties marks the buffer as modified,
-while moving an overlay or changing its properties does not.  Unlike
-text property changes, overlay property changes are not recorded in
-the buffer's undo list.
+  文本属性被认为是文本的一部分；覆盖层及其属性被特别认为不是文本的一部分。
+因此，在各种缓冲区和字符串之间复制文本会保留文本属性，但不会尝试保留覆盖层
+。更改缓冲区的文本属性会标记该缓冲区被修改，而移动覆盖层或更改其属性则不会
+。与文本属性的改变不同，覆盖层属性的改变不会记录在缓冲区的撤销列表中。
 
-  Since more than one overlay can specify a property value for the
-same character, Emacs lets you specify a priority value of each
-overlay.  The priority value is used to decide which of the
-overlapping overlays will ``win''.
+  由于多个覆盖层可以为同一个字符指定一个属性值，Emacs允许你为每个覆盖层指
+定一个优先值。优先权值用来决定哪个重叠的覆盖层会"赢"。
 
-  These functions read and set the properties of an overlay:
+  这些函数读取和设置覆盖层的属性:
 
 @defun overlay-get overlay prop
-This function returns the value of property @var{prop} recorded in
-@var{overlay}, if any.  If @var{overlay} does not record any value for
-that property, but it does have a @code{category} property which is a
-symbol, that symbol's @var{prop} property is used.  Otherwise, the value
-is @code{nil}.
+这个函数返回@var{overlay}中记录的@var{prop}属性的值（如果有）。如果
+@var{overlay}没有记录任何属性值，但是它有一个@code{category}属性，而这个
+属性是一个符号，那么就使用这个符号的@var{prop}属性。否则，其值就是
+@code{nil}。
 @end defun
 
 @defun overlay-put overlay prop value
-This function sets the value of property @var{prop} recorded in
-@var{overlay} to @var{value}.  It returns @var{value}.
+此函数将记录在@var{overlay}中的@var{prop}属性值设置为@var{value}。返回
+@var{value}。
 @end defun
 
 @defun overlay-properties overlay
-This returns a copy of the property list of @var{overlay}.
+返回@var{overlay}的属性列表的副本。
 @end defun
 
-  See also the function @code{get-char-property} which checks both
-overlay properties and text properties for a given character.
-@xref{Examining Properties}.
+  也请参见函数@code{get-char-property}，它可以检查给定字符的覆盖属性和文
+本属性。@xref{Examining Properties}。
 
-  Many overlay properties have special meanings; here is a table
-of them:
+  许多叠加属性都有特殊的含义，下面是它们的表格：
 
 @table @code
 @item priority
 @kindex priority @r{(overlay property)}
-This property's value determines the priority of the overlay.
-If you want to specify a priority value, use either @code{nil}
-(or zero), or a positive integer.  Any other value has undefined behavior.
+此属性的值决定了叠加的优先级。如果您想指定一个优先级值，请使用@code{nil}(
+或零)，或一个正整数。任何其他的值都是未定义的行为。
 
-The priority matters when two or more overlays cover the same
-character and both specify the same property; the one whose
-@code{priority} value is larger overrides the other.  (For the
-@code{face} property, the higher priority overlay's value does not
-completely override the other value; instead, its face attributes
-override the face attributes of the lower priority @code{face}
-property.)  If two overlays have the same priority value, and one is
-nested in the other, then the inner one will prevail over the outer
-one.  If neither is nested in the other then you should not make
-assumptions about which overlay will prevail.
+当两个或两个以上的覆盖层覆盖同一个字符，并且都指定了相同的属性时，优先级就
+很重要；@code{priority}值较大的那个覆盖层会覆盖另一个覆盖层。(对于
+@code{face}属性，优先级较高的覆盖层的值并不完全覆盖另一个值；相反，它的字
+体属性覆盖优先级较低的@code{face}属性的字体属性。)如果两个覆盖层具有相同的
+优先级值，并且一个覆盖层嵌套在另一个覆盖层中，那么内部的覆盖层将优先于外部
+的覆盖层。如果两个叠加都没有嵌套在另一个叠加中，那么您就不应该对哪个叠加优
+先做出假设。
 
-Currently, all overlays take priority over text properties.
+目前，所有覆盖物都优先于文本属性。
 
-Note that Emacs sometimes uses non-numeric priority values for some of
-its internal overlays, so do not try to do arithmetic on the priority
-of an overlay (unless it is one that you created).  In particular, the
-overlay used for showing the region uses a priority value of the form
-@w{@code{(@var{primary} . @var{secondary})}}, where the @var{primary}
-value is used as described above, and @var{secondary} is the fallback
-value used when @var{primary} and the nesting considerations fail to
-resolve the precedence between overlays.  However, you are advised not
-to design Lisp programs based on this implementation detail; if you
-need to put overlays in priority order, use the @var{sorted} argument
-of @code{overlays-at}.  @xref{Finding Overlays}.
+请注意，Emacs有时会对一些内部覆盖使用非数字优先级值，所以不要试图对覆盖的
+优先级进行运算（除非是你创建的覆盖）。特别是，用于显示区域的叠加使用了一个
+优先级值，其形式为@w{@code{(@var{primary} . @var{secondary})}}，其中
+@var{primary}如上介绍，而@var{secondary}则是当@var{primary}和嵌套考虑不
+能解决覆盖层之间的优先级时使用的后备值。但是，建议你不要根据这个实现细节来
+设计Lisp程序，如果你需要将覆盖物按优先级排序，请使用@code{overlays-at}的
+@var{sorted}参数。@xref{Finding Overlays}.
 
 @item window
 @kindex window @r{(overlay property)}
-If the @code{window} property is non-@code{nil}, then the overlay
-applies only on that window.
+如果@code{window}属性是非@code{nil}，那么叠加只适用于该窗口。
 
 @item category
 @kindex category @r{(overlay property)}
-If an overlay has a @code{category} property, we call it the
-@dfn{category} of the overlay.  It should be a symbol.  The properties
-of the symbol serve as defaults for the properties of the overlay.
+如果一个覆盖层有一个@code{category}属性，我们把它称为覆盖层的
+@dfn{category}。它应该是一个符号。属性的符号作为叠加属性的默认值。
 
 @item face
 @kindex face @r{(overlay property)}
-This property controls the appearance of the text (@pxref{Faces}).
-The value of the property can be the following:
+此属性控制文本的外观(@pxref{Faces})。该属性的值可以是以下几种:
 
 @itemize @bullet
 @item
-A face name (a symbol or string).
+一个字体名（一个符号或字符串）。
 
 @item
 An anonymous face: a property list of the form @code{(@var{keyword}
