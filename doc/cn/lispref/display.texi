@@ -1429,171 +1429,142 @@ foo
 一个字体名（一个符号或字符串）。
 
 @item
-An anonymous face: a property list of the form @code{(@var{keyword}
-@var{value} @dots{})}, where each @var{keyword} is a face attribute
-name and @var{value} is a value for that attribute.
+一个匿名的字体：一个@code{(@var{keyword} @var{value} @dots{})}形式的
+属性列表，其中每个@var{keyword}是一个字体属性名，@var{value}是该属性
+的一个值。
 
 @item
-A list of faces.  Each list element should be either a face name or an
-anonymous face.  This specifies a face which is an aggregate of the
-attributes of each of the listed faces.  Faces occurring earlier in
-the list have higher priority.
+一个字体的列表。每个列表元素应该是一个字体名称或一个匿名字体。这指定
+了一个字体，它是每一个被列出的字体的属性的集合。列表中较早出现的字体
+有较高的优先级。
 
 @item
-A cons cell of the form @code{(foreground-color . @var{color-name})}
-or @code{(background-color . @var{color-name})}.  This specifies the
-foreground or background color, similar to @code{(:foreground
-@var{color-name})} or @code{(:background @var{color-name})}.  This
-form is supported for backward compatibility only, and should be
-avoided.
+一个形式为@code{(foreground-color . @var{color-name})}或
+@code{(background-color . @var{color-name})}的cons cell。指定前景或
+背景颜色，类似于@code{(:foreground @var{color-name})}或
+@code{(:background @var{color-name})}。这种形式只是为了向后兼容而支
+持，应该避免使用。
 @end itemize
 
 @item mouse-face
 @kindex mouse-face @r{(overlay property)}
-This property is used instead of @code{face} when the mouse is within
-the range of the overlay.  However, Emacs ignores all face attributes
-from this property that alter the text size (e.g., @code{:height},
-@code{:weight}, and @code{:slant}).  Those attributes are always the
-same as in the unhighlighted text.
+当鼠标在覆盖范围内时，这个属性会代替@code{face}使用。然而，Emacs会忽
+略此属性中所有改变文本大小的字体属性（例如@code{:height}、
+@code{:weight}和@code{:slant}）。这些属性总是与未加亮的文本相同。
 
 @item display
 @kindex display @r{(overlay property)}
-This property activates various features that change the
-way text is displayed.  For example, it can make text appear taller
-or shorter, higher or lower, wider or narrower, or replaced with an image.
-@xref{Display Property}.
+此属性可激活各种改变文本显示方式的功能。例如，它可以使文本显示得更高
+或更短、更高或更低、更宽或更窄，或用图像代替。
+@xref{Display Property}。
 
 @item help-echo
 @kindex help-echo @r{(overlay property)}
-If an overlay has a @code{help-echo} property, then when you move the
-mouse onto the text in the overlay, Emacs displays a help string in the
-echo area, or in the tooltip window.  For details see @ref{Text
-help-echo}.
+如果一个覆盖层有@code{help-echo}属性，那么当您将鼠标移动到覆盖层中的
+文本上时，Emacs会在回声区域或工具提示窗口中显示帮助字符串。详情请看
+@ref{Text help-echo}。
 
 @item field
 @kindex field @r{(overlay property)}
-@c Copied from Special Properties.
-Consecutive characters with the same @code{field} property constitute a
-@emph{field}.  Some motion functions including @code{forward-word} and
-@code{beginning-of-line} stop moving at a field boundary.
-@xref{Fields}.
+@c 复制自特殊属性。
+具有相同@code{field}属性的连续字符构成一个@emph{field}。一些运动函数
+，包括@code{forward-word}和@emph{field}。@code{beginning-of-line}在
+字段边界处停止移动。@xref{Fields}。
 
 @item modification-hooks
 @kindex modification-hooks @r{(overlay property)}
-This property's value is a list of functions to be called if any
-character within the overlay is changed or if text is inserted strictly
-within the overlay.
 
-The hook functions are called both before and after each change.
-If the functions save the information they receive, and compare notes
-between calls, they can determine exactly what change has been made
-in the buffer text.
+此属性的值是一个函数列表，当覆盖层中的任何字符被更改或严格在覆盖层中
+插入文本时，将被调用。
 
-When called before a change, each function receives four arguments: the
-overlay, @code{nil}, and the beginning and end of the text range to be
-modified.
+钩子函数在每次修改之前和之后都会被调用。如果函数保存它们收到的信息，
+并在调用之间进行比较，它们就可以确定缓冲区文本中到底发生了什么变化。
 
-When called after a change, each function receives five arguments: the
-overlay, @code{t}, the beginning and end of the text range just
-modified, and the length of the pre-change text replaced by that range.
-(For an insertion, the pre-change length is zero; for a deletion, that
-length is the number of characters deleted, and the post-change
-beginning and end are equal.)
+当在修改前调用时，每个函数都会收到四个参数：覆盖层、@code{nil}和要修
+改的文本范围的开始和结束。
 
-When these functions are called, @code{inhibit-modification-hooks} is
-bound to non-@code{nil}.  If the functions modify the buffer, you
-might want to bind @code{inhibit-modification-hooks} to @code{nil}, so
-as to cause the change hooks to run for these modifications.  However,
-doing this may call your own change hook recursively, so be sure to
-prepare for that.  @xref{Change Hooks}.
+修改后调用时，每个函数都会收到五个参数：覆盖层、@code{t}、刚刚修改的
+文本范围的开头和结尾、被该范围替换的修改前文本的长度。对于插入，修改
+前的长度为零；对于删除，该长度为删除的字符数，修改后的开头和结尾相等
+）。
 
-Text properties also support the @code{modification-hooks} property,
-but the details are somewhat different (@pxref{Special Properties}).
+当这些函数被调用时，@code{inhibit-modification-hooks}被绑定到非
+@code{nil}。如果这些函数对缓冲区进行了修改，您可能希望将
+@code{inhibit-modification-hooks}绑定到@code{nil}上，以便使变更钩子
+为这些修改运行。然而，这样做可能会递归地调用你自己的变更钩子，所以一
+定要做好准备。@xref{Change Hooks}。
+
+文本属性也支持@code{modification-hooks}属性，但细节有些不同（
+@pxref{Special Properties}）。
 
 @item insert-in-front-hooks
 @kindex insert-in-front-hooks @r{(overlay property)}
-This property's value is a list of functions to be called before and
-after inserting text right at the beginning of the overlay.  The calling
-conventions are the same as for the @code{modification-hooks} functions.
+此属性的值是在覆盖的开始处插入文本之前和之后要调用的函数列表。调用惯
+例与@code{modification-hooks}函数相同。
 
 @item insert-behind-hooks
 @kindex insert-behind-hooks @r{(overlay property)}
-This property's value is a list of functions to be called before and
-after inserting text right at the end of the overlay.  The calling
-conventions are the same as for the @code{modification-hooks} functions.
+此属性的值是在覆盖层的末尾插入文本之前和之后要调用的函数列表。调用惯
+例与@code{modification-hooks} 函数相同。
 
 @item invisible
 @kindex invisible @r{(overlay property)}
-The @code{invisible} property can make the text in the overlay
-invisible, which means that it does not appear on the screen.
-@xref{Invisible Text}, for details.
+@code{invisible}属性可以使覆盖中的文本不可见，也就是说它不会出现在屏
+幕上。详情请参考@xref{Invisible Text}。
 
 @item intangible
 @kindex intangible @r{(overlay property)}
-The @code{intangible} property on an overlay works just like the
-@code{intangible} text property.  It is obsolete.  @xref{Special
-Properties}, for details.
+覆盖层上的@code{intangible}属性与@code{intangible}文本属性一样。它已
+经过时了。详情请参考@xref{Special Properties}。
 
 @item isearch-open-invisible
-This property tells incremental search how to make an invisible overlay
-visible, permanently, if the final match overlaps it.  @xref{Invisible
-Text}.
+这个属性告诉增量搜索，如果最终匹配重叠，如何使一个不可见的覆盖层永久
+可见。@xref{Invisible Text}.
 
 @item isearch-open-invisible-temporary
-This property tells incremental search how to make an invisible overlay
-visible, temporarily, during the search.  @xref{Invisible Text}.
+此属性告诉增量搜索如何在搜索过程中暂时使不可见的覆盖层可见。
+@xref{Invisible Text}.
 
 @item before-string
 @kindex before-string @r{(overlay property)}
-This property's value is a string to add to the display at the beginning
-of the overlay.  The string does not appear in the buffer in any
-sense---only on the screen.
+这个属性的值是一个字符串，要添加到叠加开始的显示中。该字符串不会出现
+在任何意义上的缓冲区中，只会出现在屏幕上。
 
 @item after-string
 @kindex after-string @r{(overlay property)}
-This property's value is a string to add to the display at the end of
-the overlay.  The string does not appear in the buffer in any
-sense---only on the screen.
+这个属性的值是一个字符串，要添加到叠加结束时的显示中。该字符串不会出
+现在缓冲区中，只出现在屏幕上。
 
 @item line-prefix
-This property specifies a display spec to prepend to each
-non-continuation line at display-time.  @xref{Truncation}.
+此属性指定了在显示时要预置到每个非延续行的显示规范。@xref{Truncation}.
 
 @item wrap-prefix
-This property specifies a display spec to prepend to each continuation
-line at display-time.  @xref{Truncation}.
+此属性指定了在显示时要预置到每个延续行的显示规范。@xref{Truncation}.
 
 @item evaporate
 @kindex evaporate @r{(overlay property)}
-If this property is non-@code{nil}, the overlay is deleted automatically
-if it becomes empty (i.e., if its length becomes zero).  If you give
-an empty overlay (@pxref{Managing Overlays, empty overlay}) a
-non-@code{nil} @code{evaporate} property, that deletes it immediately.
-Note that, unless an overlay has this property, it will not be deleted
-when the text between its starting and ending positions is deleted
-from the buffer.
+如果这个属性是非@code{nil}，那么如果覆盖层变成了空的（也就是说，如果它的长
+度变成了零），就会自动删除它。如果您给空叠加
+(@pxref{Managing Overlays, empty overlay})一个非@code{nil}的属性。
+@code{evaporate}属性，会立即将其删除。请注意，除非覆盖层有这个属性，否则当它的起始位置和结束位置之间的文本从缓冲区中删除时，它不会被删除。
 
 @item keymap
 @cindex keymap of character (and overlays)
 @kindex keymap @r{(overlay property)}
-If this property is non-@code{nil}, it specifies a keymap for a portion of the
-text.  This keymap is used when the character after point is within the
-overlay, and takes precedence over most other keymaps.  @xref{Active Keymaps}.
+如果此属性为非@code{nil}，则为文本的一部分指定一个键图。当点后的字符在覆盖
+范围内时，这个键位图就会被使用，并且优先于其他大多数键位图。
+@xref{Active Keymaps}.
 
 @item local-map
 @kindex local-map @r{(overlay property)}
-The @code{local-map} property is similar to @code{keymap} but replaces the
-buffer's local map rather than augmenting existing keymaps.  This also means it
-has lower precedence than minor mode keymaps.
+@code{local-map}属性类似于@code{keymap}，但它替换了缓冲区的局部地图，而不
+是增加现有的键值。这也意味着它的优先级比次要模式的键图低。
 @end table
 
-The @code{keymap} and @code{local-map} properties do not affect a
-string displayed by the @code{before-string}, @code{after-string}, or
-@code{display} properties.  This is only relevant for mouse clicks and
-other mouse events that fall on the string, since point is never on
-the string.  To bind special mouse events for the string, assign it a
-@code{keymap} or @code{local-map} text property.  @xref{Special
-Properties}.
+@code{keymap}和@code{local-map}属性不会影响@code{before-string}、
+@code{after-string}或@code{display}属性所显示的字符串。这只与鼠标点击和其
+他落在字符串上的鼠标事件有关，因为点从来不在字符串上。要为字符串绑定特殊的鼠标事件，请为它分配一个@code{keymap}或@code{local-map}文本属性。
+@xref{Special Properties}。
 
 @node 寻找叠加
 @subsection Searching for Overlays
@@ -1601,14 +1572,13 @@ Properties}.
 @cindex overlays, searching for
 
 @defun overlays-at pos &optional sorted
-This function returns a list of all the overlays that cover the character at
-position @var{pos} in the current buffer.  If @var{sorted} is non-@code{nil},
-the list is in decreasing order of priority, otherwise it is in no particular
-order.  An overlay contains position @var{pos} if it begins at or before
-@var{pos}, and ends after @var{pos}.
+该函数返回当前缓冲区中所有覆盖在@var{pos}位置上的字符的列表。如果
+@var{sorted}是非@code{nil}，则列表按优先级递减，否则没有特定顺序。如果覆
+盖的位置始于@var{pos}或在@var{pos}之前，而结束于@var{pos}之后，则覆盖的位
+置包含@var{pos}。
 
-To illustrate usage, here is a Lisp function that returns a list of the
-overlays that specify property @var{prop} for the character at point:
+为了说明使用方法，下面是一个Lisp函数，它返回了一个为点上字符指定属性
+@var{prop}的覆盖列表:
 
 @smallexample
 (defun find-overlays-specifying (prop)
@@ -1624,32 +1594,27 @@ overlays that specify property @var{prop} for the character at point:
 @end defun
 
 @defun overlays-in beg end
-This function returns a list of the overlays that overlap the region
-@var{beg} through @var{end}.  An overlay overlaps with a region if it
-contains one or more characters in the region; empty overlays
-(@pxref{Managing Overlays, empty overlay}) overlap if they are at
-@var{beg}, strictly between @var{beg} and @var{end}, or at @var{end}
-when @var{end} denotes the position at the end of the buffer.
+此函数返回与@var{beg}到@var{end}区域重叠的覆盖层列表。如果一个叠加区域中包
+含一个或多个字符，那么它就会与该区域重叠；如果空叠加（
+@pxref{Managing Overlays, empty overlay}）位于@var{beg}，严格来说是在
+@var{beg}和@var{end}之间，或者当@var{end}表示缓冲区末端的位置时位于
+@var{end}，那么它们就会重叠。
 @end defun
 
 @defun next-overlay-change pos
-This function returns the buffer position of the next beginning or end
-of an overlay, after @var{pos}.  If there is none, it returns
-@code{(point-max)}.
+此函数在返回@var{pos}之后，叠加的下一个开始或结束的缓冲区位置。如果没有，
+则返回@code{(point-max)}。
 @end defun
 
 @defun previous-overlay-change pos
-This function returns the buffer position of the previous beginning or
-end of an overlay, before @var{pos}.  If there is none, it returns
-@code{(point-min)}.
+这个函数返回在@var{pos}之前，覆盖层的前一个开始或结束的缓冲区位置。如果没
+有，则返回@code{(point-min)}。
 @end defun
 
-  As an example, here's a simplified (and inefficient) version of the
-primitive function @code{next-single-char-property-change}
-(@pxref{Property Search}).  It searches forward from position
-@var{pos} for the next position where the value of a given property
-@code{prop}, as obtained from either overlays or text properties,
-changes.
+  举个例子，这里有一个简化的（低效的）基元函数
+@code{next-single-char-property-change}的版本。(@pxref{Property Search}
+)。它从位置@var{pos}开始向前搜索下一个位置，在这个位置上，从覆盖或文本属性
+获得的给定属性@code{prop}的值发生了变化。
 
 @smallexample
 (defun next-single-char-property-change (position prop)
@@ -1668,53 +1633,37 @@ changes.
 @cindex size of text on display
 @cindex character width on display
 
-Since not all characters have the same width, these functions let you
-check the width of a character.  @xref{Primitive Indent}, and
-@ref{Screen Lines}, for related functions.
+由于不是所有的字符都有相同的宽度，这些函数可以让你检查一个字符的宽度。
+@xref{Primitive Indent},和@ref{Screen Lines}，了解相关功能。
 
 @defun char-width char
-This function returns the width in columns of the character
-@var{char}, if it were displayed in the current buffer (i.e., taking
-into account the buffer's display table, if any; @pxref{Display
-Tables}).  The width of a tab character is usually @code{tab-width}
-(@pxref{Usual Display}).
+该函数返回以列为单位的@var{char}字符的宽度，如果该字符在当前缓冲区中显示的
+话（即，考虑到缓冲区的显示表，如果有的话；@pxref{Display Tables}）。tab
+字符的宽度通常是@code{tab-width}。(@pxref{Usual Display})。
 @end defun
 
 @defun string-width string
-This function returns the width in columns of the string @var{string},
-if it were displayed in the current buffer and the selected window.
+该函数返回字符串@var{string}的列宽，如果它显示在当前的缓冲区和选定的窗口中
+。
 @end defun
 
 @defun truncate-string-to-width string width &optional start-column padding ellipsis
-This function returns the part of @var{string} that fits within
-@var{width} columns, as a new string.
+此函数将@var{string}中塞得下@var{width}列的部分作为一个新的字符串返回。
 
-If @var{string} does not reach @var{width}, then the result ends where
-@var{string} ends.  If one multi-column character in @var{string}
-extends across the column @var{width}, that character is not included in
-the result.  Thus, the result can fall short of @var{width} but cannot
-go beyond it.
+如果@var{string}宽度没有够到@var{width}，那么结果将在@var{string}结束的地
+方结束。如果@var{string}中的一个多列字符跨越了@var{width}列，那么这个字符
+就不包含在结果中。因此，结果可以不超过@var{width}，但不能超过@var{width}
+。
 
-The optional argument @var{start-column} specifies the starting column.
-If this is non-@code{nil}, then the first @var{start-column} columns of
-the string are omitted from the value.  If one multi-column character in
-@var{string} extends across the column @var{start-column}, that
-character is not included.
+可选参数@var{start-column}指定了起始列。如果这个参数是非@code{nil}，那么字符串的第一列@var{start-column}将从值中省略。如果@var{string}中的一个多列字符跨越了@var{start-column}列，那么这个字符将不被包含。
 
-The optional argument @var{padding}, if non-@code{nil}, is a padding
-character added at the beginning and end of the result string, to extend
-it to exactly @var{width} columns.  The padding character is used at the
-end of the result if it falls short of @var{width}.  It is also used at
-the beginning of the result if one multi-column character in
-@var{string} extends across the column @var{start-column}.
+可选参数@var{padding}，如果不是@code{nil}，则是在结果字符串的开头和结尾添加一个padding字符，以使其正好扩展到@var{width}列。如果结果少于@var{width}，则在结果的结尾使用padding字符。如果@var{string}中的一个多列字符跨越了@var{start-column}列，也会在结果的开头使用padding字符。
 
-@vindex truncate-string-ellipsis
-If @var{ellipsis} is non-@code{nil}, it should be a string which will
-replace the end of @var{string} (including any padding) if it extends
-beyond @var{width}, unless the display width of @var{string} is equal
-to or less than the display width of @var{ellipsis}.  If
-@var{ellipsis} is non-@code{nil} and not a string, it stands for
-the value of the variable @code{truncate-string-ellipsis}.
+@vindex truncat-string-ellipsis
+如果@var{ellipsis}是非@code{nil}，它应该是一个字符串，它将取代
+@var{string}的结尾(包括任何padding)，除非@var{string}的显示宽度等于或小于
+@var{ellipsis}的显示宽度。如果@var{ellipsis}是非@code{nil}而不是字符串，
+那么它就代表变量@code{truncat-string-ellipsis}的值。
 
 @example
 (truncate-string-to-width "\tab\t" 12 4)
@@ -1724,143 +1673,102 @@ the value of the variable @code{truncate-string-ellipsis}.
 @end example
 @end defun
 
-The following function returns the size in pixels of text as if it were
-displayed in a given window.  This function is used by
-@code{fit-window-to-buffer} and @code{fit-frame-to-buffer}
-(@pxref{Resizing Windows}) to make a window exactly as large as the text
-it contains.
+下面的函数以像素为单位，返回文本在给定窗口中显示时的大小。这个函数被
+@code{fit-window-to-buffer}和@code{fit-frame-to-buffer}(
+@pxref{Resizing Windows})使用，以使窗口的大小与它所包含的文本完全相同。
 
 @defun window-text-pixel-size &optional window from to x-limit y-limit mode-and-header-line
-This function returns the size of the text of @var{window}'s buffer in
-pixels.  @var{window} must be a live window and defaults to the selected
-one.  The return value is a cons of the maximum pixel-width of any text
-line and the maximum pixel-height of all text lines.
+此函数返回@var{window}缓冲区中文本的大小，单位为像素。@var{window}必须是
+一个实时窗口，默认为所选窗口。返回值是任意文本行的最大像素宽度和所有文本行
+的最大像素高度的cons。
 
-The optional argument @var{from}, if non-@code{nil}, specifies the first
-text position to consider and defaults to the minimum accessible
-position of the buffer.  If @var{from} is @code{t}, it uses the minimum
-accessible position that is not a newline character.  The optional
-argument @var{to}, if non-@code{nil}, specifies the last text position
-to consider and defaults to the maximum accessible position of the
-buffer.  If @var{to} is @code{t}, it uses the maximum accessible
-position that is not a newline character.
+可选参数@var{from}，如果不是@code{nil}，则指定要考虑的第一个文本位置，默认
+为缓冲区的最小可访问位置。如果@var{from}是@code{t}，则使用非换行符的最小可
+访问位置。可选参数@var{to}，如果不是@code{nil}，则指定要考虑的最后一个文本
+位置，默认为缓冲区的最大可访问位置。如果@var{to}是@code{t}，则使用非换行字
+符的最大可访问位置。
 
-The optional argument @var{x-limit}, if non-@code{nil}, specifies the
-maximum pixel-width that can be returned.  @var{x-limit} @code{nil} or
-omitted, means to use the pixel-width of @var{window}'s body
-(@pxref{Window Sizes}); this is useful when the caller does not intend
-to change the width of @var{window}.  Otherwise, the caller should
-specify here the maximum width @var{window}'s body may assume.  Text
-whose x-coordinate is beyond @var{x-limit} is ignored.  Since
-calculating the width of long lines can take some time, it's always a
-good idea to make this argument as small as needed; in particular, if
-the buffer might contain long lines that will be truncated anyway.
+可选参数@var{x-limit}，如果不是@code{nil}，则指定可以返回的最大像素宽度。
+@var{x-limit}@code{nil}或省略代表使用@var{window}的主体的像素宽度 (
+@pxref{Window Sizes})；当调用者不打算改变@var{window}的宽度时，这很有用。
+否则，调用者应该在这里指定@var{window}的主体可能承担的最大宽度。X坐标超出
+@var{x-limit}的文本将被忽略。由于计算长行的宽度需要一定的时间，所以最好将
+这个参数设置得越小越好；尤其是当缓冲区中可能包含长行时，无论如何都会被截断
+。
 
-The optional argument @var{y-limit}, if non-@code{nil}, specifies the
-maximum pixel-height that can be returned.  Text lines whose
-y-coordinate is beyond @var{y-limit} are ignored.  Since calculating the
-pixel-height of a large buffer can take some time, it makes sense to
-specify this argument; in particular, if the caller does not know the
-size of the buffer.
+可选参数@var{y-limit}，如果不是@code{nil}，则指定可以返回的最大像素高度。
+y坐标超过@var{y-limit}的文本行将被忽略。由于计算一个大的缓冲区的像素高度可
+能需要一些时间，所以指定这个参数是有意义的；尤其是当调用者不知道缓冲区的大
+小时。
 
-The optional argument @var{mode-and-header-line} @code{nil} or omitted
-means to not include the height of the mode- or header-line of
-@var{window} in the return value.  If it is either the symbol
-@code{mode-line} or @code{header-line}, include only the height of that
-line, if present, in the return value.  If it is @code{t}, include the
-height of both, if present, in the return value.
+可选参数@var{mode-and-header-line}@code{nil}或省略表示在返回值中不包含
+@var{window}的模式行或标题行的高度。如果是符号@code{mode-line}或
+@code{header-line}，则在返回值中只包含该行的高度（如果存在的话）；如果是
+@code{t}，则在返回值中包含两者的高度（如果存在）。
 @end defun
 
-@code{window-text-pixel-size} treats the text displayed in a window as a
-whole and does not care about the size of individual lines.  The
-following function does.
+@code{window-text-pixel-size}将窗口中显示的文本作为一个整体来处理，而不关
+心单个行的大小。下面的函数则是如此。
 
 @defun window-lines-pixel-dimensions &optional window first last body inverse left
-This function calculates the pixel dimensions of each line displayed in
-the specified @var{window}.  It does so by walking @var{window}'s
-current glyph matrix---a matrix storing the glyph (@pxref{Glyphs}) of
-each buffer character currently displayed in @var{window}.  If
-successful, it returns a list of cons pairs representing the x- and
-y-coordinates of the lower right corner of the last character of each
-line.  Coordinates are measured in pixels from an origin (0, 0) at the
-top-left corner of @var{window}.  @var{window} must be a live window and
-defaults to the selected one.
+这个函数计算指定的@var{window}中显示的每一行的像素尺寸。它的计算方法是遍历
+@var{window}的当前字形矩阵--一个存储@var{window}中当前显示的每个缓冲字符
+的字形(@pxref{Glyphs})的矩阵。如果成功，它将返回一个cons对的列表，代表每行
+最后一个字符的右下角的x和y坐标。坐标是以@var{window}左上角为原点(0,0)，以
+像素为单位测量。@var{window}必须是一个实时窗口，默认为选定的窗口。
 
-If the optional argument @var{first} is an integer, it denotes the index
-(starting with 0) of the first line of @var{window}'s glyph matrix to be
-returned.  Note that if @var{window} has a header line, the line with
-index 0 is that header line.  If @var{first} is @code{nil}, the first line to
-be considered is determined by the value of the optional argument
-@var{body}: If @var{body} is non-@code{nil}, this means to start with
-the first line of @var{window}'s body, skipping any header line, if
-present.  Otherwise, this function will start with the first line of
-@var{window}'s glyph matrix, possibly the header line.
+如果可选的参数@var{first}是一个整数，它表示要返回@var{window}的字形矩阵的第一行的索引（从0开始）。请注意，如果@var{window}有一个头行，那么索引为0的
+行就是那个头行。如果@var{first}是@code{nil}，那么要考虑的第一行由可选参数
+@var{body}的值决定：如果@var{body}是非@code{nil}，则意味着从@var{window}
+主体的第一行开始，跳过任何头行（如果存在）。否则，这个函数将从@var{window}的字形矩阵的第一行开始，可能是头行。
 
-If the optional argument @var{last} is an integer, it denotes the index
-of the last line of @var{window}'s glyph matrix that shall be returned.
-If @var{last} is @code{nil}, the last line to be considered is determined by
-the value of @var{body}: If @var{body} is non-@code{nil}, this means to
-use the last line of @var{window}'s body, omitting @var{window}'s mode
-line, if present.  Otherwise, this means to use the last line of
-@var{window} which may be the mode line.
+如果可选的参数@var{last}是一个整数，它表示将返回@var{window}的字形矩阵的
+最后一行的索引。如果@var{last}是@code{nil}，那么最后一行的索引由
+@var{body}的值决定。如果@var{body}是非@code{nil}，这意味着使用
+@var{window}的body的最后一行，省略@var{window}的模式行（如果存在的话）。
+否则，这意味着使用@var{window}的最后一行，这可能是模式行。
 
-The optional argument @var{inverse}, if @code{nil}, means that the
-y-pixel value returned for any line specifies the distance in pixels
-from the left edge (body edge if @var{body} is non-@code{nil}) of
-@var{window} to the right edge of the last glyph of that line.
-@var{inverse} non-@code{nil} means that the y-pixel value returned for
-any line specifies the distance in pixels from the right edge of the
-last glyph of that line to the right edge (body edge if @var{body} is
-non-@code{nil}) of @var{window}.  This is useful for determining the
-amount of slack space at the end of each line.
+可选参数@var{inverse}，如果是@code{nil}，意味着任何一行返回的y-pixel值指
+定了从@var{window}的左边缘（如果@var{body}是非@code{nil}，则为主体边缘）
+到该行最后一个字形的右边缘的像素距离。如果@var{inverse}是非@code{nil}意味
+着任何一行返回的y-pixel值指定了从该行最后一个字形的右边缘到@var{window}的
+右边缘(如果@var{body}是非@code{nil}，则为主体边缘)的距离，单位为像素。这
+对于确定每行末尾的空余空间非常有用。
 
-The optional argument @var{left}, if non-@code{nil} means to return the
-x- and y-coordinates of the lower left corner of the leftmost character
-on each line.  This is the value that should be used for windows that
-mostly display text from right to left.
+可选参数@var{left}，如果非@code{nil}则表示返回每行最左边字符的左下角的x和
+y坐标。对于那些主要从右到左显示文字的窗口，应该使用这个值。
 
-If @var{left} is non-@code{nil} and @var{inverse} is @code{nil}, this
-means that the y-pixel value returned for any line specifies the
-distance in pixels from the left edge of the last (leftmost) glyph of
-that line to the right edge (body edge if @var{body} is non-@code{nil})
-of @var{window}.  If @var{left} and @var{inverse} are both
-non-@code{nil}, the y-pixel value returned for any line specifies the
-distance in pixels from the left edge (body edge if @var{body} is
-non-@code{nil}) of @var{window} to the left edge of the last (leftmost)
-glyph of that line.
+如果@var{left}是非@code{nil}，而@var{inverse}是@code{nil}，这意味着任何
+一行返回的y-pixel值都指定了从该行最后（最左边）字形的左边缘到@var{window}
+的右边缘（如果@var{body}是非@code{nil}，则为主体边缘）的像素距离。如果
+@var{left}和@var{inverse}都是非@code{nil}，则任何一行返回的y-pixel值指定
+了从@var{window}的左边缘（如果@var{body}是非@code{nil}，则为主体边缘）到
+该行最后一个（最左）字形的左边缘的距离。
 
-This function returns @code{nil} if the current glyph matrix of
-@var{window} is not up-to-date which usually happens when Emacs is busy,
-for example, when processing a command.  The value should be retrievable
-though when this function is run from an idle timer with a delay of zero
-seconds.
+如果当前@var{window}的字形矩阵不是最新的，这个函数返回@code{nil}，这通常
+发生在Emacs繁忙的时候，例如处理命令时。当这个函数在一个空闲的定时器中运行
+时，其值应该是可以被检索到的，延迟时间为0秒。
+
 @end defun
 
 @defun line-pixel-height
-This function returns the height in pixels of the line at point in the
-selected window.  The value includes the line spacing of the line
-(@pxref{Line Height}).
+此函数返回所选窗口中某点的行高度，单位为像素。此值包括了线条的行距（
+@pxref{Line Height}）。
 @end defun
 
-When a buffer is displayed with line numbers (@pxref{Display Custom,,,
-emacs, The GNU Emacs Manual}), it is sometimes useful to know the
-width taken for displaying the line numbers.  The following function
-is for Lisp programs which need this information for layout
-calculations.
+当缓冲区显示行号时(@pxref{Display Custom,,,emacs,The GNU Emacs Manual})
+，有时需要知道显示行号的宽度。下面的函数适用于需要这些信息进行布局计算的
+Lisp程序。
 
 @defun line-number-display-width &optional pixelwise
-This function returns the width used for displaying the line numbers
-in the selected window.  If the optional argument @var{pixelwise} is
-the symbol @code{columns}, the return value is a float number of the
-frame's canonical columns; if @var{pixelwise} is @code{t} or any other
-non-@code{nil} value, the value is an integer and is measured in
-pixels.  If @var{pixelwise} is omitted or @code{nil}, the value is the
-integer number of columns of the font defined for the
-@code{line-number} face, and doesn't include the 2 columns used to pad
-the numbers on display.  If line numbers are not displayed in the
-selected window, the value is zero regardless of the value of
-@var{pixelwise}.  Use @code{with-selected-window} (@pxref{Selecting
-Windows}) if you need this information about another window.
+本函数返回所选窗口中用于显示行号的宽度。如果可选参数@var{pixelwise}是符号
+@code{columns}，则返回值是窗帧的规范列数的浮点数；如果@var{pixelwise}是
+@code{t}或其他任何非@code{nil}值，则该值是以像素为单位的整数。如果
+@var{pixelwise}被省略或@code{nil}，则该值是为@code{line-number}面定义的
+字体的整数列，不包括用来衬托显示数字的2列。如果行号没有在选定的窗口中显示，
+那么无论@var{pixelwise}的值是多少，该值都是零。使用
+@code{with-selected-window}。(@pxref{Selecting Windows})，如果您需要另一
+个窗口的信息。
 @end defun
 
 
