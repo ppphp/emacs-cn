@@ -1777,315 +1777,249 @@ Lisp程序。
 @cindex line height
 @cindex height of a line
 
-  The total height of each display line consists of the height of the
-contents of the line, plus optional additional vertical line spacing
-above or below the display line.
+  每个显示行的总高度由行内内容的高度，加上显示行上方或下方可选的额外垂直行
+距组成。
 
-  The height of the line contents is the maximum height of any character
-or image on that display line, including the final newline if there is
-one.  (A display line that is continued doesn't include a final
-newline.)  That is the default line height, if you do nothing to specify
-a greater height.  (In the most common case, this equals the height of
-the corresponding frame's default font, see @ref{Frame Font}.)
+  行内容的高度是该显示行中任何字符或图像的最大高度，包括最后的换行（如果有
+的话）。(一个被延续的显示行不包括最后的换行。)如果你没有指定更大的高度，这
+是默认的行高。(在最常见的情况下，这等于相应框架的默认字体的高度，参见
+@ref{Frame Font}。)
 
-  There are several ways to explicitly specify a larger line height,
-either by specifying an absolute height for the display line, or by
-specifying vertical space.  However, no matter what you specify, the
-actual line height can never be less than the default.
+  有几种方法可以明确指定更大的行高，可以指定显示行的绝对高度，也可以指定垂
+直空间。但是，无论您如何指定，实际的行高都不能小于默认值。
 
 @kindex line-height @r{(text property)}
-  A newline can have a @code{line-height} text or overlay property
-that controls the total height of the display line ending in that
-newline.
+  一个新行可以有一个@code{line-height}文本或覆盖属性，控制以该新行结束的显
+示行的总高度。
 
-  If the property value is @code{t}, the newline character has no
-effect on the displayed height of the line---the visible contents
-alone determine the height.  The @code{line-spacing} property,
-described below, is also ignored in this case.  This is useful for
-tiling small images (or image slices) without adding blank areas
-between the images.
+  如果属性值为@code{t}，换行符对行的显示高度没有任何影响--只有可见的内容才
+能决定高度。下面描述的@code{line-spacing}属性在这种情况下也会被忽略。这对
+于平铺小图像（或图像切片）而不在图像之间添加空白区域非常有用。
 
-  If the property value is a list of the form @code{(@var{height}
-@var{total})}, that adds extra space @emph{below} the display line.
-First Emacs uses @var{height} as a height spec to control extra space
-@emph{above} the line; then it adds enough space @emph{below} the line
-to bring the total line height up to @var{total}.  In this case, any
-value of @code{line-spacing} property for the newline is ignored.
+  如果属性值是一个@code{(@var{height} @var{total})}形式的列表，那就会给显
+示行@emph{下}增加额外的空间。首先Emacs使用@var{height}作为高度规范来控制
+行@emph{上}额外的空间；然后它增加足够的空间到行@emph{下}，来使总行高达到
+@var{total}。在这种情况下，新行的@code{line-spacing}属性的任何值都会被忽
+略。
 
 @cindex height spec
-  Any other kind of property value is a height spec, which translates
-into a number---the specified line height.  There are several ways to
-write a height spec; here's how each of them translates into a number:
+  任何其他类型的属性值都是高度规格，它可以转化为一个数字---指定的行高。有
+几种写入高度规格的方法，下面是每种方法如何转化为一个数字：
 
 @table @code
 @item @var{integer}
-If the height spec is a positive integer, the height value is that integer.
+如果高度规格是一个正整数，高度值就是这个整数。
 @item @var{float}
-If the height spec is a float, @var{float}, the numeric height value
-is @var{float} times the frame's default line height.
+如果高度规格是浮点数，@var{float}，数字高度值是@var{float}乘以窗帧的默认
+行高。
 @item (@var{face} . @var{ratio})
-If the height spec is a cons of the format shown, the numeric height
-is @var{ratio} times the height of face @var{face}.  @var{ratio} can
-be any type of number, or @code{nil} which means a ratio of 1.
-If @var{face} is @code{t}, it refers to the current face.
+如果高度规格是所示格式的cons，那么数字高度是@var{ratio}乘以字体@var{face}
+的高度。@var{ratio}可以是任何类型的数字，也可以是@code{nil}，表示比值为1
+，如果@var{face}是@code{t}，则是指当前的字体。
 @item (nil . @var{ratio})
-If the height spec is a cons of the format shown, the numeric height
-is @var{ratio} times the height of the contents of the line.
+如果高度规格是所示格式的cons，则数字高度为@var{ratio}乘以行内容的高度。
 @end table
 
-  Thus, any valid height spec determines the height in pixels, one way
-or another.  If the line contents' height is less than that, Emacs
-adds extra vertical space above the line to achieve the specified
-total height.
+  因此，任何有效的高度规格都会以像素为单位，以某种方式确定高度。如果行内容
+的高度小于这个高度，Emacs会在行上面增加额外的垂直空间，以达到指定的总高度
+。
 
-  If you don't specify the @code{line-height} property, the line's
-height consists of the contents' height plus the line spacing.
-There are several ways to specify the line spacing for different
-parts of Emacs text.
+  如果您没有指定@code{line-height}属性，行高由内容的高度加上行距组成。有几
+种方法可以为Emacs文本的不同部分指定行距。
 
-  On graphical terminals, you can specify the line spacing for all
-lines in a frame, using the @code{line-spacing} frame parameter
-(@pxref{Layout Parameters}).  However, if the default value of
-@code{line-spacing} is non-@code{nil}, it overrides the
-frame's @code{line-spacing} parameter.  An integer specifies the
-number of pixels put below lines.  A floating-point number specifies
-the spacing relative to the frame's default line height.
+  在图形终端上，您可以使用@code{line-spacing}窗帧参数(
+@pxref{Layout Parameters})来指定一个框架中所有行的行距，但是如果
+@code{line-spacing}的默认值是非@code{nil}，则会覆盖窗帧的
+@code{line-spacing}参数。一个整数，指定行下的像素数。浮点数指定相对于窗帧
+默认行高的间距。
 
 @vindex line-spacing
-  You can specify the line spacing for all lines in a buffer via the
-buffer-local @code{line-spacing} variable.  An integer specifies
-the number of pixels put below lines.  A floating-point number
-specifies the spacing relative to the default frame line height.  This
-overrides line spacings specified for the frame.
+  你可以通过缓冲区本地@code{line-spacing}变量来指定缓冲区中所有行的行距。
+一个整数指定了行下的像素数，一个浮点数指定了相对于默认帧行高的间距。浮点数
+指定相对于默认帧行高的间距。这将覆盖为窗帧指定的行距。
 
 @kindex line-spacing @r{(text property)}
-  Finally, a newline can have a @code{line-spacing} text or overlay
-property that can enlarge the default frame line spacing and the
-buffer local @code{line-spacing} variable: if its value is larger than
-the buffer or frame defaults, that larger value is used instead, for
-the display line ending in that newline.
+  最后，一个新行可以有一个@code{line-spacing}文本或覆盖属性，它可以放大默
+认的帧行距和缓冲区本地@code{line-spacing}变量：如果它的值大于缓冲区或帧的默认值，那么对于以该新行结束的显示行，将使用该较大的值。
 
-  One way or another, these mechanisms specify a Lisp value for the
-spacing of each line.  The value is a height spec, and it translates
-into a Lisp value as described above.  However, in this case the
-numeric height value specifies the line spacing, rather than the line
-height.
+  这些机制以一种或另一种方式为每行的间距指定一个Lisp值。该值是一个高度规格
+，它转化为一个Lisp值，如上所述。然而，在这种情况下，数字高度值指定的是行间
+距，而不是行高。
 
-  On text terminals, the line spacing cannot be altered.
+  在文本终端上，行距不能改变。
 
-@node 字型
+@node 字形
 @section Faces
 @cindex faces
 
-  A @dfn{face} is a collection of graphical attributes for displaying
-text: font, foreground color, background color, optional underlining,
-etc.  Faces control how Emacs displays text in buffers, as well as
-other parts of the frame such as the mode line.
+  一个@dfn{face}是用于显示文本的图形属性的集合：字体、前景色、背景色、可选
+的下划线等。字形控制Emacs如何在缓冲区中显示文本，以及窗帧的其他部分，如模式行。
 
 @cindex anonymous face
-  One way to represent a face is as a property list of attributes,
-like @code{(:foreground "red" :weight bold)}.  Such a list is called
-an @dfn{anonymous face}.  For example, you can assign an anonymous
-face as the value of the @code{face} text property, and Emacs will
-display the underlying text with the specified attributes.
-@xref{Special Properties}.
+  表示一个字形的一种方式是属性列表，比如
+@code{(:foreground "red" :weight bold)}。这样的列表称为
+@dfn{anonymous face}。例如，您可以指定一个匿名的字形作为@code{face}文本属
+性的值，Emacs将显示具有指定属性的底层文本。@xref{Special Properties}。
 
 @cindex face name
-  More commonly, a face is referred to via a @dfn{face name}: a Lisp
-symbol associated with a set of face attributes@footnote{For backward
-compatibility, you can also use a string to specify a face name; that
-is equivalent to a Lisp symbol with the same name.}.  Named faces are
-defined using the @code{defface} macro (@pxref{Defining Faces}).
-Emacs comes with several standard named faces (@pxref{Basic Faces}).
+  更常见的是，一个面孔是通过@dfn{face name}来引用的：一个与一组字形属性相
+关联的Lisp符号@footnote{为了向后兼容，你也可以使用一个字符串来指定一个字形
+名；这相当于一个具有相同名称的Lisp符号}。命名的字形是使用@code{defface}宏
+（@pxref{Defining Faces}）来定义的。Emacs自带了几个标准的命名面(
+@pxref{Basic Faces})。
 
-  Some parts of Emacs require named faces (e.g., the functions
-documented in @ref{Attribute Functions}).  Unless otherwise stated, we
-will use the term @dfn{face} to refer only to named faces.
+  Emacs的某些部分需要命名的字形（例如，在@ref{Attribute Functions}中记载
+的函数）。除非另有说明，否则我们将使用@dfn{face}来表示命名的字形。
 
 @defun facep object
-This function returns a non-@code{nil} value if @var{object} is a
-named face: a Lisp symbol or string which serves as a face name.
-Otherwise, it returns @code{nil}.
+如果@var{object}是一个命名的字形：一个作为字形名的Lisp符号或字符串，那么这
+个函数返回一个非@code{nil}值。否则，它将返回@code{nil}值。
 @end defun
 
 @menu
-* Face Attributes::     What is in a face?
-* Defining Faces::      How to define a face.
-* Attribute Functions::  Functions to examine and set face attributes.
-* Displaying Faces::     How Emacs combines the faces specified for a character.
-* Face Remapping::      Remapping faces to alternative definitions.
-* Face Functions::      How to define and examine faces.
-* Auto Faces::          Hook for automatic face assignment.
-* Basic Faces::         Faces that are defined by default.
-* Font Selection::      Finding the best available font for a face.
-* Font Lookup::         Looking up the names of available fonts
-                          and information about them.
-* Fontsets::            A fontset is a collection of fonts
-                          that handle a range of character sets.
-* Low-Level Font::      Lisp representation for character display fonts.
+* 字形属性::     什么是字形？
+* 定义字形::     如何定义一个字形。
+* 属性函数::     检查和设置字形属性的函数。
+* 显示字形::     Emacs如何组合字符指定的字形。
+* 字形重映射::   将字形重映射到其他定义。
+* 字形函数::     如何定义和检查字形。
+* 自动字形::     自动字形分配的钩子。
+* 基本字形::     默认定义的字形。
+* 字体选择::     为字形寻找最佳可用字体。
+* 字体查询::     查询可用字体的名称和相关信息。
+* 字体集::       字体集是指处理一系列字符集的字体的集合。
+* 低级字体::     字符显示字体的Lisp表示。
 @end menu
 
-@node Face Attributes
+@node 字形属性
 @subsection Face Attributes
 @cindex face attributes
+  @dfn{Face attributes}决定了字形的视觉外观。下表列出了所有的字形属性、它
+们可能的值和它们的效果。
 
-  @dfn{Face attributes} determine the visual appearance of a face.
-The following table lists all the face attributes, their possible
-values, and their effects.
+  除了下面给出的值之外，每个字形属性可以有@code{unspecified}这个值。这个特
+殊的值意味着该字形没有直接指定该属性。一个@code{unspecified}属性会告诉
+Emacs引用一个父字形(见下面@code{:inherit}属性的描述)；或者，如果不能引用
+，则引用一个底层字形(@pxref{Displaying Faces})。@code{default}字形必须指
+定所有属性。
 
-  Apart from the values given below, each face attribute can have the
-value @code{unspecified}.  This special value means that the face
-doesn't specify that attribute directly.  An @code{unspecified}
-attribute tells Emacs to refer instead to a parent face (see the
-description @code{:inherit} attribute below); or, failing that, to an
-underlying face (@pxref{Displaying Faces}).  The @code{default} face
-must specify all attributes.
-
-  Some of these attributes are meaningful only on certain kinds of
-displays.  If your display cannot handle a certain attribute, the
-attribute is ignored.
+  其中有些属性只对某些类型的显示器有意义。如果您的显示器不能处理某个属性，
+则该属性将被忽略。
 
 @table @code
 @item :family
-Font family name (a string).  @xref{Fonts,,, emacs, The GNU
-Emacs Manual}, for more information about font families.  The function
-@code{font-family-list} (see below) returns a list of available family
-names.
+字体族名称（字符串）。@xref{Fonts,,,emacs,The GNU Emacs Manual},可以获得
+更多关于字体家族的信息。函数@code{font-family-list}。(见下文)返回一个可用
+的姓氏清单。
 
 @item :foundry
-The name of the @dfn{font foundry} for the font family specified by
-the @code{:family} attribute (a string).  @xref{Fonts,,, emacs, The
-GNU Emacs Manual}.
+由@code{:family}属性（字符串）指定的字体系列的
+@dfn{font foundry}名称。@xref{Fonts,,,emacs, The GNU Emacs Manual}。
 
 @item :width
-Relative character width.  This should be one of the symbols
-@code{ultra-condensed}, @code{extra-condensed}, @code{condensed},
-@code{semi-condensed}, @code{normal}, @code{semi-expanded},
-@code{expanded}, @code{extra-expanded}, or @code{ultra-expanded}.
+相对字符宽度。应该是@code{ultra-condensed}、@code{extra-condensed}、
+@code{condensed}、@code{semi-condensed}、@code{normal}、
+@code{semi-expanded}、@code{expanded}、@code{extra-expanded}或
+@code{ultra-expanded}中的一个符号。
 
 @item :height
-The height of the font.  In the simplest case, this is an integer in
-units of 1/10 point.
+字体的高度。在最简单的情况下，这是一个以1/10点为单位的整数。
 
-The value can also be floating point or a function, which
-specifies the height relative to an @dfn{underlying face}
-(@pxref{Displaying Faces}).  A floating-point value
-specifies the amount by which to scale the height of the
-underlying face.  A function value is called
-with one argument, the height of the underlying face, and returns the
-height of the new face.  If the function is passed an integer
-argument, it must return an integer.
+该值也可以是浮点或函数，它指定了相对于@dfn{underlying face}的高度。(
+@pxref{Displaying Faces})。浮点值指定了缩放底层字形的高度的数量。调用函数
+值时，只需要一个参数，即底层字形的高度，并返回新字形的高度。如果函数的参数
+是整数，则必须返回一个整数。
 
-The height of the default face must be specified using an integer;
-floating point and function values are not allowed.
+默认字形的高度必须使用整数来指定，不允许使用浮点和函数值。
 
 @item :weight
-Font weight---one of the symbols (from densest to faintest)
-@code{ultra-bold}, @code{extra-bold}, @code{bold}, @code{semi-bold},
-@code{normal}, @code{semi-light}, @code{light}, @code{extra-light}, or
-@code{ultra-light}.  On text terminals which support
-variable-brightness text, any weight greater than normal is displayed
-as extra bright, and any weight less than normal is displayed as
-half-bright.
+字体权重------@code{ultra-bold}、@code{extra-bold}、@code{bold}、
+@code{semi-bold}、@code{normal}、@code{semi-light}、@code{light}、
+@code{extra-light}、@code{ultra-light}中的一个符号（从最浓到最淡）。在支
+持可变亮度文字的文本终端上，大于正常值的文字显示为特亮，小于正常值的文字显
+示为半亮。
 
 @cindex italic text
 @item :slant
-Font slant---one of the symbols @code{italic}, @code{oblique},
-@code{normal}, @code{reverse-italic}, or @code{reverse-oblique}.  On
-text terminals that support variable-brightness text, slanted text is
-displayed as half-bright.
+字体倾斜---@code{italic}、@code{oblique}、@code{normal}、
+@code{reverse-italic}或@code{reverse-oblique}等符号之一。在支持可变亮度
+文本的文本终端上，倾斜的文本显示为半亮。
 
 @item :foreground
-Foreground color, a string.  The value can be a system-defined color
-name, or a hexadecimal color specification.  @xref{Color Names}.  On
-black-and-white displays, certain shades of gray are implemented by
-stipple patterns.
+前景色，一个字符串。该值可以是系统定义的颜色名称，也可以是十六进制的颜色规
+格。@xref{Color Names}。在黑白显示器上，某些灰度是通过点阵图案来实现的。
 
 @item :distant-foreground
-Alternative foreground color, a string.  This is like @code{:foreground}
-but the color is only used as a foreground when the background color is
-near to the foreground that would have been used.  This is useful for
-example when marking text (i.e., the region face).  If the text has a foreground
-that is visible with the region face, that foreground is used.
-If the foreground is near the region face background,
-@code{:distant-foreground} is used instead so the text is readable.
+替代前景色，一个字符串。这和@code{:foreground}类似，但只有当背景色接近于本
+应使用的前景色时，才会使用该颜色作为前景色。例如，在标记文本（即区域面）时
+，这很有用。如果文本的前景与区域面可见，则使用该前景。如果前景在区域面背景
+附近，则使用@code{:distant-foreground}来代替，这样文本就可读了。
 
 @item :background
-Background color, a string.  The value can be a system-defined color
-name, or a hexadecimal color specification.  @xref{Color Names}.
+背景色，一个字符串。该值可以是一个系统定义的颜色名称，也可以是一个十六进制
+的颜色规格。@xref{Color Names}。
 
 @cindex underlined text
 @item :underline
-Whether or not characters should be underlined, and in what
-way.  The possible values of the @code{:underline} attribute are:
+是否应该对字符进行下划线，以及以何种方式进行。@code{:underline}属性的可能
+值是：
 
 @table @asis
 @item @code{nil}
-Don't underline.
+不要下划线。
 
 @item @code{t}
-Underline with the foreground color of the face.
+用字形的前景色下划线。
 
 @item @var{color}
-Underline in color @var{color}, a string specifying a color.
+颜色下划线@var{color}，一个指定颜色的字符串。
 
 @item @code{(:color @var{color} :style @var{style})}
-@var{color} is either a string, or the symbol @code{foreground-color},
-meaning the foreground color of the face.  Omitting the attribute
-@code{:color} means to use the foreground color of the face.
-@var{style} should be a symbol @code{line} or @code{wave}, meaning to
-use a straight or wavy line.  Omitting the attribute @code{:style}
-means to use a straight line.
+@var{color}是一个字符串，或者符号@code{foreground-color}，意思是字形的前
+景色。省略@code{:color}属性，表示使用字形的前景色。@var{style}应该是符号
+@code{line}或@code{wave}，意思是使用直线或波浪线。省略@code{:style}属性，
+表示使用直线。
 @end table
 
 @cindex overlined text
 @item :overline
-Whether or not characters should be overlined, and in what color.
-If the value is @code{t}, overlining uses the foreground color of the
-face.  If the value is a string, overlining uses that color.  The
-value @code{nil} means do not overline.
+是否要对字符上划线，以及用什么颜色划线。如果值是@code{t}，则使用字面的前景
+色。如果值是字符串，则使用该颜色进行叠加。值为@code{nil}表示不上划线。
 
 @cindex strike-through text
 @item :strike-through
-Whether or not characters should be strike-through, and in what
-color.  The value is used like that of @code{:overline}.
+字符是否应该被删除，以及用什么颜色。这个值的用法和@code{:overline}的用法一
+样。
 
 @cindex 2D box
 @cindex 3D box
 @item :box
-Whether or not a box should be drawn around characters, its color, the
-width of the box lines, and 3D appearance.  Here are the possible
-values of the @code{:box} attribute, and what they mean:
+是否应该在字符周围画一个方框，它的颜色，方框线的宽度，以及3D外观。以下是
+@code{:box}属性的可能值，以及它们的含义:
 
 @table @asis
 @item @code{nil}
-Don't draw a box.
+不要画一个盒子。
 
 @item @code{t}
-Draw a box with lines of width 1, in the foreground color.
+用前景色画一个宽度为1的线条的方框。
 
 @item @var{color}
-Draw a box with lines of width 1, in color @var{color}.
+绘制一个宽度为1的方框，颜色为@var{color}。
 
 @item @code{(:line-width (@var{vwidth} . @var{hwidth}) :color @var{color} :style @var{style})}
-This way you can explicitly specify all aspects of the box.  The values
-@var{vwidth} and @var{hwidth} specifies respectively the width of the
-vertical and horizontal lines to draw; they default to (1 . 1).
-A negative horizontal or vertical width @minus{}@var{n} means to draw a line
-of width @var{n} that occupies the space of the underlying text, thus
-avoiding any increase in the character height or width. For simplification
-the width could be specified with only a single number @var{n} instead
-of a list, such case is equivalent to @code{((abs @var{n}) . @var{n})}.
+这样你就可以明确地指定盒子的所有方面。值@var{vwidth}和@var{hwidth}分别指
+定要绘制的垂直线和水平线的宽度，它们默认为(1 . 1)。负的水平或垂直宽度
+@minus{}@var{n}意味着要画一条宽度为@var{n}的线，占用底层文本的空间，从而
+避免字符高度或宽度的增加。为了简化，宽度可以只用一个数字@var{n}来代替列表
+，这种情况相当于@code{((abs @var{n}) . @var{n})}。
 
-The value @var{color} specifies the color to draw with.  The default is
-the foreground color of the face for simple boxes, and the background
-color of the face for 3D boxes.
+值@var{color}指定了要绘制的颜色。默认情况下，对于简单的方框，是字形的前景
+色，对于3D方框，是字形的背景色。
 
-The value @var{style} specifies whether to draw a 3D box.  If it is
-@code{released-button}, the box looks like a 3D button that is not being
-pressed.  If it is @code{pressed-button}, the box looks like a 3D button
-that is being pressed.  If it is @code{nil} or omitted, a plain 2D box
-is used.
+值@var{style}指定是否要绘制一个3D框。如果是@code{released-button}，则该框
+看起来像一个没有被按下的3D按钮。如果是@code{pressed-button}，则该框看起来
+像一个正在被按下的3D按钮。如果是@code{nil}或省略，则使用普通的2D框。
 @end table
 
 @item :inverse-video
@@ -2181,7 +2115,7 @@ suitable for use with @code{:stipple} (see above).  It returns
 @code{nil} otherwise.
 @end defun
 
-@node Defining Faces
+@node 定义字形
 @subsection Defining Faces
 @cindex defining faces
 
@@ -2366,7 +2300,7 @@ reserved for internal use, but the function will still define
 @var{face} itself and recalculate its attributes, as described above.
 @end defun
 
-@node Attribute Functions
+@node 属性函数
 @subsection Face Attribute Functions
 @cindex face attributes, access and modification
 
@@ -2593,7 +2527,7 @@ a non-@code{nil} @code{:extend} attribute.
 @end defun
 
 
-@node Displaying Faces
+@node 显示字形
 @subsection Displaying Faces
 @cindex displaying faces
 @cindex face merging
@@ -2662,7 +2596,7 @@ Attributes}.  Note that the parent face(s) may also leave the
 attribute unspecified; in that case, the attribute remains unspecified
 at the next level of face merging.
 
-@node Face Remapping
+@node 字形重映射
 @subsection Face Remapping
 @cindex face remapping
 
@@ -2782,7 +2716,7 @@ This function sets the base remapping of @var{face} to its default
 value, which inherits from @var{face}'s global definition.
 @end defun
 
-@node Face Functions
+@node 字形函数
 @subsection Functions for Working with Faces
 
   Here are additional functions for creating and working with faces.
@@ -2838,7 +2772,7 @@ when @code{obsolete-face} was made obsolete (usually a version number
 string).
 @end defmac
 
-@node Auto Faces
+@node 自动字形
 @subsection Automatic Face Assignment
 @cindex automatic face assignment
 @cindex faces, automatic choice
@@ -2873,7 +2807,7 @@ For efficiency, we recommend writing these functions so that they
 usually assign faces to around 400 to 600 characters at each call.
 @end defvar
 
-@node Basic Faces
+@node 基本字形
 @subsection Basic Faces
 @cindex basic faces
 
@@ -2935,7 +2869,7 @@ For text concerning errors, warnings, or successes.  For example,
 these are used for messages in @file{*Compilation*} buffers.
 @end table
 
-@node Font Selection
+@node 字体选择
 @subsection Font Selection
 @cindex font selection
 @cindex selecting a font
@@ -3045,7 +2979,7 @@ the font size if certain fonts are bigger or smaller than their
 nominal heights and widths would suggest.
 @end defvar
 
-@node Font Lookup
+@node 字体查询
 @subsection Looking Up Fonts
 @cindex font lookup
 @cindex looking up fonts
@@ -3104,7 +3038,7 @@ The last three elements give additional information about the font.
 encoding of the font.
 @end defun
 
-@node Fontsets
+@node 字体集
 @subsection Fontsets
 @cindex fontset
 
@@ -3268,7 +3202,7 @@ Fontsets can specify a font on a per-character basis; when the fontset
 does that, this function's value may not be accurate.
 @end defun
 
-@node Low-Level Font
+@node 低级字体
 @subsection Low-Level Font Representation
 @cindex font property
 
