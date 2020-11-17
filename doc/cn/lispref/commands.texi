@@ -705,53 +705,43 @@ Put them into three windows, selecting the last one."
 变量是个坏主意。
 
 @defvar last-command
-This variable records the name of the previous command executed by the
-command loop (the one before the current command).  Normally the value
-is a symbol with a function definition, but this is not guaranteed.
+这个变量记录了命令循环执行的前一条命令的名称（当前命令之前的那条）。通常情况下，值是一
+个带有函数定义的符号，但这并不保证。
 
-The value is copied from @code{this-command} when a command returns to
-the command loop, except when the command has specified a prefix
-argument for the following command.
+当一个命令返回到命令循环时，该值会从@code{this-command}中复制出来，除非该命令已经
+为下面的命令指定了前缀参数。
 
-This variable is always local to the current terminal and cannot be
-buffer-local.  @xref{Multiple Terminals}.
+这个变量始终是当前终端的本地变量，不能是缓冲区本地变量。
+@xref{Multiple Terminals}。
 @end defvar
 
 @defvar real-last-command
-This variable is set up by Emacs just like @code{last-command},
-but never altered by Lisp programs.
+这个变量在Emacs中的设置就像@code{last-command}一样，但从未被Lisp程序改变。
 @end defvar
 
 @defvar last-repeatable-command
-This variable stores the most recently executed command that was not
-part of an input event.  This is the command @code{repeat} will try to
-repeat, @xref{Repeating,,, emacs, The GNU Emacs Manual}.
+这个变量存储了最近执行的不属于输入事件的命令。这是@code{repeat}将尝试重复执行的命令
+，@xref{Repeating,,,emacs, The GNU Emacs Manual}。
 @end defvar
 
 @defvar this-command
 @cindex current command
-This variable records the name of the command now being executed by
-the editor command loop.  Like @code{last-command}, it is normally a symbol
-with a function definition.
+这个变量记录了编辑器命令循环正在执行的命令的名称，和@code{last-command}一样，它通
+常是带有函数定义的符号。和@code{last-command}一样，它通常是一个带有函数定义的符号
+。
 
-The command loop sets this variable just before running a command, and
-copies its value into @code{last-command} when the command finishes
-(unless the command specified a prefix argument for the following
-command).
+命令循环在运行命令之前设置这个变量，并在命令完成后将其值复制到@code{last-command}
+中（除非命令为下面的命令指定了一个前缀参数）。
 
 @cindex kill command repetition
-Some commands set this variable during their execution, as a flag for
-whatever command runs next.  In particular, the functions for killing text
-set @code{this-command} to @code{kill-region} so that any kill commands
-immediately following will know to append the killed text to the
-previous kill.
+有些命令在执行过程中设置了这个变量，作为接下来运行的任何命令的标志。特别是，杀戮文本的
+函数将@code{this-command}设置为@code{kill-region}，这样紧接着的任何杀戮命令都
+会知道将杀戮文本附加到之前的杀戮中。
 @end defvar
 
-If you do not want a particular command to be recognized as the previous
-command in the case where it got an error, you must code that command to
-prevent this.  One way is to set @code{this-command} to @code{t} at the
-beginning of the command, and set @code{this-command} back to its proper
-value at the end, like this:
+如果您不希望某条命令在出错的情况下被识别为前一条命令，您必须对该命令进行编码以防止这种
+情况发生。一种方法是在命令的开头将@code{this-command}设置为@code{t}，然后在结尾
+处将@code{this-command} 设置为合适的值，就像这样:
 
 @example
 (defun foo (args@dots{})
@@ -763,9 +753,8 @@ value at the end, like this:
 @end example
 
 @noindent
-We do not bind @code{this-command} with @code{let} because that would
-restore the old value in case of error---a feature of @code{let} which
-in this case does precisely what we want to avoid.
+我们没有绑定@code{this-command}与@code{let}，因为这样做会在出错时恢复旧的值--这
+是@code{let}的一个特性，在这种情况下，它恰恰是我们想要避免的。
 
 @defvar this-original-command
 This has the same value as @code{this-command} except when command
