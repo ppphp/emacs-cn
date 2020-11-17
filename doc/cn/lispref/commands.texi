@@ -406,31 +406,26 @@ No I/O.
 弃，则@samp{U}提供@code{nil}作为参数。 No I/O.
 
 @item v
-A variable declared to be a user option (i.e., satisfying the
-predicate @code{custom-variable-p}).  This reads the variable using
-@code{read-variable}.  @xref{Definition of read-variable}.  Existing,
-Completion, Prompt.
+一个声明为用户选项的变量(即满足前提条件@code{custom-variable-p})。这将使用
+@code{read-variable}读取变量。@xref{Definition of read-variable}。
+Existing, Completion, Prompt.
 
 @item x
-A Lisp object, specified with its read syntax, terminated with a
-@kbd{C-j} or @key{RET}.  The object is not evaluated.  @xref{Object from
-Minibuffer}.  Prompt.
+一个Lisp对象，用它的读取语法指定，以@kbd{C-j}或@key{RET}结束。该对象没有被评估。
+@xref{Object from Minibuffer}。 Prompt.
 
 @item X
 @cindex evaluated expression argument
-A Lisp form's value.  @samp{X} reads as @samp{x} does, then evaluates
-the form so that its value becomes the argument for the command.
-Prompt.
+一个Lisp表单的值。@samp{X}像@samp{x}一样读取，然后运算表单，使其值成为命令的参数
+。 Prompt.
 
 @item z
-A coding system name (a symbol).  If the user enters null input, the
-argument value is @code{nil}.  @xref{Coding Systems}.  Completion,
-Existing, Prompt.
+一个编码系统名称（一个符号）。如果用户输入为空，参数值为@code{nil}。
+@xref{Coding Systems}.  Completion, Existing, Prompt.
 
 @item Z
-A coding system name (a symbol)---but only if this command has a prefix
-argument.  With no prefix argument, @samp{Z} provides @code{nil} as the
-argument value.  Completion, Existing, Prompt.
+一个编码系统名称（一个符号），仅当这个命令有前缀参数时。如果没有前缀参数，@samp{Z}提
+供@code{nil}作为参数值。 Completion, Existing, Prompt.
 @end table
 
 @node 交互式例子
@@ -490,72 +485,54 @@ Put them into three windows, selecting the last one."
 @cindex generic commands
 @cindex alternatives, defining
 
-The macro @code{define-alternatives} can be used to define
-@dfn{generic commands}.  These are interactive functions whose
-implementation can be selected from several alternatives, as a matter
-of user preference.
+宏@code{define-alternatives}可以用来定义@dfn{generic commands}。这些是交互
+式函数，按照用户的喜好，可以从几个备选方案中选择实施。
 
 @defmac define-alternatives command &rest customizations
-Define the new command @var{command}, a symbol.
+定义新的命令@var{command}，一个符号。
 
-When a user runs @kbd{M-x @var{command} @key{RET}} for the first time,
-Emacs prompts for which real form of the command to use, and records
-the selection by way of a custom variable.  Using a prefix argument
-repeats this process of choosing an alternative.
+当用户在第一次运行@kbd{M-x @var{command} @key{RET}}时，Emacs会提示使用命令的
+实际表单，并通过自定义变量记录选择。使用前缀参数会重复这个选择过程。
 
-The variable @code{@var{command}-alternatives} should contain an alist
-with alternative implementations of @var{command}.
-Until this variable is set, @code{define-alternatives} has no effect.
+变量@code{@var{command}-alternatives}应该包含一个@var{command}的替代实现的
+列表。在这个变量被设置之前，@code{define-alternatives}没有任何作用。
 
-If @var{customizations} is non-@code{nil}, it should consist of
-alternating @code{defcustom} keywords (typically @code{:group} and
-@code{:version}) and values to add to the declaration of
-@code{@var{command}-alternatives}.
+如果@var{customizations}是非@code{nil}，它应该由替代的@code{defcustom}关键
+字（通常是@code{:group}和@code{:version}）和值组成，以添加到
+@code{@var{command}-alternatives}的声明中。
 @end defmac
 
 @node 交互式调用
 @section Interactive Call
 @cindex interactive call
 
-  After the command loop has translated a key sequence into a command,
-it invokes that command using the function @code{command-execute}.  If
-the command is a function, @code{command-execute} calls
-@code{call-interactively}, which reads the arguments and calls the
-command.  You can also call these functions yourself.
+  在命令循环将一个键序列翻译成命令后，它使用函数@code{command-execute}来调用这个
+命令。如果命令是一个函数，那么@code{command-execute}会调用
+@code{call-inactively}，后者读取参数并调用命令。你也可以自己调用这些函数。
 
-  Note that the term ``command'', in this context, refers to an
-interactively callable function (or function-like object), or a
-keyboard macro.  It does not refer to the key sequence used to invoke
-a command (@pxref{Keymaps}).
+  请注意，术语"命令"在这里指的是一个可交互调用的函数（或类似函数的对象），或一个键盘
+宏。它不是指用于调用命令的键序（@pxref{Keymaps}）。
 
 @defun commandp object &optional for-call-interactively
-This function returns @code{t} if @var{object} is a command.
-Otherwise, it returns @code{nil}.
+如果@var{object}是一条命令，则该函数返回@code{t}。否则，返回@code{nil}。
 
-Commands include strings and vectors (which are treated as keyboard
-macros), lambda expressions that contain a top-level
-@code{interactive} form (@pxref{Using Interactive}), byte-code
-function objects made from such lambda expressions, autoload objects
-that are declared as interactive (non-@code{nil} fourth argument to
-@code{autoload}), and some primitive functions.  Also, a symbol is
-considered a command if it has a non-@code{nil}
-@code{interactive-form} property, or if its function definition
-satisfies @code{commandp}.
+命令包括字符串和向量（被视为键盘宏）、包含顶级@code{interactive}表单的lambda表达
+式（@pxref{Using Interactive}）、由这些lambda表达式构成的字节码函数对象、被声
+明为交互式的自动加载对象（@code{autoload}的第四个参数非@code{nil}），以及一些原
+始函数。另外，如果一个符号有一个非@code{nil}的@code{interactive-form}属性，或者它的函数定义满足@code{commandp}，第四个参数，那么它就被认为是一个命令。
 
-If @var{for-call-interactively} is non-@code{nil}, then
-@code{commandp} returns @code{t} only for objects that
-@code{call-interactively} could call---thus, not for keyboard macros.
+如果@var{for-call-interactively}是非@code{nil}，那么@code{commandp}只对
+@code{call-interactively}可以调用的对象返回@code{t}--因此，不对键盘宏返回。
 
-See @code{documentation} in @ref{Accessing Documentation}, for a
-realistic example of using @code{commandp}.
+参见@ref{Accessing Documentation}中的@code{documentation}，这是一个使用
+@code{commandp}的实际例子。
 @end defun
 
 @defun call-interactively command &optional record-flag keys
-This function calls the interactively callable function @var{command},
-providing arguments according to its interactive calling specifications.
-It returns whatever @var{command} returns.
+这个函数调用可交互调用的函数@var{command}，并根据其交互调用规范提供参数。无论
+@var{command}返回什么，它都会返回。
 
-If, for instance, you have a function with the following signature:
+例如，如果你有一个具有以下签名的函数:
 
 @example
 (defun foo (begin end)
@@ -563,86 +540,70 @@ If, for instance, you have a function with the following signature:
   ...)
 @end example
 
-then saying
+然后
 
 @example
 (call-interactively 'foo)
 @end example
 
-will call @code{foo} with the region (@code{point} and @code{mark}) as
-the arguments.
+将调用@code{foo}，把区域（@code{point}和@code{mark}）作为参数。
 
-An error is signaled if @var{command} is not a function or if it
-cannot be called interactively (i.e., is not a command).  Note that
-keyboard macros (strings and vectors) are not accepted, even though
-they are considered commands, because they are not functions.  If
-@var{command} is a symbol, then @code{call-interactively} uses its
-function definition.
+如果@var{command}不是函数，或者不能交互调用（即不是命令），就会发出错误信号。请注意
+，键盘宏（字符串和向量）即使被认为是命令，也不会被接受，因为它们不是函数。如果
+@var{command}是一个符号，那么@code{call-interactively}使用它的函数定义。
 
 @cindex record command history
-If @var{record-flag} is non-@code{nil}, then this command and its
-arguments are unconditionally added to the list @code{command-history}.
-Otherwise, the command is added only if it uses the minibuffer to read
-an argument.  @xref{Command History}.
+如果@var{record-flag}是非@code{nil}，那么这条命令和它的参数就会无条件地添加到
+@code{command-history}列表中。否则，只有当该命令使用迷你缓冲区读取参数时，才会被
+添加到列表中。@xref{Command History}。
 
-The argument @var{keys}, if given, should be a vector which specifies
-the sequence of events to supply if the command inquires which events
-were used to invoke it.  If @var{keys} is omitted or @code{nil}, the
-default is the return value of @code{this-command-keys-vector}.
-@xref{Definition of this-command-keys-vector}.
+如果给定参数@var{keys}，那么它应该是一个向量，用于指定在命令询问哪些事件被用来调用
+时要提供的事件序列。如果省略了@var{keys}或@code{nil}，则默认为
+@code{this-command-keys-vector}的返回值。
+@xref{this-command-keys-vector}。
 @end defun
 
 @defun funcall-interactively function &rest arguments
-This function works like @code{funcall} (@pxref{Calling Functions}),
-but it makes the call look like an interactive invocation: a call to
-@code{called-interactively-p} inside @var{function} will return
-@code{t}.  If @var{function} is not a command, it is called without
-signaling an error.
+这个函数的工作原理与@code{funcall}类似。(@pxref{Calling Functions})，但它使
+调用看起来像一个交互式调用：在@var{function}内调用
+@code{called-interactively-p}将返回@code{t}。如果@var{function}不是一个命
+令，那么它在被调用时不会发出错误信号。
 @end defun
 
 @defun command-execute command &optional record-flag keys special
 @cindex keyboard macro execution
-This function executes @var{command}.  The argument @var{command} must
-satisfy the @code{commandp} predicate; i.e., it must be an interactively
-callable function or a keyboard macro.
+这个函数执行@var{command}，参数@var{command}必须满足@code{commandp}谓词，也
+就是说，它必须是一个可交互调用的函数或键盘宏。
 
-A string or vector as @var{command} is executed with
-@code{execute-kbd-macro}.  A function is passed to
-@code{call-interactively} (see above), along with the
-@var{record-flag} and @var{keys} arguments.
+作为@var{command}的字符串或向量会被@code{execute-kbd-macro}执行。一个函数与
+@var{record-flag}和@var{keys}参数一起传递给@code{call-interactively}（见上
+文）。
 
-If @var{command} is a symbol, its function definition is used in its
-place.  A symbol with an @code{autoload} definition counts as a
-command if it was declared to stand for an interactively callable
-function.  Such a definition is handled by loading the specified
-library and then rechecking the definition of the symbol.
+如果@var{command}是一个符号，那么使用它的函数定义。如果一个带有@code{autoload}
+定义的符号被声明为代表一个可交互调用的函数，那么这个符号也算作一个命令。这种定义是通过
+加载指定的库，然后重新检查符号的定义来处理的。
 
-The argument @var{special}, if given, means to ignore the prefix
-argument and not clear it.  This is used for executing special events
-(@pxref{Special Events}).
+如果给定参数@var{special}，意味着忽略前缀参数，而且不清除它。这用于执行特殊事件（
+@pxref{Special Events}）。
 @end defun
 
 @deffn Command execute-extended-command prefix-argument
 @cindex read command name
-This function reads a command name from the minibuffer using
-@code{completing-read} (@pxref{Completion}).  Then it uses
-@code{command-execute} to call the specified command.  Whatever that
-command returns becomes the value of @code{execute-extended-command}.
+该函数使用@code{completing-read}从minibuffer中读取命令名。(
+@pxref{Completion})。然后它使用@code{command-execute}来调用指定的命令。无论
+该命令返回什么，都会成为@code{execute-extended-command}的值。
 
 @cindex execute with prefix argument
-If the command asks for a prefix argument, it receives the value
-@var{prefix-argument}.  If @code{execute-extended-command} is called
-interactively, the current raw prefix argument is used for
-@var{prefix-argument}, and thus passed on to whatever command is run.
+如果命令要求使用前缀参数，它将接收@var{prefix-argument}的值。如果交互式地调用了
+@code{execute-extended-command}，那么当前的原始前缀参数将被用于
+@var{prefix-argument}，从而传递给任何运行的命令。
 
-@c !!! Should this be @kindex?
+@c !!!应该是@kindex?
 @cindex @kbd{M-x}
-@code{execute-extended-command} is the normal definition of @kbd{M-x},
-so it uses the string @w{@samp{M-x }} as a prompt.  (It would be better
-to take the prompt from the events used to invoke
-@code{execute-extended-command}, but that is painful to implement.)  A
-description of the value of the prefix argument, if any, also becomes
-part of the prompt.
+@code{execute-extended-command}是@kbd{M-x}的普通定义，所以它使用了字符串
+@w{@samp{M-x }}作为提示符。(最好是从调用@code{execute-extended-command}的事
+件中获取提示符，但实现起来很麻烦。)如果有的话，对前缀参数值的描述也会成为提示的一部分
+。
 
 @example
 @group
@@ -660,13 +621,10 @@ part of the prompt.
 @cindex distinguish interactive calls
 @cindex is this call interactive
 
-  Sometimes a command should display additional visual feedback (such
-as an informative message in the echo area) for interactive calls
-only.  There are three ways to do this.  The recommended way to test
-whether the function was called using @code{call-interactively} is to
-give it an optional argument @code{print-message} and use the
-@code{interactive} spec to make it non-@code{nil} in interactive
-calls.  Here's an example:
+  有时，命令应该只为交互式呼叫显示额外的视觉反馈（如在回音区显示信息信息）。有三种方
+法可以做到这一点。测试函数是否通过@code{call-interactively}调用，推荐的方法是给
+函数一个可选的参数@code{print-message}，并使用@code{interactive}规范使其在交
+互式调用中不@code{nil}。下面是一个例子:
 
 @example
 (defun foo (&optional print-message)
@@ -676,37 +634,31 @@ calls.  Here's an example:
 @end example
 
 @noindent
-We use @code{"p"} because the numeric prefix argument is never
-@code{nil}.  Defined in this way, the function does display the
-message when called from a keyboard macro.
+我们使用@code{"p"}，因为数字前缀参数永远不会是@code{nil}。以这种方式定义的函数，
+在从键盘宏调用时确实会显示消息。
 
-  The above method with the additional argument is usually best,
-because it allows callers to say ``treat this call as interactive''.
-But you can also do the job by testing @code{called-interactively-p}.
+上面的方法加上额外的参数通常是最好的，因为它允许调用者说"把这个调用当作交互式"。但你
+也可以通过测试@code{called-interactively-p}来完成这项工作。
 
 @defun called-interactively-p kind
-This function returns @code{t} when the calling function was called
-using @code{call-interactively}.
+当使用@code{call-inactively}调用调用函数时，该函数返回@code{t}。
 
-The argument @var{kind} should be either the symbol @code{interactive}
-or the symbol @code{any}.  If it is @code{interactive}, then
-@code{called-interactively-p} returns @code{t} only if the call was
-made directly by the user---e.g., if the user typed a key sequence
-bound to the calling function, but @emph{not} if the user ran a
-keyboard macro that called the function (@pxref{Keyboard Macros}).  If
-@var{kind} is @code{any}, @code{called-interactively-p} returns
-@code{t} for any kind of interactive call, including keyboard macros.
+参数@var{kind}应该是符号@code{interactive}或者符号@code{any}。如果是
+@code{interactive}，那么@code{called-interactively-p}只有在用户直接调用的情
+况下才返回@code{t}--例如，如果用户输入了一个绑定到调用函数的按键序列，但如果用户运
+行了一个调用函数的键盘宏(@pxref{Keyboard Macros})，则返回@emph{not}。如果
+@var{kind}是@code{any}，则@code{called-interactively-p}返回@code{t}，用于
+任何类型的交互式调用，包括键盘宏。
 
-If in doubt, use @code{any}; the only known proper use of
-@code{interactive} is if you need to decide whether to display a
-helpful message while a function is running.
+如果有疑问，请使用@code{any}；唯一已知的@code{interactive}的正确用法是当你需要
+决定是否在函数运行时显示一个有用的消息。
 
-A function is never considered to be called interactively if it was
-called via Lisp evaluation (or with @code{apply} or @code{funcall}).
+如果一个函数是通过Lisp运算调用的（或者使用@code{apply}或@code{funcall}），那么
+它永远不会被认为是交互式调用的。
 @end defun
 
 @noindent
-Here is an example of using @code{called-interactively-p}:
+下面是一个使用@code{called-interactively-p}的例子:
 
 @example
 @group
@@ -729,8 +681,7 @@ Here is an example of using @code{called-interactively-p}:
 @end example
 
 @noindent
-Here is another example that contrasts direct and indirect calls to
-@code{called-interactively-p}.
+下面是另一个例子，将直接和间接调用@code{called-interactively-p}进行对比。
 
 @example
 @group
@@ -749,10 +700,9 @@ Here is another example that contrasts direct and indirect calls to
 @section Information from the Command Loop
 @cindex command loop variables
 
-The editor command loop sets several Lisp variables to keep status
-records for itself and for commands that are run.  With the exception of
-@code{this-command} and @code{last-command} it's generally a bad idea to
-change any of these variables in a Lisp program.
+编辑器命令循环设置了几个Lisp变量来为自己和正在运行的命令保存状态记录。除了
+@code{this-command}和@code{last-command}之外，一般来说，在Lisp程序中改变这些
+变量是个坏主意。
 
 @defvar last-command
 This variable records the name of the previous command executed by the
