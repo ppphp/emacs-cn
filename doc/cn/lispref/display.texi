@@ -2023,96 +2023,75 @@ Emacs引用一个父字形(见下面@code{:inherit}属性的描述)；或者，�
 @end table
 
 @item :inverse-video
-Whether or not characters should be displayed in inverse video.  The
-value should be @code{t} (yes) or @code{nil} (no).
+是否应该在反转视频中显示字符。该值应该是@code{t}(是)或@code{nil}(否)。
 
 @item :stipple
-The background stipple, a bitmap.
+背景点图，是一个位图。
 
-The value can be a string; that should be the name of a file containing
-external-format X bitmap data.  The file is found in the directories
-listed in the variable @code{x-bitmap-file-path}.
+值可以是一个字符串，应该是包含外部格式X位图数据的文件名。该文件在
+@code{x-bitmap-file-path}变量中列出的目录中找到。
 
-Alternatively, the value can specify the bitmap directly, with a list
-of the form @code{(@var{width} @var{height} @var{data})}.  Here,
-@var{width} and @var{height} specify the size in pixels, and
-@var{data} is a string containing the raw bits of the bitmap, row by
-row.  Each row occupies @math{(@var{width} + 7) / 8} consecutive bytes
-in the string (which should be a unibyte string for best results).
-This means that each row always occupies at least one whole byte.
+另外，也可以直接指定位图的值，其列表形式为
+@code{(@var{width} @var{height} @var{data})}。这里，@var{width}和
+@var{height}以像素为单位指定大小，@var{data}是一个字符串，包含位图的原始
+位，一行一行的。每一行都占据了字符串中@math{(@var{width} + 7) / 8}连续的
+字节（为了达到最佳效果，应该是一个单字节的字符串）。这意味着每一行至少要占
+用一个完整的字节。
 
-If the value is @code{nil}, that means use no stipple pattern.
+如果值是@code{nil}，表示不使用点图图案。
 
-Normally you do not need to set the stipple attribute, because it is
-used automatically to handle certain shades of gray.
+通常情况下，你不需要设置点图属性，因为它会自动用于处理某些灰度。
 
 @item :font
-The font used to display the face.  Its value should be a font object
-or a fontset.  @xref{Low-Level Font}, for information about font
-objects, font specs, and font entities.  @xref{Fontsets}, for
-information about fontsets.
+用于显示字形的字体。它的值应该是一个字体对象或字体集。
+@xref{Low-Level Font}，用于了解字体对象、字体规格和字体实体的信息。
+@xref{Fontsets}，用于获取字体集的信息。
 
 @anchor{face-font-attribute}
-When specifying this attribute using @code{set-face-attribute} or
-@code{set-face-font} (@pxref{Attribute Functions}), you may also
-supply a font spec, a font entity, or a string.  Emacs converts such
-values to an appropriate font object, and stores that font object as
-the actual attribute value.  If you specify a string, the contents of
-the string should be a font name (@pxref{Fonts,,, emacs, The GNU Emacs
-Manual}); if the font name is an XLFD containing wildcards, Emacs
-chooses the first font matching those wildcards.  Specifying this
-attribute also changes the values of the @code{:family},
-@code{:foundry}, @code{:width}, @code{:height}, @code{:weight}, and
-@code{:slant} attributes.
+当使用@code{set-face-attribute}或@code{set-face-font}来指定这个属性时。(
+@pxref{Attribute Functions})，您也可以提供一个字体规格、一个字体实体或一
+个字符串。Emacs会将这些值转换为适当的字体对象，并将该字体对象存储为实际的
+属性值。如果你指定的是一个字符串，字符串的内容应该是一个字体名称（
+@pxref{Fonts,,,emacs,The GNU Emacs Manual}）；如果字体名称是一个包含通配
+符的XLFD，Emacs会选择第一个与这些通配符匹配的字体。指定这个属性也会改变
+@code{:family}、@code{:foundry}、@code{:width}、@code{:height}、
+@code{:weight}和@code{:slant}属性的值。
 
 @cindex inheritance, for faces
 @item :inherit
-The name of a face from which to inherit attributes, or a list of face
-names.  Attributes from inherited faces are merged into the face like
-an underlying face would be, with higher priority than underlying
-faces (@pxref{Displaying Faces}).  If the face to inherit from is
-@code{unspecified}, it is treated the same as @code{nil}, since Emacs
-never merges @code{:inherit} attributes.  If a list of faces is used,
-attributes from faces earlier in the list override those from later
-faces.
+继承属性的字形的名称，或字形名称的列表。来自继承的字形的属性会像底层字形一
+样被合并到字形中，其优先级高于底层字形(@pxref{Displaying Faces})。如果要
+继承的面孔是@code{unspecified}，则与@code{nil}处理相同，因为Emacs从不合并
+@code{:inherit}属性。如果使用了一个字形列表，那么列表中前面的字形的属性会
+覆盖后面的字形的属性。
 
 @item :extend
-Whether or not this face will be extended beyond end of line and will
-affect the display of the empty space between the end of line and the
-edge of the window.  The value should be @code{t} to display the empty
-space between end of line and edge of the window using this face, or
-@code{nil} to not use this face for the space between the end of the
-line and the edge of the window.  When Emacs merges several faces for
-displaying the empty space beyond end of line, only those faces with
-@code{:extend} non-@code{nil} will be merged.  By default, only a
-small number of faces, notably, @code{region}, have this attribute
-set.  This attribute is different from the others in that when a theme
-doesn't specify an explicit value for a face, the value from the
-original face definition by @code{defface} is inherited
-(@pxref{Defining Faces}).
+这个字形是否会被扩展到行尾之外，并影响行尾和窗口边缘之间空隙的显示。这个值
+应该是@code{t}使用这个面来显示行尾和窗口边缘之间的空位，或者@code{nil}不使
+用这个字形来显示行尾和窗口边缘之间的空位。当Emacs合并几个字形来显示行尾以
+外的空格时，只有那些带有@code{:extension}非@code{nil}的字形会被合并。默认
+情况下，只有少数字形，特别是@code{region}，有这个属性。这个属性与其他属性
+不同的是，当一个主题没有为某个字形指定一个显式的值时，会继承@code{defface}
+从原始字形定义中得到的值（@pxref{Defining Faces}）。
 
 @end table
 
 @defun font-family-list &optional frame
-This function returns a list of available font family names.  The
-optional argument @var{frame} specifies the frame on which the text is
-to be displayed; if it is @code{nil}, the selected frame is used.
+这个函数返回一个可用的字体家族名称列表。可选参数@var{frame}指定显示文字的
+窗帧；如果是@code{nil}，则使用选定的窗帧。
 @end defun
 
 @defopt underline-minimum-offset
-This variable specifies the minimum distance between the baseline and
-the underline, in pixels, when displaying underlined text.
+该变量指定了显示下划线文本时，基线和下划线之间的最小距离，单位为像素。
 @end defopt
 
 @defopt x-bitmap-file-path
-This variable specifies a list of directories for searching
-for bitmap files, for the @code{:stipple} attribute.
+这个变量为@code{:stippple}属性指定了一个用于搜索位图文件的目录列表。
 @end defopt
 
 @defun bitmap-spec-p object
-This returns @code{t} if @var{object} is a valid bitmap specification,
-suitable for use with @code{:stipple} (see above).  It returns
-@code{nil} otherwise.
+如果@var{object}是有效的位图规格，则返回@code{t}，适合与@code{:stipple}一
+起使用(见上文)。否则返回@code{nil}。
 @end defun
 
 @node 定义字形
@@ -2120,125 +2099,99 @@ suitable for use with @code{:stipple} (see above).  It returns
 @cindex defining faces
 
 @cindex face spec
-  The usual way to define a face is through the @code{defface} macro.
-This macro associates a face name (a symbol) with a default @dfn{face
-spec}.  A face spec is a construct which specifies what attributes a
-face should have on any given terminal; for example, a face spec might
-specify one foreground color on high-color terminals, and a different
-foreground color on low-color terminals.
+  通常定义一个字形的方法是通过@code{defface}宏。这个宏将一个字形的名称（一
+个符号）与一个默认的@dfn{face spec}关联起来。字形规格是一个结构，它指定了
+一个字形在任何给定的终端上应该具有的属性；例如，一个字形规格可以指定在高色
+终端上使用一种前景色，而在低色终端上使用不同的前景色。
 
-  People are sometimes tempted to create a variable whose value is a
-face name.  In the vast majority of cases, this is not necessary; the
-usual procedure is to define a face with @code{defface}, and then use
-its name directly.
+  人们有时会想创建一个变量，其值是一个字形名。在绝大多数情况下，没有必要这
+样做，通常的程序是用@code{defface}定义一个字形，然后直接使用它的名字。
 
 @cindex face (non-removability of)
-Note that once you have defined a face (usually with @code{defface}),
-you cannot later undefine this face safely, except by restarting
-Emacs.
+请注意，一旦你定义了一个字形（通常使用@code{defface}），你以后就不能安全地
+取消定义这个字形，除非重新启动 Emacs。
 
 @defmac defface face spec doc [keyword value]@dots{}
-This macro declares @var{face} as a named face whose default face spec
-is given by @var{spec}.  You should not quote the symbol @var{face},
-and it should not end in @samp{-face} (that would be redundant).  The
-argument @var{doc} is a documentation string for the face.  The
-additional @var{keyword} arguments have the same meanings as in
-@code{defgroup} and @code{defcustom} (@pxref{Common Keywords}).
+这个宏声明@var{face}为一个命名的字形，其默认字形的规格由@var{spec}提供。
+您不应该引用符号@var{face}，也不应该以@samp{-face}结尾。(那就太多余了)。
+参数@var{doc}是字形的文档字符串。附加的@var{keyword}参数的含义与
+@code{defgroup}和@code{defcustom}相同。(@pxref{Common Keywords})。
 
-If @var{face} already has a default face spec, this macro does
-nothing.
+如果@var{face}已经有一个默认的字形规格，那么这个宏就不会有任何作用。
 
-The default face spec determines @var{face}'s appearance when no
-customizations are in effect (@pxref{Customization}).  If @var{face}
-has already been customized (via Custom themes or via customizations
-read from the init file), its appearance is determined by the custom
-face spec(s), which override the default face spec @var{spec}.
-However, if the customizations are subsequently removed, the
-appearance of @var{face} will again be determined by its default face
-spec.
+当没有定制生效时，默认的字形规格决定了@var{face}的外观(
+@pxref{Customization})。如果@var{face}已经被自定义（通过自定义主题或从
+init文件中读取的自定义），它的外观由自定义的字形规格决定，它覆盖了默认的字
+形规格@var{spec}。然而，如果随后删除了自定义，@var{face}的外观将再次由其默
+认的字形规格决定。
 
 @cindex @code{eval-defun}, and @code{defface} forms
-As an exception, if you evaluate a @code{defface} form with
-@kbd{C-M-x} in Emacs Lisp mode (@code{eval-defun}), a special feature
-of @code{eval-defun} overrides any custom face specs on the face,
-causing the face to reflect exactly what the @code{defface} says.
+作为一个例外，如果您在Emacs Lisp模式下使用@kbd{C-M-x}(@code{eval-defun})
+运行@code{defface}表单，@code{eval-defun}的一个特殊的功能覆盖任何自定义的
+字形规格，使字形完全反映@code{defface}的内容。
 
-The @var{spec} argument is a @dfn{face spec}, which states how the
-face should appear on different kinds of terminals.  It should be an
-alist whose elements each have the form
+参数@var{spec}是一个@dfn{face spec}，它说明了不同类型的终端上的字形应该如
+何显示。它应该是一个alist，每个元素的形式是
 
 @example
 (@var{display} . @var{plist})
 @end example
 
 @noindent
-@var{display} specifies a class of terminals (see below).  @var{plist}
-is a property list of face attributes and their values, specifying how
-the face appears on such terminals.  For backward compatibility, you
-can also write an element as @code{(@var{display} @var{plist})}.
+@var{display}指定了一个终端的类别（见下文）。@var{plist}是一个字形属性及
+其值的属性列表，指定了字形在这些终端上的显示方式。为了向后兼容，您也可以将
+一个元素写成 @code{(@var{display} @var{plist})}。
 
-The @var{display} part of an element of @var{spec} determines which
-terminals the element matches.  If more than one element of @var{spec}
-matches a given terminal, the first element that matches is the one
-used for that terminal.  There are three possibilities for
-@var{display}:
+@var{spec}元素的@var{display}部分决定了该元素匹配的终端。如果@var{spec}中
+有多个元素与给定的终端匹配，那么第一个匹配的元素就是用于该终端的元素。
+@var{display}有三种可能:
 
 @table @asis
 @item @code{default}
-This element of @var{spec} doesn't match any terminal; instead, it
-specifies defaults that apply to all terminals.  This element, if
-used, must be the first element of @var{spec}.  Each of the following
-elements can override any or all of these defaults.
+@var{spec}的这个元素并不匹配任何终端，而是指定了适用于所有终端的默认值。如
+果使用这个元素，它必须是@var{spec}的第一个元素。下面的每个元素都可以覆盖这
+些默认值中的任何一个或全部。
 
 @item @code{t}
-This element of @var{spec} matches all terminals.  Therefore, any
-subsequent elements of @var{spec} are never used.  Normally @code{t}
-is used in the last (or only) element of @var{spec}.
+@var{spec}的这个元素匹配所有的终端。因此，@var{spec}的任何后续元素都不会被
+使用。通常@code{t}会被用于@var{spec}的最后一个（或唯一）元素。
 
 @item a list
-If @var{display} is a list, each element should have the form
-@code{(@var{characteristic} @var{value}@dots{})}.  Here
-@var{characteristic} specifies a way of classifying terminals, and the
-@var{value}s are possible classifications which @var{display} should
-apply to.  Here are the possible values of @var{characteristic}:
+如果@var{display}是一个列表，那么每个元素的形式应该是
+@code{(@var{characteristic} @var{value}@dots{})}。这里，
+@var{characteristic}指定了对终端进行分类的方式，@var{value}s是
+@var{display}应该适用的可能分类。以下是@var{characteristic}的可能值:
 
 @table @code
 @item type
-The kind of window system the terminal uses---either @code{graphic}
-(any graphics-capable display), @code{x}, @code{pc} (for the MS-DOS
-console), @code{w32} (for MS Windows 9X/NT/2K/XP), or @code{tty} (a
-non-graphics-capable display).  @xref{Window Systems, window-system}.
+窗口系统终端的种类使用@code{graphic}(任何可显示图形的显示器),@code{x},
+@code{pc}(MS-DOS控制台)，@code{w32}(适用于MS Windows 9X/NT/2K/XP)，或
+@code{tty}(非图形功能的显示器).@xref{Window Systems, window-system}.
 
 @item class
-What kinds of colors the terminal supports---either @code{color},
-@code{grayscale}, or @code{mono}.
+终端支持的颜色种类---@code{color},@code{grayscale},或@code{mono}.
 
 @item background
-The kind of background---either @code{light} or @code{dark}.
+背景的种类---@code{light}或@code{dark}.
 
 @item min-colors
-An integer that represents the minimum number of colors the terminal
-should support.  This matches a terminal if its
-@code{display-color-cells} value is at least the specified integer.
+一个整数，表示终端应该支持的最小颜色数量。如果终端的
+@code{display-color-cells}值至少是指定的整数，则与之匹配。
 
 @item supports
-Whether or not the terminal can display the face attributes given in
-@var{value}@dots{} (@pxref{Face Attributes}).  @xref{Display Face
-Attribute Testing}, for more information on exactly how this testing
-is done.
+终端是否可以显示@var{value}@dots{}中给出的字形属性。(
+@pxref{Face Attributes})。@xref{Display Face Attribute Testing}，了解
+更多关于这个测试具体如何进行的信息。
 @end table
 
-If an element of @var{display} specifies more than one @var{value} for
-a given @var{characteristic}, any of those values is acceptable.  If
-@var{display} has more than one element, each element should specify a
-different @var{characteristic}; then @emph{each} characteristic of the
-terminal must match one of the @var{value}s specified for it in
-@var{display}.
+如果@var{display}的一个元素为给定的@var{characteristic}指定了一个以上的
+@var{value}，那么这些值中的任何一个都是可以接受的。如果@var{display}有一
+个以上的元素，则每个元素都应该指定一个不同的@var{characteristic}；那么终端
+的@emph{each}特性必须与@var{display}中为其指定的@var{value}之一相匹配。
 @end table
 @end defmac
 
-  For example, here's the definition of the standard face
-@code{highlight}:
+  例如，这里是标准字形的定义@code{highlight}：
 
 @example
 (defface highlight
@@ -2257,82 +2210,65 @@ terminal must match one of the @var{value}s specified for it in
   :group 'basic-faces)
 @end example
 
-  Internally, Emacs stores each face's default spec in its
-@code{face-defface-spec} symbol property (@pxref{Symbol Properties}).
-The @code{saved-face} property stores any face spec saved by the user
-using the customization buffer; the @code{customized-face} property
-stores the face spec customized for the current session, but not
-saved; and the @code{theme-face} property stores an alist associating
-the active customization settings and Custom themes with the face
-specs for that face.  The face's documentation string is stored in the
-@code{face-documentation} property.
+  在内部，Emacs在其@code{face-defface-spec}符号属性(
+@pxref{Symbol Properties})中存储了每个字形的默认规格。@code{saved-face}
+属性存储了用户使用自定义缓冲区保存的任何字形规格；@code{customized-face}
+属性存储了为当前会话定制的字形规格，但没有保存；@code{theme-face}属性存储
+了一个将活动的自定义设置和自定义主题与该字形规格关联起来的列表。字形的文档
+字符串存储在@code{face-documentation}属性中。
 
-  Normally, a face is declared just once, using @code{defface}, and
-any further changes to its appearance are applied using the Customize
-framework (e.g., via the Customize user interface or via the
-@code{custom-set-faces} function; @pxref{Applying Customizations}), or
-by face remapping (@pxref{Face Remapping}).  In the rare event that
-you need to change a face spec directly from Lisp, you can use the
-@code{face-spec-set} function.
+  通常情况下，一个字形只声明一次，使用@code{defface}，对其外观的任何进一步
+更改都是使用自定义框架（例如，通过自定义用户界面或通过
+@code{custom-set-faces}函数；@pxref{Applying Customizations}），或通过字
+形重映射（@pxref{Face Remapping}）。在极少数情况下，您需要直接从Lisp中
+更改字形规格，您可以使用@code{face-spec-set}函数。
 
 @defun face-spec-set face spec &optional spec-type
-This function applies @var{spec} as a face spec for @code{face}.
-@var{spec} should be a face spec, as described in the above
-documentation for @code{defface}.
+本函数将@var{spec}应用为@code{face}的字形规格。@var{spec}应该是一个字形的
+规格，如上面文档中对@code{defface}的描述。
 
-This function also defines @var{face} as a valid face name if it is
-not already one, and (re)calculates its attributes on existing frames.
+这个函数还定义了@var{face}作为有效的字形名称（如果还没有的话），并（重新）
+计算现有窗帧的属性。
 
 @cindex override spec @r{(for a face)}
-The optional argument @var{spec-type} determines which spec to set.
-If it is omitted or @code{nil} or @code{face-override-spec}, this
-function sets the @dfn{override spec}, which overrides face specs on
-@var{face} of all the other types mentioned below.  This is useful
-when calling this function outside of Custom code.  If @var{spec-type}
-is @code{customized-face} or @code{saved-face}, this function sets the
-customized spec or the saved custom spec, respectively.  If it is
-@code{face-defface-spec}, this function sets the default face spec
-(the same one set by @code{defface}).  If it is @code{reset}, this
-function clears out all customization specs and override specs from
-@var{face} (in this case, the value of @var{spec} is ignored).  The
-effect of any other value of @var{spec-type} on the face specs is
-reserved for internal use, but the function will still define
-@var{face} itself and recalculate its attributes, as described above.
+可选参数@var{spec-type}决定了要设置哪个规格。如果省略了@code{nil}或
+@code{face-override-spec}，这个函数将设置@dfn{override spec}，它将覆盖下
+面提到的所有其他类型的@var{face}的字形规格。当在自定义代码之外调用这个函数
+时，这个功能非常有用。如果@var{spec-type}是@code{customized-face}或
+@code{saved-face}，这个函数将分别设置自定义的规格或保存的自定义规格。如果
+是@code{face-defface-spec}，这个函数将设置默认的字形规格（与
+@code{defface}设置的规格相同）。如果是@code{reset}，这个函数将清空所有自
+定义的规格，并覆盖@var{face}中的规格。(在这种情况下，@var{spec}的值会被忽
+略)。其他任何@var{spec-type}的值对字形的影响都是保留给内部使用的，但函数仍
+然会定义@var{face}本身，并重新计算其属性，如上所述。
 @end defun
 
 @node 属性函数
 @subsection Face Attribute Functions
 @cindex face attributes, access and modification
 
-  This section describes functions for directly accessing and
-modifying the attributes of a named face.
+  本节介绍了直接访问和修改命名面的属性的函数。
 
 @defun face-attribute face attribute &optional frame inherit
-This function returns the value of the @var{attribute} attribute for
-@var{face} on @var{frame}.
+此函数返回@var{frame}上 @var{face}的@var{attribute}属性值。
 
-If @var{frame} is omitted or @code{nil}, that means the selected frame
-(@pxref{Input Focus}).  If @var{frame} is @code{t}, this function
-returns the value of the specified attribute for newly-created frames
-(this is normally @code{unspecified}, unless you have specified some
-value using @code{set-face-attribute}; see below).
+如果@var{frame}被省略或@code{nil}，则表示选定的窗帧（
+@pxref{Input Focus}）。如果@var{frame}是@code{t}，这个函数将返回新创建的
+窗帧的指定属性值（通常是@code{unspecified}，除非您使用
+@code{set-face-attribute}指定了一些值；见下文）。
 
-If @var{inherit} is @code{nil}, only attributes directly defined by
-@var{face} are considered, so the return value may be
-@code{unspecified}, or a relative value.  If @var{inherit} is
-non-@code{nil}, @var{face}'s definition of @var{attribute} is merged
-with the faces specified by its @code{:inherit} attribute; however the
-return value may still be @code{unspecified} or relative.  If
-@var{inherit} is a face or a list of faces, then the result is further
-merged with that face (or faces), until it becomes specified and
-absolute.
+如果@var{inherit}是非@code{nil}，则只考虑@var{face}直接定义的属性，所以返
+回值可能是@code{unspecified}，或者一个相对值。如果@var{inherit}是非
+@code{nil}，则@var{face}对@var{attribute}的定义会与@code{:herit}属性所指
+定的字形合并，但返回值可能仍然是@code{unspecified}或相对值。如果
+@var{inherit}是一个字形或一个字形的列表，那么结果将进一步与该字形（或多个
+字形）合并，直到它成为指定的和绝对的。
 
-To ensure that the return value is always specified and absolute, use
-a value of @code{default} for @var{inherit}; this will resolve any
-unspecified or relative values by merging with the @code{default} face
-(which is always completely specified).
+为了确保返回值始终是指定的和绝对的，对@var{inherit}使用@code{default}的值
+；这将通过与@code{default}面（始终是完全指定的）合并来解决任何未指定或相对
+值。
 
-For example,
+例如,
 
 @example
 (face-attribute 'bold :weight)
@@ -2340,18 +2276,16 @@ For example,
 @end example
 @end defun
 
-@c FIXME: Add an index for "relative face attribute", maybe here?  --xfq
+@c FIXME:增加一个"相对面属性"的索引，也许在这里？--xfq
 @defun face-attribute-relative-p attribute value
-This function returns non-@code{nil} if @var{value}, when used as the
-value of the face attribute @var{attribute}, is relative.  This means
-it would modify, rather than completely override, any value that comes
-from a subsequent face in the face list or that is inherited from
-another face.
+如果@var{value}作为字形属性@var{attribute}的值是相对的，那么这个函数返回
+非@code{nil}。这意味着它将修改而不是完全覆盖任何来自于字形列表中后续字形的
+值，或者是继承自其他字形的值。
 
-@code{unspecified} is a relative value for all attributes.  For
-@code{:height}, floating point and function values are also relative.
+对于所有属性来说，@code{:unspecified}是一个相对值。对于@code{:height}，浮
+点和函数值也是相对的。
 
-For example:
+例如：
 
 @example
 (face-attribute-relative-p :height 2.0)
@@ -2360,26 +2294,22 @@ For example:
 @end defun
 
 @defun face-all-attributes face &optional frame
-This function returns an alist of attributes of @var{face}.  The
-elements of the result are name-value pairs of the form
-@w{@code{(@var{attr-name} . @var{attr-value})}}.  Optional argument
-@var{frame} specifies the frame whose definition of @var{face} to
-return; if omitted or @code{nil}, the returned value describes the
-default attributes of @var{face} for newly created frames.
+这个函数返回一个@var{face}的属性列表。结果中的元素是名称-值对，其形式为
+@w{@code{(@var{attr-name} . @var{attr-value})}}。可选参数@var{frame}指
+定要返回@var{face}定义的框架；如果省略或@code{nil}，则返回的值描述了
+@var{face}对新创建窗帧的默认属性。
 @end defun
 
 @defun merge-face-attribute attribute value1 value2
-If @var{value1} is a relative value for the face attribute
-@var{attribute}, returns it merged with the underlying value
-@var{value2}; otherwise, if @var{value1} is an absolute value for the
-face attribute @var{attribute}, returns @var{value1} unchanged.
+如果@var{value1}是字形属性@var{attribute}的相对值，则返回它与底层值
+@var{value2}合并；否则，如果@var{value1}是字形属性@var{attribute}的绝对
+值，则返回@var{value1}不变。
 @end defun
 
-  Normally, Emacs uses the face specs of each face to automatically
-calculate its attributes on each frame (@pxref{Defining Faces}).  The
-function @code{set-face-attribute} can override this calculation by
-directly assigning attributes to a face, either on a specific frame or
-for all frames.  This function is mostly intended for internal usage.
+  通常情况下，Emacs会使用每个面的规格来自动计算每个窗帧的属性（
+@pxref{Defining Faces}）。函数@code{set-face-attribute}可以覆盖这种计算
+方式，直接将属性分配给一个字形，无论是在特定的窗帧上还是在所有窗帧上。这个
+函数主要用于内部使用。
 
 @defun set-face-attribute face frame &rest arguments
 This function sets one or more attributes of @var{face} for
