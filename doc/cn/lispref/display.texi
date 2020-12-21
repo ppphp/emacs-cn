@@ -2312,148 +2312,127 @@ init文件中读取的自定义），它的外观由自定义的字形规格决�
 函数主要用于内部使用。
 
 @defun set-face-attribute face frame &rest arguments
-This function sets one or more attributes of @var{face} for
-@var{frame}.  The attributes specifies in this way override the face
-spec(s) belonging to @var{face}.
+此函数为@var{frame}设置@var{face}的一个或多个属性。这些属性覆盖了
+@var{face}的字形规格。
 
-The extra arguments @var{arguments} specify the attributes to set, and
-the values for them.  They should consist of alternating attribute
-names (such as @code{:family} or @code{:underline}) and values.  Thus,
+额外的参数@var{arguments}指定了要设置的属性，以及它们的值，它们应该由要替
+代的属性名（如@code{:family}或@code{:underline}）和值组成。因此，
 
 @example
 (set-face-attribute 'foo nil :weight 'bold :slant 'italic)
 @end example
 
 @noindent
-sets the attribute @code{:weight} to @code{bold} and the attribute
-@code{:slant} to @code{italic}.
+将属性@code{:weight}设置为@code{bold}，将属性@code{:slant}设置为
+@code{italic}。
 
-
-If @var{frame} is @code{t}, this function sets the default attributes
-for newly created frames.  If @var{frame} is @code{nil}, this function
-sets the attributes for all existing frames, as well as for newly
-created frames.
+如果@var{frame}是@code{t}，这个函数为新创建的窗帧设置默认属性，如果
+@var{frame}是@code{nil}，这个函数为所有现有的窗帧以及新创建的窗帧设置属性
+。如果@var{frame}为@code{nil}，则此函数为所有现有的窗帧以及新创建的窗帧设
+置默认属性。
 @end defun
 
-  The following commands and functions mostly provide compatibility
-with old versions of Emacs.  They work by calling
-@code{set-face-attribute}.  Values of @code{t} and @code{nil} (or
-omitted) for their @var{frame} argument are handled just like
-@code{set-face-attribute} and @code{face-attribute}.  The commands
-read their arguments using the minibuffer, if called interactively.
+  下面的命令和函数主要提供了与旧版本Emacs的兼容性。它们通过调用
+@code{set-face-attribute}工作。@var{frame}参数的@code{t}和@code{nil}(或
+省略)的值的处理方式与@code{set-face-attribute}和@code{face-attribute}一
+样。如果是交互式调用的话，这些命令会使用minibuffer读取参数。
 
 @deffn Command set-face-foreground face color &optional frame
 @deffnx Command set-face-background face color &optional frame
-These set the @code{:foreground} attribute (or @code{:background}
-attribute, respectively) of @var{face} to @var{color}.
+这些设置将@var{face}的@code{:foreground}属性（或@code{:background}属性，
+相对地）设置为@var{color}。
 @end deffn
 
 @deffn Command set-face-stipple face pattern &optional frame
-This sets the @code{:stipple} attribute of @var{face} to
-@var{pattern}.
+这将@var{face}的@code{:stippple}属性设置为@var{pattern}。
 @end deffn
 
 @deffn Command set-face-font face font &optional frame
-Change the font-related attributes of @var{face} to those of
-@var{font} (a string or a font object).  @xref{face-font-attribute},
-for the supported formats of the @var{font} argument.  This function
-sets the attribute @code{:font} of the face, and indirectly also the
-@code{:family}, @code{:foundry}, @code{:width}, @code{:height},
-@code{:weight}, and @code{:slant} attributes, as defined by the font.
-If @var{frame} is non-@code{nil}, only change the attributes on the
-specified frame.
+将@var{face}的字体相关属性改为@var{font}（一个字符串或字体对象）的相关属性
+。@xref{face-font-attribute}，用于@var{font}参数的支持格式。这个函数设置
+字体的属性@code{:font}，并间接设置字体定义的@code{:family}、
+@code{:foundry}、@code{:width}、@code{:height}、@code{:weight}和
+@code{:slant}属性。如果@var{frame}是非@code{nil}，则只改变指定窗帧的属性
+。
 @end deffn
 
 @defun set-face-bold face bold-p &optional frame
-This sets the @code{:weight} attribute of @var{face} to @var{normal}
-if @var{bold-p} is @code{nil}, and to @var{bold} otherwise.
+如果@var{bold-p}是@code{nil}，则将@var{face}的@code{:weight}属性设置为
+@var{normal}，否则设置为@var{bold}。
 @end defun
 
 @defun set-face-italic face italic-p &optional frame
-This sets the @code{:slant} attribute of @var{face} to @var{normal} if
-@var{italic-p} is @code{nil}, and to @var{italic} otherwise.
+如果@var{italic-p}是@code{nil}，则设置@var{face}的@code{:slant}属性为
+@var{normal}，否则为@var{italic}。
 @end defun
 
 @deffn Command set-face-underline face underline &optional frame
-This sets the @code{:underline} attribute of @var{face} to
-@var{underline}.
+这将@var{face}的@code{:underline}属性设置为@var{underline}。
 @end deffn
 
 @deffn Command set-face-inverse-video face inverse-video-p &optional frame
-This sets the @code{:inverse-video} attribute of @var{face} to
-@var{inverse-video-p}.
+这将@var{face}的@code{:inverse-video}属性设置为@var{inverse-video-p}。
 @end deffn
 
 @deffn Command invert-face face &optional frame
-This swaps the foreground and background colors of face @var{face}.
+这将交换字形@var{face}的前景色和背景色。
 @end deffn
 
 @deffn Command set-face-extend face extend &optional frame
-This sets the @code{:extend} attribute of @var{face} to
-@var{extend}.
+这将@var{face}的@code{:extend}属性设置为@var{extend}。
 @end deffn
 
-  The following functions examine the attributes of a face.  They
-mostly provide compatibility with old versions of Emacs.  If you don't
-specify @var{frame}, they refer to the selected frame; @code{t} refers
-to the default data for new frames.  They return @code{unspecified} if
-the face doesn't define any value for that attribute.  If
-@var{inherit} is @code{nil}, only an attribute directly defined by the
-face is returned.  If @var{inherit} is non-@code{nil}, any faces
-specified by its @code{:inherit} attribute are considered as well, and
-if @var{inherit} is a face or a list of faces, then they are also
-considered, until a specified attribute is found.  To ensure that the
-return value is always specified, use a value of @code{default} for
-@var{inherit}.
+  下面的函数检查一个字形的属性，它们主要提供了与旧版本Emacs的兼容性。它们
+主要提供了与旧版本Emacs的兼容性。如果你没有指定@var{frame}，它们会指向所选
+的窗帧；@code{t}指向新窗帧的默认数据。如果面没有为该属性定义任何值，它们会
+返回@code{unspecified}。如果@var{inherit}是@code{nil}，则只返回一个由字
+形直接定义的属性。如果@var{inherit}是非@code{nil}，那么由@code{:inherit}
+属性指定的任何字形也会被考虑，如果@var{inherit}是一个字形或一个字形列表，
+那么它们也会被考虑，直到找到一个指定的属性。为了确保返回值始终是指定的，请
+为@var{inherit}使用@code{default}的值。
 
 @defun face-font face &optional frame character
-This function returns the name of the font of face @var{face}.
+此函数返回字形@var{face}的字体名称。
 
-If the optional argument @var{frame} is specified, it returns the name
-of the font of @var{face} for that frame.  If @var{frame} is omitted or
-@code{nil}, the selected frame is used.  In the latter case, if the
-optional third argument @var{character} is supplied, it returns the font
-name used for @var{character}.
+如果指定了可选的参数@var{frame}，则返回该帧的@var{face}的字体名称。如果省
+略了@var{frame}或@code{nil}，则使用选定的窗帧。在后一种情况下，如果提供了
+可选的第三个参数@var{character}，则返回用于@var{character}的字体名称。
 @end defun
 
 @defun face-foreground face &optional frame inherit
 @defunx face-background face &optional frame inherit
-These functions return the foreground color (or background color,
-respectively) of face @var{face}, as a string.  If the color is
-unspecified, they return @code{nil}.
+这些函数以字符串的形式返回字形@var{face}的前景色（或背景色）。如果没有指定
+颜色，则返回@code{nil}。
 @end defun
 
 @defun face-stipple face &optional frame inherit
-This function returns the name of the background stipple pattern of face
-@var{face}, or @code{nil} if it doesn't have one.
+此函数返回面孔的背景图案名称@var{face}，如果没有，则返回@code{nil}。
 @end defun
 
 @defun face-bold-p face &optional frame inherit
-This function returns a non-@code{nil} value if the @code{:weight}
-attribute of @var{face} is bolder than normal (i.e., one of
-@code{semi-bold}, @code{bold}, @code{extra-bold}, or
-@code{ultra-bold}).  Otherwise, it returns @code{nil}.
+如果@var{face}的@code{:weight}属性比正常情况下更粗（即@code{semi-bold}、
+@code{bold}、@code{extra-bold}或@code{ultra-bold}中的一个），则该函数返
+回一个非@code{nil}值。否则，它将返回@code{nil}。
 @end defun
 
 @defun face-italic-p face &optional frame inherit
-This function returns a non-@code{nil} value if the @code{:slant}
-attribute of @var{face} is @code{italic} or @code{oblique}, and
-@code{nil} otherwise.
+如果@var{face}的@code{:slant}属性为@code{italic}或@code{oblique}，则该函
+数返回一个非@code{nil}值，否则返回@code{nil}。
 @end defun
 
 @defun face-underline-p face &optional frame inherit
-This function returns non-@code{nil} if face @var{face} specifies
-a non-@code{nil} @code{:underline} attribute.
+如果字形@var{face}指定了一个非@code{nil}的@code{:underline}属性，则该函数
+返回非@code{nil}。
 @end defun
 
 @defun face-inverse-video-p face &optional frame inherit
-This function returns non-@code{nil} if face @var{face} specifies
-a non-@code{nil} @code{:inverse-video} attribute.
+如果字形@var{face}指定了一个非@code{nil}的@code{:inverse-video}属性，则
+该函数返回非@code{nil}。
 @end defun
 
 @defun face-extend-p face &optional frame
-This function returns non-@code{nil} if face @var{face} specifies
-a non-@code{nil} @code{:extend} attribute.
+如果字形@var{face}指定了一个非@code{nil}的@code{:extension}属性，则该函数
+返回非@code{nil}。
 @end defun
 
 
@@ -2462,154 +2441,124 @@ a non-@code{nil} @code{:extend} attribute.
 @cindex displaying faces
 @cindex face merging
 
-  When Emacs displays a given piece of text, the visual appearance of
-the text may be determined by faces drawn from different sources.  If
-these various sources together specify more than one face for a
-particular character, Emacs merges the attributes of the various
-faces.  Here is the order in which Emacs merges the faces, from
-highest to lowest priority:
+  当Emacs显示一段给定的文本时，文本的视觉外观可能由来自不同来源的字形决定
+。如果这些不同的来源为一个特定的字符指定了多个字形，Emacs会合并不同字形的属性。以下是Emacs合并字形的顺序，从最高优先级到最低优先级:
 
 @itemize @bullet
 @item
-If the text consists of a special glyph, the glyph can specify a
-particular face.  @xref{Glyphs}.
+如果文本由一个特殊的字形组成，则该字形可以指定一个特定的面。@xref{Glyphs}.
 
 @item
-If the text lies within an active region, Emacs highlights it using
-the @code{region} face.  @xref{Standard Faces,,, emacs, The GNU Emacs
-Manual}.
+如果文本位于活动区域内，Emacs会使用@code{region}面来高亮它。
+@xref{Standard Faces,,,emacs, The GNU Emacs Manual}.
 
 @item
-If the text lies within an overlay with a non-@code{nil} @code{face}
-property, Emacs applies the face(s) specified by that property.  If
-the overlay has a @code{mouse-face} property and the mouse is near
-enough to the overlay, Emacs applies the face or face attributes
-specified by the @code{mouse-face} property instead.  @xref{Overlay
-Properties}.
+如果文本位于一个非@code{nil}的@code{face}属性的覆盖范围内，Emacs就会应用
+该属性所指定的字形。如果覆盖有@code{mouse-face}属性，并且鼠标离覆盖足够近
+，Emacs会应用@code{mouse-face}属性指定的面孔或面孔属性。
+@xref{Overlay Properties}。
 
-When multiple overlays cover one character, an overlay with higher
-priority overrides those with lower priority.  @xref{Overlays}.
+当多个叠加覆盖一个字符时，优先级较高的叠加会覆盖优先级较低的叠加。
+@xref{Overlays}.
 
 @item
-If the text contains a @code{face} or @code{mouse-face} property,
-Emacs applies the specified faces and face attributes.  @xref{Special
-Properties}.  (This is how Font Lock mode faces are applied.
+如果文本包含@code{face}或@code{mouse-face}属性，Emacs会应用指定的字形和字
+形属性。@xref{Special Properties}。(字体锁定模式的面孔就是这样应用的。
 @xref{Font Lock Mode}.)
 
 @item
-If the text lies within the mode line of the selected window, Emacs
-applies the @code{mode-line} face.  For the mode line of a
-non-selected window, Emacs applies the @code{mode-line-inactive} face.
-For a header line, Emacs applies the @code{header-line} face.
-For a tab line, Emacs applies the @code{tab-line} face.
+如果文字位于所选窗口的模式线内，Emacs应用@code{mode-line}字形。对于非选择
+窗口的模式行，Emacs应用@code{mode-line-inactive}字形。对于页眉行，Emacs应
+用@code{header-line}字形。对于标签行，Emacs应用@code{tab-line}字形。
 
 @item
-If the text comes from an overlay string via @code{before-string} or
-@code{after-string} properties (@pxref{Overlay Properties}), or from a
-display string (@pxref{Other Display Specs}), and the string doesn't
-contain a @code{face} or @code{mouse-face} property, or these
-properties leave some face attributes undefined, but the buffer text
-affected by the overlay/display property does define a face or those
-attributes, Emacs applies the face attributes of the ``underlying''
-buffer text.  Note that this is so even if the overlay or display
-string is displayed in the display margins (@pxref{Display Margins}).
+如果文本通过@code{before-string}或@code{after-string}属性(
+@pxref{Overlay Properties})来自覆盖字符串，或来自显示字符串(
+@pxref{Other Display Specs})，而该字符串并不包含@code{face}或
+@code{mouse-face}属性，或者这些属性没有定义一些字形的属性，但受覆盖/显示属
+性影响的缓冲区文本确实定义了一个字形或这些属性，Emacs就会应用“下层”缓冲区
+文本的字形属性。请注意，即使覆盖或显示字符串显示在显示边距中，也是如此(
+@pxref{Display Margins})。
 
 @item
-If any given attribute has not been specified during the preceding
-steps, Emacs applies the attribute of the @code{default} face.
+如果在前面的步骤中没有指定任何给定的属性，Emacs会应用@code{default}字形的
+属性。
 @end itemize
 
-  At each stage, if a face has a valid @code{:inherit} attribute,
-Emacs treats any attribute with an @code{unspecified} value as having
-the corresponding value drawn from the parent face(s).  @pxref{Face
-Attributes}.  Note that the parent face(s) may also leave the
-attribute unspecified; in that case, the attribute remains unspecified
-at the next level of face merging.
+  在每个阶段，如果一个字形有一个有效的@code{:inherit}属性，Emacs会将任何
+具有@code{unspecified}值的属性视为具有来自父字形的相应值。
+@pxref{Face Attributes}。请注意，父字形也可以不指定该属性，在这种情况下，
+该属性在下一层次的面合并中仍未指定。
 
 @node 字形重映射
 @subsection Face Remapping
 @cindex face remapping
 
-  The variable @code{face-remapping-alist} is used for buffer-local or
-global changes in the appearance of a face.  For instance, it is used
-to implement the @code{text-scale-adjust} command (@pxref{Text
-Scale,,, emacs, The GNU Emacs Manual}).
+  变量@code{face-remapping-alist}用于在缓冲区局部或全局改变一个字形的外观
+。例如，它被用来实现@code{text-scale-adjust}命令(
+@pxref{Text Scale,,,emacs, The GNU Emacs Manual})。
 
 @defvar face-remapping-alist
-The value of this variable is an alist whose elements have the form
-@code{(@var{face} . @var{remapping})}.  This causes Emacs to display
-any text having the face @var{face} with @var{remapping}, rather than
-the ordinary definition of @var{face}.
+这个变量的值是一个alist，其元素的形式是
+@code{(@var{face} . @var{remapping})}。这将导致Emacs用@var{face}来显示
+任何带有@var{face}字形的文本，而不是普通的@var{face}的定义。
 
-@var{remapping} may be any face spec suitable for a @code{face} text
-property: either a face (i.e., a face name or a property list of
-attribute/value pairs), or a list of faces.  For details, see the
-description of the @code{face} text property in @ref{Special
-Properties}.  @var{remapping} serves as the complete specification for
-the remapped face---it replaces the normal definition of @var{face},
-instead of modifying it.
+@var{remapping}可以是任何适合@code{face}文本属性的字形规格：可以是一个字
+形（即一个字形名或属性/值对的属性列表），也可以是一个字形列表。详情请参见
+@ref{Special Properties}中对@code{face}文本属性的描述。@var{remapping}
+是重映射面的完整规范----它取代了@var{face}的正常定义，而不是修改它。
 
-If @code{face-remapping-alist} is buffer-local, its local value takes
-effect only within that buffer.  If @code{face-remapping-alist}
-includes faces applicable only to certain windows, by using the
-@w{@code{(:filtered (:window @var{param} @var{val}) @var{spec})}},
-that face takes effect only in windows that match the filter
-conditions (@pxref{Special Properties}).  To turn off face filtering
-temporarily, bind @code{face-filters-always-match} to a non-@code{nil}
-value, then all face filters will match any window.
+如果@code{face-remapping-alist}是缓冲区本地的，那么它的局部值只在该缓冲区
+内生效。如果@code{face-remapping-alist}包含了只适用于特定窗口的字形，那么
+通过使用
+@w{@code{(:filtered (:window @var{param} @var{val}) @var{spec})}}，字形
+只在符合过滤条件的窗口中生效 (@pxref{Special Properties})。要暂时关闭字形
+过滤，请将@code{face-filters-always-match}绑定到一个非@code{nil}的值，然
+后所有的字形过滤器将匹配任何窗口。
 
-Note: face remapping is non-recursive.  If @var{remapping} references
-the same face name @var{face}, either directly or via the
-@code{:inherit} attribute of some other face in @var{remapping}, that
-reference uses the normal definition of @var{face}.  For instance, if
-the @code{mode-line} face is remapped using this entry in
-@code{face-remapping-alist}:
+注意：字形重映射是非递归的。如果@var{remapping}直接或通过@var{remapping}
+中其它字形的@code{:inherit}属性引用了相同的字形名@var{face}，那么这个引用
+将使用@var{face}的正常定义。例如，如果@code{modine-line}字形是使用
+@code{face-remapping-alist}中的这个条目进行重映射的:
 
 @example
 (mode-line italic mode-line)
 @end example
 
 @noindent
-then the new definition of the @code{mode-line} face inherits from the
-@code{italic} face, and the @emph{normal} (non-remapped) definition of
-@code{mode-line} face.
+那么新定义的@code{modine-line}字形就继承了@code{italic}字形，而
+@emph{normal}字形则继承了@code{style}字形(非重映射的)@code{modine-line}
+字形的定义。
 @end defvar
 
 @cindex relative remapping, faces
 @cindex base remapping, faces
-  The following functions implement a higher-level interface to
-@code{face-remapping-alist}.  Most Lisp code should use these
-functions instead of setting @code{face-remapping-alist} directly, to
-avoid trampling on remappings applied elsewhere.  These functions are
-intended for buffer-local remappings, so they all make
-@code{face-remapping-alist} buffer-local as a side-effect.  They manage
-@code{face-remapping-alist} entries of the form
+  下面的函数实现了@code{face-remapping-alist}的一个更高级别的接口，大多
+数Lisp代码应该使用这些函数，而不是直接设置@code{face-remapping-alist}，以
+避免践踏应用在其他地方的重映射。这些函数是用于缓冲区局部重映射的，所以它们
+都会让@code{face-remapping-alist}成为缓冲区局部的副作用。它们管理
+@code{face-remapping-alist}的形式
 
 @example
   (@var{face} @var{relative-spec-1} @var{relative-spec-2} @var{...} @var{base-spec})
 @end example
 
 @noindent
-where, as explained above, each of the @var{relative-spec-N} and
-@var{base-spec} is either a face name, or a property list of
-attribute/value pairs.  Each of the @dfn{relative remapping} entries,
-@var{relative-spec-N}, is managed by the
-@code{face-remap-add-relative} and @code{face-remap-remove-relative}
-functions; these are intended for simple modifications like changing
-the text size.  The @dfn{base remapping} entry, @var{base-spec}, has
-the lowest priority and is managed by the @code{face-remap-set-base}
-and @code{face-remap-reset-base} functions; it is intended for major
-modes to remap faces in the buffers they control.
+其中，如上所述，@var{relative-spec-N}和@var{base-spec}中的每一个都是一个
+字形名，或者是一个属性/值对的属性列表。@dfn{relative remapping}中的每一个
+条目，@var{relative-spec-N}都由@code{face-remap-add-relative}和
+@code{face-remap-remove-relative}函数管理；这些函数用于简单的修改，比如改
+变文本大小。@dfn{base remapping}条目，@var{base-spec}，优先级最低，由
+@code{face-remap-set-base}和@code{face-remap-reset-base}函数管理；它是
+为了主要模式在其控制的缓冲区中重映射字形。
 
 @defun face-remap-add-relative face &rest specs
-This function adds the face spec in @var{specs} as relative
-remappings for face @var{face} in the current buffer.  The remaining
-arguments, @var{specs}, should form either a list of face names, or a
-property list of attribute/value pairs.
+这个函数将@var{specs}中的字形参数添加到当前缓冲区中的@var{face}中，作为字
+形的相对重映射。其余的参数@var{specs}应该是一个字形名称列表，或者是一个属
+性/值对的属性列表。
 
-The return value is a Lisp object that serves as a cookie; you can
-pass this object as an argument to @code{face-remap-remove-relative}
-if you need to remove the remapping later.
+返回值是一个作为cookie的Lisp对象，如果以后需要删除重映射，可以将这个对象作
+为参数传递给@code{face-remap-remove-relative}。
 
 @example
 ;; Remap the 'escape-glyph' face into a combination
@@ -2622,84 +2571,71 @@ if you need to remove the remapping later.
 @end defun
 
 @defun face-remap-remove-relative cookie
-This function removes a relative remapping previously added by
-@code{face-remap-add-relative}.  @var{cookie} should be the Lisp
-object returned by @code{face-remap-add-relative} when the remapping
-was added.
+这个函数删除了之前由@code{face-remap-add-relative}添加的相对重映射。
+@var{cookie}应该是@code{face-remap-add-relative}在添加相对重映射时返回的
+Lisp对象。
 @end defun
 
 @defun face-remap-set-base face &rest specs
-This function sets the base remapping of @var{face} in the current
-buffer to @var{specs}.  If @var{specs} is empty, the default base
-remapping is restored, similar to calling @code{face-remap-reset-base}
-(see below); note that this is different from @var{specs} containing a
-single value @code{nil}, which has the opposite result (the global
-definition of @var{face} is ignored).
+这个函数将当前缓冲区中@var{face}的基本重映射设置为@var{specs}。如果
+@var{specs}为空，则恢复默认的基础重映射，类似于调用
+@code{face-remap-reset-base}。(见下文)；请注意，这与@var{specs}包含一个
+单一的值@code{nil}不同，后者的结果正好相反（@var{face}的全局定义被忽略）。
 
-This overwrites the default @var{base-spec}, which inherits the global
-face definition, so it is up to the caller to add such inheritance if
-so desired.
+这将覆盖默认的@var{base-spec}，后者继承了全局的字形定义，所以如果需要的话
+，由调用者来添加这种继承。
 @end defun
 
 @defun face-remap-reset-base face
-This function sets the base remapping of @var{face} to its default
-value, which inherits from @var{face}'s global definition.
+此函数将@var{face}的基本重映射设置为默认值，默认值继承自@var{face}的全局定
+义。
 @end defun
 
 @node 字形函数
 @subsection Functions for Working with Faces
 
-  Here are additional functions for creating and working with faces.
+  以下是用于创建和处理字形的附加功能。
 
 @defun face-list
-This function returns a list of all defined face names.
+该函数返回所有已定义的字形名列表。
 @end defun
 
 @cindex face number
 @cindex face property of face symbols
 @defun face-id face
-This function returns the @dfn{face number} of face @var{face}.  This
-is a number that uniquely identifies a face at low levels within
-Emacs.  It is seldom necessary to refer to a face by its face number.
-However, functions that manipulate glyphs, such as
-@code{make-glyph-code} and @code{glyph-face} (@pxref{Glyphs}) access
-the face numbers internally.  Note that the face number is stored as
-the value of the @code{face} property of the face symbol, so we
-recommend not to set that property of a face to any value of your own.
+这个函数返回@var{face}的@dfn{face number}。这是在Emacs中唯一标识一个字形
+的数字。很少有必要用它的字形数来表示一个字形。然而，操作字形的函数，如
+@code{make-glyph-code}和@code{glyph-face}。(@pxref{Glyphs})内部访问字形
+号。请注意，字形数是作为字形符号的@code{face}属性的值来存储的，所以我们建
+议不要将面的该属性设置为自己的任何值。
 @end defun
 
 @defun face-documentation face
-This function returns the documentation string of face @var{face}, or
-@code{nil} if none was specified for it.
+此函数返回字形的文档字符串@var{face}，如果没有指定，则返回@code{nil}。
 @end defun
 
 @defun face-equal face1 face2 &optional frame
-This returns @code{t} if the faces @var{face1} and @var{face2} have the
-same attributes for display.
+如果@var{face1}和@var{face2}的显示属性相同，则返回@code{t}。
 @end defun
 
 @defun face-differs-from-default-p face &optional frame
-This returns non-@code{nil} if the face @var{face} displays
-differently from the default face.
+如果字形@var{face}的显示方式与默认字形不同，则返回非@code{nil}。
 @end defun
 
 @cindex face alias
 @cindex alias, for faces
-A @dfn{face alias} provides an equivalent name for a face.  You can
-define a face alias by giving the alias symbol the @code{face-alias}
-property, with a value of the target face name.  The following example
-makes @code{modeline} an alias for the @code{mode-line} face.
+一个@dfn{face alias}提供了一个等价的字形名称，您可以通过给
+@code{face-alias}属性定义一个字形的别名，并赋予目标字形名称的值。下面的例
+子让@code{modeline}成为@code{modline}字形的别名。
 
 @example
 (put 'modeline 'face-alias 'mode-line)
 @end example
 
 @defmac define-obsolete-face-alias obsolete-face current-face when
-This macro defines @code{obsolete-face} as an alias for
-@var{current-face}, and also marks it as obsolete, indicating that it
-may be removed in future.  @var{when} should be a string indicating
-when @code{obsolete-face} was made obsolete (usually a version number
-string).
+这个宏定义了@code{obsolete-face}作为@var{current-face}的别名，并将其标记
+为过时，表示将来可能会被删除。@var{when}应该是一个字符串，表示
+@code{obsolete-face}什么时候被淘汰的（通常是一个版本号字符串）。
 @end defmac
 
 @node 自动字形
@@ -2707,57 +2643,46 @@ string).
 @cindex automatic face assignment
 @cindex faces, automatic choice
 
-  This hook is used for automatically assigning faces to text in the
-buffer.  It is part of the implementation of Jit-Lock mode, used by
-Font-Lock.
+  这个钩子用于自动为缓冲区中的文本分配面。它是实现Jit-Lock模式的一部分，被
+Font-Lock使用。
 
 @defvar fontification-functions
-This variable holds a list of functions that are called by Emacs
-redisplay as needed, just before doing redisplay.  They are called even
-when Font Lock Mode isn't enabled.  When Font Lock Mode is enabled, this
-variable usually holds just one function, @code{jit-lock-function}.
+这个变量保存了Emacs重绘需要在重新显示之前调用的函数列表，在重绘之前。即使
+在没有启用Font Lock Mode的情况下，这些函数也会被调用。当启用字体锁定模式时
+，这个变量通常只保留一个函数，@code{jit-lock-function}。
 
-The functions are called in the order listed, with one argument, a
-buffer position @var{pos}.  Collectively they should attempt to assign
-faces to the text in the current buffer starting at @var{pos}.
+这些函数的调用顺序是按照所列的顺序进行的，只有一个参数，即缓冲区位置
+@var{pos}。所有函数都会尝试从@var{pos}开始为当前缓冲区中的文本分配面。
 
-The functions should record the faces they assign by setting the
-@code{face} property.  They should also add a non-@code{nil}
-@code{fontified} property to all the text they have assigned faces to.
-That property tells redisplay that faces have been assigned to that text
-already.
+函数应该通过设置@code{face}属性来记录它们分配的字形。它们还应该添加一个非
+@code{nil}属性。@code{fontified}属性为他们已分配给所有文本的字形。该属性
+告诉重新显示已经为该文本分配了字形。
 
-It is probably a good idea for the functions to do nothing if the
-character after @var{pos} already has a non-@code{nil} @code{fontified}
-property, but this is not required.  If one function overrides the
-assignments made by a previous one, the properties after the last
-function finishes are the ones that really matter.
+如果@var{pos}后面的字符已经有一个非@code{nil}的字符，那么函数不做任何操作
+可能是个好主意。@code{fontified}属性，但这不是必须的。如果一个函数覆盖了前
+一个函数的赋值，那么最后一个函数完成后的属性才是真正重要的。
 
-For efficiency, we recommend writing these functions so that they
-usually assign faces to around 400 to 600 characters at each call.
+为了提高效率，我们建议编写这些函数，使它们通常在每次调用时为大约400到600个
+字符分配字形。
 @end defvar
 
 @node 基本字形
 @subsection Basic Faces
 @cindex basic faces
 
-If your Emacs Lisp program needs to assign some faces to text, it is
-often a good idea to use certain existing faces or inherit from them,
-rather than defining entirely new faces.  This way, if other users
-have customized the basic faces to give Emacs a certain look, your
-program will fit in without additional customization.
+如果你的Emacs Lisp程序需要给文本分配一些字形，通常情况下，使用某些现有的字
+形或从它们那里继承字形，而不是定义全新的字形是一个好主意。这样一来，如果其
+他用户已经定制了基本的字形来给Emacs提供某种外观，你的程序将无需额外的定制
+就能适应。
 
-  Some of the basic faces defined in Emacs are listed below.  In
-addition to these, you might want to make use of the Font Lock faces
-for syntactic highlighting, if highlighting is not already handled by
-Font Lock mode, or if some Font Lock faces are not in use.
-@xref{Faces for Font Lock}.
+下面列出了Emacs中定义的一些基本字形。除此以外，如果高亮显示还没有被Font
+Lock模式处理，或者一些Font Lock字形没有被使用，您可能会想使用Font
+Lock字形来进行语法高亮显示。@xref{Faces for Font Lock}。
 
 @table @code
 @item default
-The default face, whose attributes are all specified.  All other faces
-implicitly inherit from it: any unspecified attribute defaults to the
-attribute on this face (@pxref{Face Attributes}).
+默认字形，其属性都是指定的。所有其他的字形都隐含地继承了它的属性：任何未指
+定的属性都默认为这个字形的属性 (@pxref{Face Attributes})。
 
 @item bold
 @itemx italic
@@ -2766,37 +2691,33 @@ attribute on this face (@pxref{Face Attributes}).
 @itemx fixed-pitch
 @itemx fixed-pitch-serif
 @itemx variable-pitch
-These have the attributes indicated by their names (e.g., @code{bold}
-has a bold @code{:weight} attribute), with all other attributes
-unspecified (and so given by @code{default}).
+这些属性由它们的名字来表示（例如，@code{bold}有一个粗体的@code{:weight}属
+性），其他的属性都没有指定（所以由@code{default}给出）。
 
 @item shadow
-For dimmed-out text.  For example, it is used for the ignored
-part of a filename in the minibuffer (@pxref{Minibuffer File,,
-Minibuffers for File Names, emacs, The GNU Emacs Manual}).
+用于被遮挡的文本。例如，它用于minibuffer中文件名的忽略部分（
+@pxref{Minibuffer File,,Minibuffers for File Names,emacs,The GNU Emacs
+Manual}）。
 
 @item link
 @itemx link-visited
-For clickable text buttons that send the user to a different
-buffer or location.
+对于可点击的文本按钮，将用户发送到不同的缓冲区或位置。
 
 @item highlight
-For stretches of text that should temporarily stand out.  For example,
-it is commonly assigned to the @code{mouse-face} property for cursor
-highlighting (@pxref{Special Properties}).
+用于应该暂时突出的文本延伸。例如，它通常被分配给@code{mouse-face}属性，用
+于光标高亮（@pxref{Special Properties}）。
 
 @item match
 @itemx isearch
 @itemx lazy-highlight
-For text matching (respectively) permanent search matches, interactive
-search matches, and lazy highlighting other matches than the current
-interactive one.
+用于文本匹配（分别是）永久搜索匹配、交互式搜索匹配和懒惰高亮当前交互式匹配
+之外的其他匹配。
 
 @item error
 @itemx warning
 @itemx success
-For text concerning errors, warnings, or successes.  For example,
-these are used for messages in @file{*Compilation*} buffers.
+用于有关错误、警告或成功的文本。例如，这些文字用于@file{*Compilation*}缓冲
+区中的信息。
 @end table
 
 @node 字体选择
@@ -2804,109 +2725,89 @@ these are used for messages in @file{*Compilation*} buffers.
 @cindex font selection
 @cindex selecting a font
 
-  Before Emacs can draw a character on a graphical display, it must
-select a @dfn{font} for that character@footnote{In this context, the
-term @dfn{font} has nothing to do with Font Lock (@pxref{Font Lock
-Mode}).}.  @xref{Fonts,,, emacs, The GNU Emacs Manual}.  Normally,
-Emacs automatically chooses a font based on the faces assigned to that
-character---specifically, the face attributes @code{:family},
-@code{:weight}, @code{:slant}, and @code{:width} (@pxref{Face
-Attributes}).  The choice of font also depends on the character to be
-displayed; some fonts can only display a limited set of characters.
-If no available font exactly fits the requirements, Emacs looks for
-the @dfn{closest matching font}.  The variables in this section
-control how Emacs makes this selection.
+  在Emacs在图形显示上绘制一个字符之前，它必须为该字符选择一个@dfn{font}
+@footnote{在此上下文中，术语@dfn{font}与字体锁定（
+@pxref{Font Lock Mode}）无关。
+@xref{Fonts,,, emacs, The GNU Emacs Manual}。通常情况下，Emacs会根据分配
+给该字符的字形自动选择字体--特别是字形属性@code{:family}、@code{:weight}
+、@code{:slant}和@code{:width}。(@pxref{Face Attributes})。字体的选择也
+取决于要显示的字符；有些字体只能显示有限的字符集。如果没有可用的字体完全符
+合要求，Emacs就会寻找@dfn{closest matching font}。本节中的变量可以控制
+Emacs如何进行这种选择。
 
 @defopt face-font-family-alternatives
-If a given family is specified but does not exist, this variable
-specifies alternative font families to try.  Each element should have
-this form:
+如果一个给定的字体族被指定了，但它不存在，这个变量就会指定要尝试的其他字库
+。每个元素都应该有这种形式:
 
 @example
 (@var{family} @var{alternate-families}@dots{})
 @end example
 
-If @var{family} is specified but not available, Emacs will try the other
-families given in @var{alternate-families}, one by one, until it finds a
-family that does exist.
+如果指定@var{family}，但不可用，Emacs会逐个尝试@var{alternate-families}
+中给出的其他字体族，直到找到一个确实存在的字体族。
 @end defopt
 
 @defopt face-font-selection-order
-If there is no font that exactly matches all desired face attributes
-(@code{:width}, @code{:height}, @code{:weight}, and @code{:slant}),
-this variable specifies the order in which these attributes should be
-considered when selecting the closest matching font.  The value should
-be a list containing those four attribute symbols, in order of
-decreasing importance.  The default is @code{(:width :height :weight
-:slant)}.
+如果没有与所有所需的字形属性（@code{:width}、@code{:height}、
+@code{:weight}和@code{:slant}）完全匹配的字体，这个变量指定了在选择最接近
+的匹配字体时应该考虑这些属性的顺序。该值应该是一个包含这四个属性符号的列表
+，按重要性递减的顺序排列。默认值是
+@code{(:width :height :weight :slant)}。
 
-Font selection first finds the best available matches for the first
-attribute in the list; then, among the fonts which are best in that
-way, it searches for the best matches in the second attribute, and so
-on.
+字体选择首先找到列表中第一个属性的最佳可用匹配；然后，在该方式最佳的字体中
+，搜索第二个属性的最佳匹配，以此类推。
 
-The attributes @code{:weight} and @code{:width} have symbolic values in
-a range centered around @code{normal}.  Matches that are more extreme
-(farther from @code{normal}) are somewhat preferred to matches that are
-less extreme (closer to @code{normal}); this is designed to ensure that
-non-normal faces contrast with normal ones, whenever possible.
+属性@code{:weight}和@code{:width}的符号值范围是以@code{normal}为中心。较
+极端的匹配（离@code{normal}较远）比较不极端的匹配（离@code{normal}较近）
+更受欢迎；这是为了确保非正常字形与正常字形尽可能形成对比。
 
-One example of a case where this variable makes a difference is when the
-default font has no italic equivalent.  With the default ordering, the
-@code{italic} face will use a non-italic font that is similar to the
-default one.  But if you put @code{:slant} before @code{:height}, the
-@code{italic} face will use an italic font, even if its height is not
-quite right.
+这个变量发挥作用的一个例子是，当默认字体没有等效的斜体时。在默认的排序下，
+@code{italic}面将使用与默认字体相似的非斜体字体。但是如果您将
+@code{:slant}放在@code{:height}之前，@code{italic}字形将使用斜体字体，即
+使它的高度不太合适。
 @end defopt
 
 @defopt face-font-registry-alternatives
-This variable lets you specify alternative font registries to try, if a
-given registry is specified and doesn't exist.  Each element should have
-this form:
+如果指定了一个给定的注册表并且不存在，这个变量可以让你指定其他的字体注册表
+来尝试。每个元素都应该有这种形式:
 
 @example
 (@var{registry} @var{alternate-registries}@dots{})
 @end example
 
-If @var{registry} is specified but not available, Emacs will try the
-other registries given in @var{alternate-registries}, one by one,
-until it finds a registry that does exist.
+如果指定了@var{registry}但没有可用的注册表，Emacs会逐个尝试
+@var{alternate-registries}中给出的其他注册表，直到找到一个确实存在的注册
+表。
 @end defopt
 
 @cindex scalable fonts
-  Emacs can make use of scalable fonts, but by default it does not use
-them.
+  Emacs可以使用可扩展的字体，但默认情况下它不使用这些字体。
 
 @defopt scalable-fonts-allowed
-This variable controls which scalable fonts to use.  A value of
-@code{nil}, the default, means do not use scalable fonts.  @code{t}
-means to use any scalable font that seems appropriate for the text.
+这个变量控制使用哪种可伸缩字体。默认值@code{nil}表示不使用可伸缩字体。
+@code{t}表示使用任何适合文本的可伸缩字体。
 
-Otherwise, the value must be a list of regular expressions.  Then a
-scalable font is enabled for use if its name matches any regular
-expression in the list.  For example,
+否则，该值必须是一个正则表达式的列表。然后，如果可扩展字体的名称与列表中的
+任何正则表达式相匹配，则启用可扩展字体以供使用。例如,
 
 @example
 (setq scalable-fonts-allowed '("iso10646-1$"))
 @end example
 
 @noindent
-allows the use of scalable fonts with registry @code{iso10646-1}.
+允许使用注册表@code{iso10646-1}的可扩展字体。
 @end defopt
 
 @defvar face-font-rescale-alist
-This variable specifies scaling for certain faces.  Its value should
-be a list of elements of the form
+这个变量指定某些字形的缩放比例。它的值应该是一个元素列表，其形式是
 
 @example
 (@var{fontname-regexp} . @var{scale-factor})
 @end example
 
-If @var{fontname-regexp} matches the font name that is about to be
-used, this says to choose a larger similar font according to the
-factor @var{scale-factor}.  You would use this feature to normalize
-the font size if certain fonts are bigger or smaller than their
-nominal heights and widths would suggest.
+如果@var{fontname-regexp}与即将使用的字体名称相匹配，这就说明要根据
+@var{scale-factor}这个因子选择更大的类似字体。如果某些字体比其标称的高度和
+宽度大或小，您可以使用这个功能来规范字体大小。
 @end defvar
 
 @node 字体查询
@@ -2915,43 +2816,34 @@ nominal heights and widths would suggest.
 @cindex looking up fonts
 
 @defun x-list-fonts name &optional reference-face frame maximum width
-This function returns a list of available font names that match
-@var{name}.  @var{name} should be a string containing a font name in
-either the Fontconfig, GTK+, or XLFD format (@pxref{Fonts,,, emacs, The
-GNU Emacs Manual}).  Within an XLFD string, wildcard characters may be
-used: the @samp{*} character matches any substring, and the @samp{?}
-character matches any single character.  Case is ignored when matching
-font names.
+这个函数返回与@var{name}匹配的可用字体名称列表。@var{name}应该是一个包含字
+体名称的字符串，其格式为Fontconfig、GTK+或XLFD格式（
+@pxref{Fonts,,,emacs,The GNU Emacs Manual}）。在XLFD字符串中，可以使用通
+配符：@samp{*}字符匹配任何子串，@samp{?}字符匹配任何单个字符。匹配字体名称
+时，忽略大小写。
 
-If the optional arguments @var{reference-face} and @var{frame} are
-specified, the returned list includes only fonts that are the same
-size as @var{reference-face} (a face name) currently is on the frame
-@var{frame}.
+如果指定了可选的参数@var{reference-face}和@var{frame}，则返回的列表只包括
+与@var{reference-face}大小相同的字体。(字形名称)当前在框架@var{frame}上。
 
-The optional argument @var{maximum} sets a limit on how many fonts to
-return.  If it is non-@code{nil}, then the return value is truncated
-after the first @var{maximum} matching fonts.  Specifying a small
-value for @var{maximum} can make this function much faster, in cases
-where many fonts match the pattern.
+可选参数@var{maximum}设置了返回字体的数量限制。如果它是非@code{nil}，那么
+返回值会在第一个@var{maximum}匹配字体之后被截断。为@var{maximum}指定一个
+小值可以使这个函数在许多字体匹配模式的情况下变得更快。
 
-The optional argument @var{width} specifies a desired font width.  If
-it is non-@code{nil}, the function only returns those fonts whose
-characters are (on average) @var{width} times as wide as
-@var{reference-face}.
+可选参数@var{width}指定了一个所需的字体宽度，如果它是非@code{nil}，则函数
+只返回那些字符宽度为@var{width}倍的字体。如果参数为非@code{nil}，则函数只
+返回字符宽度为(平均)@var{width}倍@var{reference-face}的字体。
 @end defun
 
 @defun x-family-fonts &optional family frame
-This function returns a list describing the available fonts for family
-@var{family} on @var{frame}.  If @var{family} is omitted or @code{nil},
-this list applies to all families, and therefore, it contains all
-available fonts.  Otherwise, @var{family} must be a string; it may
-contain the wildcards @samp{?} and @samp{*}.
+此函数返回一个列表，描述@var{family}家族在@var{frame}上的可用字体。如果
+@var{family}被省略或是@code{nil}，那么这个列表适用于所有的字体家族，因此
+，它包含了所有可用的字体，否则，@var{family}必须是一个字符串。否则，
+@var{family} 必须是一个字符串；它可能包含通配符@samp{?}和@samp{*}。
 
-The list describes the display that @var{frame} is on; if @var{frame} is
-omitted or @code{nil}, it applies to the selected frame's display
-(@pxref{Input Focus}).
+该列表描述了@var{frame}所处的显示；如果@var{frame}被省略或@code{nil}，则
+适用于所选窗帧的显示（@pxref{Input Focus}）。
 
-Each element in the list is a vector of the following form:
+列表中的每个元素都是以下形式的向量:
 
 @example
 [@var{family} @var{width} @var{point-size} @var{weight} @var{slant}
