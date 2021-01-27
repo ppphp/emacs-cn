@@ -2850,101 +2850,81 @@ Emacs如何进行这种选择。
  @var{fixed-p} @var{full} @var{registry-and-encoding}]
 @end example
 
-The first five elements correspond to face attributes; if you
-specify these attributes for a face, it will use this font.
+前五个元素对应的是字形属性，如果你为一个字形指定了这些属性，它就会使用这个
+字体。
 
-The last three elements give additional information about the font.
-@var{fixed-p} is non-@code{nil} if the font is fixed-pitch.
-@var{full} is the full name of the font, and
-@var{registry-and-encoding} is a string giving the registry and
-encoding of the font.
+最后三个元素给出了关于字体的附加信息。如果字体是固定间距的,@var{fixed-p}是
+非@code{nil}。@var{full}是字体的全名，@var{registry-and-encoding}是一个
+字符串，给出字体的注册和编码。
 @end defun
 
 @node 字体集
 @subsection Fontsets
 @cindex fontset
 
-  A @dfn{fontset} is a list of fonts, each assigned to a range of
-character codes.  An individual font cannot display the whole range of
-characters that Emacs supports, but a fontset can.  Fontsets have names,
-just as fonts do, and you can use a fontset name in place of a font name
-when you specify the font for a frame or a face.  Here is
-information about defining a fontset under Lisp program control.
-
-@defun create-fontset-from-fontset-spec fontset-spec &optional style-variant-p noerror
-This function defines a new fontset according to the specification
-string @var{fontset-spec}.  The string should have this format:
+一个@dfn{fontset}是一个字体的列表，每个字体都被分配到一个字符代码的范围。
+单个字体不能显示Emacs支持的全部字符范围，但字体集可以。正如字体一样，字体
+集也有名称，当你为一个框架或一个面指定字体时，你可以使用字体集的名称来代替
+字体名称。下面是关于在Lisp程序控制下定义字体集的信息:
 
 @smallexample
 @var{fontpattern}, @r{[}@var{charset}:@var{font}@r{]@dots{}}
 @end smallexample
 
 @noindent
-Whitespace characters before and after the commas are ignored.
+忽略逗号前后的空白字符。
 
-The first part of the string, @var{fontpattern}, should have the form of
-a standard X font name, except that the last two fields should be
-@samp{fontset-@var{alias}}.
+字符串的第一部分，@var{fontpattern}，应该是标准X字体名称的形式，但最后两个
+字段应该是@samp{fontset-@var{alias}}。
 
-The new fontset has two names, one long and one short.  The long name is
-@var{fontpattern} in its entirety.  The short name is
-@samp{fontset-@var{alias}}.  You can refer to the fontset by either
-name.  If a fontset with the same name already exists, an error is
-signaled, unless @var{noerror} is non-@code{nil}, in which case this
-function does nothing.
+新的字体集有两个名字，一个是长名，一个是短名。长名是@var{fontpattern}的全
+部内容。短名是@samp{fontset-@var{alias}}。您可以通过以下两种名称来引用字
+体集。如果已经存在一个同名的字体集，则会发出错误信号，除非@var{noerror}是
+非@code{nil}，在这种情况下，这个函数什么都不做。
 
-If optional argument @var{style-variant-p} is non-@code{nil}, that says
-to create bold, italic and bold-italic variants of the fontset as well.
-These variant fontsets do not have a short name, only a long one, which
-is made by altering @var{fontpattern} to indicate the bold and/or italic
-status.
+如果可选参数@var{style-variant-p}是非@code{nil}，那就说要把字体集的粗体、
+斜体和粗体-黑体变体也创建出来。这些变体字体集没有短名，只有长名，通过改变
+@var{fontpattern}来表示粗体和/或斜体状态。
 
-The specification string also says which fonts to use in the fontset.
-See below for the details.
+规格字符串还说了要在字体集中使用哪些字体。详情请看下文。
 @end defun
 
-  The construct @samp{@var{charset}:@var{font}} specifies which font to
-use (in this fontset) for one particular character set.  Here,
-@var{charset} is the name of a character set, and @var{font} is the font
-to use for that character set.  You can use this construct any number of
-times in the specification string.
+  构造@samp{@var{charset}:@var{font}}指定了一个特定字符集要使用的字体（在
+这个字体集中）。这里，@var{charset}是一个字符集的名称，@var{font}是该字符
+集要使用的字体。您可以在规范字符串中任意多次使用这个构造。
 
-  For the remaining character sets, those that you don't specify
-explicitly, Emacs chooses a font based on @var{fontpattern}: it replaces
-@samp{fontset-@var{alias}} with a value that names one character set.
-For the @acronym{ASCII} character set, @samp{fontset-@var{alias}} is replaced
-with @samp{ISO8859-1}.
+  对于其余的字符集，也就是那些你没有明确指定的字符集，Emacs会根据
+@var{fontpattern}来选择字体：它取代了@samp{fontset-@var{alias}}，其值为
+一个字符集。对于@acronym{ASCII}字符集，@samp{fontset-@var{alias}}用
+@samp{ISO8859-1}代替。
 
-  In addition, when several consecutive fields are wildcards, Emacs
-collapses them into a single wildcard.  This is to prevent use of
-auto-scaled fonts.  Fonts made by scaling larger fonts are not usable
-for editing, and scaling a smaller font is not useful because it is
-better to use the smaller font in its own size, which Emacs does.
+  此外，当几个连续的字段是通配符时，Emacs会将它们折叠成一个通配符。这是为
+了防止使用自动缩放的字体。通过缩放较大的字体制作的字体不能用于编辑，而缩放
+较小的字体也没有用，因为最好使用较小字体的自身大小，Emacs就是这样做的。
 
-  Thus if @var{fontpattern} is this,
+  因此，如果@var{fontpattern}是这个,
 
 @example
 -*-fixed-medium-r-normal-*-24-*-*-*-*-*-fontset-24
 @end example
 
 @noindent
-the font specification for @acronym{ASCII} characters would be this:
+@acronym{ASCII}字符的字体规范是这样的:
 
 @example
 -*-fixed-medium-r-normal-*-24-*-ISO8859-1
 @end example
 
 @noindent
-and the font specification for Chinese GB2312 characters would be this:
+而中文GB2312字符的字体规范是这样的:
 
 @example
 -*-fixed-medium-r-normal-*-24-*-gb2312*-*
 @end example
 
-  You may not have any Chinese font matching the above font
-specification.  Most X distributions include only Chinese fonts that
-have @samp{song ti} or @samp{fangsong ti} in the @var{family} field.  In
-such a case, @samp{Fontset-@var{n}} can be specified as below:
+  您可能没有任何符合上述字体规范的中文字体。大多数X发行版只包含在
+@var{family}字段中含有@samp{宋体}或@samp{方宋体}的中文字体。在这种情况下
+，@samp{Fontset-@var{n}}可以按如下方式指定:
 
 @smallexample
 Emacs.Fontset-0: -*-fixed-medium-r-normal-*-24-*-*-*-*-*-fontset-24,\
@@ -2952,62 +2932,54 @@ Emacs.Fontset-0: -*-fixed-medium-r-normal-*-24-*-*-*-*-*-fontset-24,\
 @end smallexample
 
 @noindent
-Then, the font specifications for all but Chinese GB2312 characters have
-@samp{fixed} in the @var{family} field, and the font specification for
-Chinese GB2312 characters has a wild card @samp{*} in the @var{family}
-field.
+那么，除中文GB2312字外，其他字的字体规格都有在@var{family}字段中的
+@samp{fixed}，以及字体规范中的中文GB2312字符在@var{family}字段中有一个通
+配符 @samp{*}。
 
 @defun set-fontset-font name character font-spec &optional frame add
-This function modifies the existing fontset @var{name} to use the font
-matching with @var{font-spec} for the specified @var{character}.
+此函数修改了现有的字体集@var{name}，使其与指定了@var{character}的
+@var{font-spec}的字体匹配。
 
-If @var{name} is @code{nil}, this function modifies the fontset of the
-selected frame or that of @var{frame} if @var{frame} is not
-@code{nil}.
+如果@var{name}是@code{nil}，则该函数修改所选框架的字体集；如果@var{frame}
+不是@code{nil}，则修改@var{frame}的字体集。
 
-If @var{name} is @code{t}, this function modifies the default
-fontset, whose short name is @samp{fontset-default}.
+如果@var{name}是@code{t}，则此函数将修改默认字体集，其简称为
+@samp{fontset-default}。
 
-In addition to specifying a single codepoint, @var{character} may be a
-cons @code{(@var{from} . @var{to})}, where @var{from} and @var{to} are
-character codepoints.  In that case, use @var{font-spec} for all the
-characters in the range @var{from} and @var{to} (inclusive).
+除了指定一个单一的代码点之外，@var{character}也可以是一个cons
+@code{(@var{from} . @var{to})}，其中@var{from}和@var{to}是字符代码点。在
+这种情况下，使用@var{font-spec}来表示@var{from}和@var{to}(包括)范围内的所
+有字符。
 
-@var{character} may be a charset (@pxref{Character Sets}).  In that
-case, use @var{font-spec} for all the characters in the charset.
+@var{character}可能是一个字符集(@pxref{Character Sets})。在这种情况下，
+使用@var{font-spec} 来表示该字符集中的所有字符。
 
-@var{character} may be a script name (@pxref{Character Properties}).
-In that case, use @var{font-spec} for all the characters belonging to
-the script.
+@var{character}可能是一个脚本名称（@pxref{Character Properties}）。在这
+种情况下，使用@var{font-spec}来表示属于脚本的所有字符。
 
-@var{character} may be @code{nil}, which means to use @var{font-spec}
-for any character which no font-spec is specified.
+@var{character}可以是@code{nil}，也就是说，对于没有指定字体规格的字符，可
+以使用@var{font-spec}。
 
-@var{font-spec} may be a font-spec object created by the function
-@code{font-spec} (@pxref{Low-Level Font}).
+@var{font-spec}可以是一个由函数@code{font-spec}创建的字体规格对象。(
+@pxref{Low-Level Font})。
 
-@var{font-spec} may be a cons; @code{(@var{family} . @var{registry})},
-where @var{family} is a family name of a font (possibly including a
-foundry name at the head), @var{registry} is a registry name of a font
-(possibly including an encoding name at the tail).
+@var{font-spec}可以是一个cons; @code{(@var{family} . @var{registry})}，
+其中@var{family}是一个字体的家族名（可能在头部包括一个厂商名），
+@var{registry}是一个字体的注册名（可能在尾部包括一个编码名）。
 
-@var{font-spec} may be a font name, a string.
+@var{font-spec}可以是一个字体名称，一个字符串。
 
-@var{font-spec} may be @code{nil}, which explicitly specifies that
-there's no font for the specified @var{character}.  This is useful,
-for example, to avoid expensive system-wide search for fonts for
-characters that have no glyphs, like those from the Unicode Private
-Use Area (PUA).
+@var{font-spec}可以是@code{nil}，它明确地指定了指定的@var{character}没有
+字体。这很有用，例如，可以避免在整个系统中为没有字型的字符搜索昂贵的字体，
+比如那些来自Unicode专用区（PUA）的字符。
 
-The optional argument @var{add}, if non-@code{nil}, specifies how to
-add @var{font-spec} to the font specifications previously set.  If it
-is @code{prepend}, @var{font-spec} is prepended.  If it is
-@code{append}, @var{font-spec} is appended.  By default,
-@var{font-spec} overrides the previous settings.
+可选参数@var{add}，如果是非@code{nil}，则指定如何将@var{font-spec}添加到
+之前设置的字体规格中。如果是@code{prepend}，则@var{font-spec}会被预先添加
+。如果是@code{append}，则会将@var{font-spec}添加到后面。默认情况下，
+@var{font-spec}会覆盖之前的设置。
 
-For instance, this changes the default fontset to use a font of which
-family name is @samp{Kochi Gothic} for all characters belonging to
-the charset @code{japanese-jisx0208}.
+例如，这就改变了默认的字体集，将属于字符集@code{japanese-jisx0208}的所有
+字符使用@samp{Kochi Gothic}的字体。
 
 @smallexample
 (set-fontset-font t 'japanese-jisx0208
@@ -3016,554 +2988,466 @@ the charset @code{japanese-jisx0208}.
 @end defun
 
 @defun char-displayable-p char
-This function returns @code{t} if Emacs ought to be able to display
-@var{char}.  More precisely, if the selected frame's fontset has a
-font to display the character set that @var{char} belongs to.
+如果Emacs应该能够显示@var{char}，这个函数返回@code{t}。更准确的说，如果所
+选框架的字体集有一个字体可以显示@var{char}所属的字符集，则返回@code{t}。
 
-Fontsets can specify a font on a per-character basis; when the fontset
-does that, this function's value may not be accurate.
+字体集可以在每个字符的基础上指定字体；当字体集这样做时，这个函数的值可能不
+准确。
 @end defun
 
 @node 低级字体
 @subsection Low-Level Font Representation
 @cindex font property
 
-  Normally, it is not necessary to manipulate fonts directly.  In case
-you need to do so, this section explains how.
+  通常情况下，不需要直接操作字体。如果您需要这样做，本节将解释如何操作。
 
-  In Emacs Lisp, fonts are represented using three different Lisp
-object types: @dfn{font objects}, @dfn{font specs}, and @dfn{font
-entities}.
+  在Emacs Lisp中，字体是用三种不同的Lisp对象类型来表示的，分别是
+@dfn{font objects}、@dfn{font specs}和@dfn{font entities}。
 
 @defun fontp object &optional type
-Return @code{t} if @var{object} is a font object, font spec, or font
-entity.  Otherwise, return @code{nil}.
+如果@var{object}是一个字体对象、字体规格或字体实体，则返回@code{t}。否则，
+返回@code{nil}。
 
-The optional argument @var{type}, if non-@code{nil}, determines the
-exact type of Lisp object to check for.  In that case, @var{type}
-should be one of @code{font-object}, @code{font-spec}, or
-@code{font-entity}.
+可选参数@var{type}，如果不是@code{nil}，则决定要检查的Lisp对象的确切类型
+。在这种情况下，@var{type}应该是@code{font-object}、@code{font-spec}或
+@code{font-entity}中的一个。
 @end defun
 
 @cindex font object
-  A font object is a Lisp object that represents a font that Emacs has
-@dfn{opened}.  Font objects cannot be modified in Lisp, but they can
-be inspected.
+  字体对象是一个Lisp对象，表示Emacs所拥有@dfn{opened}的字体。在Lisp中不能
+修改字体对象，但可以被检查。
 
 @defun font-at position &optional window string
-Return the font object that is being used to display the character at
-position @var{position} in the window @var{window}.  If @var{window}
-is @code{nil}, it defaults to the selected window.  If @var{string} is
-@code{nil}, @var{position} specifies a position in the current buffer;
-otherwise, @var{string} should be a string, and @var{position}
-specifies a position in that string.
+返回用于在@var{position}窗口中显示@var{window}位置上的字符的字体对象，如
+果@var{window}是@code{nil}，则默认为选定的窗口。如果@var{string}是
+@code{nil}，则@var{position}指定当前缓冲区中的一个位置；否则，
+@var{string}应该是一个字符串，@var{position}指定该字符串中的一个位置。
 @end defun
 
 @cindex font spec
-  A font spec is a Lisp object that contains a set of specifications
-that can be used to find a font.  More than one font may match the
-specifications in a font spec.
+  字体规格是一个Lisp对象，它包含了一组可用于查找字体的规格。在一个字体规格
+中，可能有一个以上的字体与之匹配。
 
 @defun font-spec &rest arguments
-Return a new font spec using the specifications in @var{arguments},
-which should come in @code{property}-@code{value} pairs.  The possible
-specifications are as follows:
+使用@var{arguments}中的规格返回一个新的字体规格，它应该以
+@code{property}-@code{value}对的形式出现。可能的字体规格如下:
 
 @table @code
 @item :name
-The font name (a string), in either XLFD, Fontconfig, or GTK+ format.
-@xref{Fonts,,, emacs, The GNU Emacs Manual}.
+字体名称（字符串），可以是XLFD、Fontconfig或GTK+格式。
+@xref{Fonts,,,emacs, The GNU Emacs Manual}。
 
 @item :family
 @itemx :foundry
 @itemx :weight
 @itemx :slant
 @itemx :width
-These have the same meanings as the face attributes of the same name.
-@xref{Face Attributes}.  @code{:family} and @code{:foundry} are
-strings, while the other three are symbols.  As example values,
-@code{:slant} may be @code{italic}, @code{:weight} may be @code{bold}
-and @code{:width} may be @code{normal}.
+这些与同名的字形属性具有相同的含义。@xref{Face Attributes}。
+@code{:family}和@code{:foundry}是字符串，而其他三个是符号。作为示例值，
+@code{:slant}可以是@code{italic}，@code{:weight}可以是@code{bold}，
+@code{:width}可以是@code{normal}。
 
 @item :size
-The font size---either a non-negative integer that specifies the pixel
-size, or a floating-point number that specifies the point size.
+字体大小——指定像素大小的非负整数，或指定点大小的浮点数。
 
 @item :adstyle
-Additional typographic style information for the font, such as
-@samp{sans}.  The value should be a string or a symbol.
+字体的附加排版风格信息，如@samp{sans}。该值应该是一个字符串或符号。
 
 @cindex font registry
 @item :registry
-The charset registry and encoding of the font, such as
-@samp{iso8859-1}.  The value should be a string or a symbol.
+字体的字符集注册表和编码，如@samp{iso8859-1}。该值应为字符串或符号。
 
 @item :script
-The script that the font must support (a symbol).
+字体必须支持的文字（符号）。
 
 @item :lang
-The language that the font should support.  The value should be a
-symbol whose name is a two-letter ISO-639 language name.  On X, the
-value is matched against the ``Additional Style'' field of the XLFD
-name of a font, if it is non-empty.  On MS-Windows, fonts matching the
-spec are required to support codepages needed for the language.
-Currently, only a small set of CJK languages is supported with this
-property: @samp{ja}, @samp{ko}, and @samp{zh}.
+字体应该支持的语言。该值应该是一个符号，其名称是两个字母的ISO-639语言名称
+。在X上，如果字体的XLFD名称中的"附加样式"字段是非空的，则该值与之匹配。在
+MS-Windows上，需要匹配规范的字体来支持语言所需的代码页。目前，只有一小部分
+中日韩语言支持这个属性：@samp{ja}、@samp{ko}和@samp{zh}。
 
 @item :otf
 @cindex OpenType font
-The font must be an OpenType font that supports these OpenType
-features, provided Emacs is compiled with a library, such as
-@samp{libotf} on GNU/Linux, that supports complex text layout for
-scripts which need that.  The value must be a list of the form
+字体必须是支持这些OpenType特性的OpenType字体，前提是Emacs要用一个库来编译
+，如在GNU/Linux上的@samp{libotf}，支持复杂的文本布局以满足脚本的需要。值
+必须是一个列表，其形式为
 
 @smallexample
 @code{(@var{script-tag} @var{langsys-tag} @var{gsub} @var{gpos})}
 @end smallexample
 
-where @var{script-tag} is the OpenType script tag symbol;
-@var{langsys-tag} is the OpenType language system tag symbol, or
-@code{nil} to use the default language system; @code{gsub} is a list
-of OpenType GSUB feature tag symbols, or @code{nil} if none is
-required; and @code{gpos} is a list of OpenType GPOS feature tag
-symbols, or @code{nil} if none is required.  If @code{gsub} or
-@code{gpos} is a list, a @code{nil} element in that list means that
-the font must not match any of the remaining tag symbols.  The
-@code{gpos} element may be omitted.
+其中@var{script-tag}是OpenType脚本标签符号；@var{langsys-tag}是OpenType
+语言系统标签符号，或者@code{nil}使用默认的语言系统；@code{gsub}是OpenType
+GSUB特征标签符号的列表，如果不需要，则@code{nil}；@code{gpos}是OpenType
+GPOS特征标签符号的列表，如果不需要，则@code{nil}。如果@code{gsub}或
+@code{gpos}是一个列表，则该列表中的@code{nil}元素意味着字体必须不与任何其
+余的标签符号匹配。可以省略@code{gpos}元素。
 @end table
 @end defun
 
 @defun font-put font-spec property value
-Set the font property @var{property} in the font-spec @var{font-spec}
-to @var{value}.
+将字体规格@var{font-spec}中的字体属性@var{property}设置为@var{value}。
 @end defun
 
 @cindex font entity
-  A font entity is a reference to a font that need not be open.  Its
-properties are intermediate between a font object and a font spec:
-like a font object, and unlike a font spec, it refers to a single,
-specific font.  Unlike a font object, creating a font entity does not
-load the contents of that font into computer memory.  Emacs may open
-multiple font objects of different sizes from a single font entity
-referring to a scalable font.
+  字体实体是对字体的引用，不需要打开。它的属性介于字体对象和字体规格之间：
+与字体对象一样，与字体规格不同的是，它指的是单一的、特定的字体。与字体对象
+不同，创建字体实体并不会将该字体的内容加载到计算机内存中。Emacs可以从一个
+指代可扩展字体的字体实体中打开多个不同大小的字体对象。
 
 @defun find-font font-spec &optional frame
-This function returns a font entity that best matches the font spec
-@var{font-spec} on frame @var{frame}.  If @var{frame} is @code{nil},
-it defaults to the selected frame.
+本函数返回与@var{frame}框架上的字体规格@var{font-spec}最匹配的字体实体。
+如果@var{frame}是@code{nil}，则默认为所选窗帧的字体。
 @end defun
 
 @defun list-fonts font-spec &optional frame num prefer
-This function returns a list of all font entities that match the font
-spec @var{font-spec}.
+这个函数返回所有符合字体规格@var{font-spec}的字体实体列表。
 
-The optional argument @var{frame}, if non-@code{nil}, specifies the
-frame on which the fonts are to be displayed.  The optional argument
-@var{num}, if non-@code{nil}, should be an integer that specifies the
-maximum length of the returned list.  The optional argument
-@var{prefer}, if non-@code{nil}, should be another font spec, which is
-used to control the order of the returned list; the returned font
-entities are sorted in order of decreasing closeness to that font
-spec.
+可选参数@var{frame}，如果不是@code{nil}，则指定显示字体的窗帧。可选参数
+@var{num}，如果是非@code{nil}，则应该是一个整数，指定返回列表的最大长度。
+可选参数@var{prefer}，如果是非@code{nil}，应该是另一个字体规格，用于控制
+返回列表的顺序；返回的字体实体按照与该字体规格的亲密度递减的顺序排序。
 @end defun
 
-  If you call @code{set-face-attribute} and pass a font spec, font
-entity, or font name string as the value of the @code{:font}
-attribute, Emacs opens the best matching font that is available
-for display.  It then stores the corresponding font object as the
-actual value of the @code{:font} attribute for that face.
+  如果您调用@code{set-face-attribute}，并传递一个字体规格、字体实体或字体
+名称字符串作为@code{:font}属性的值，Emacs就会打开可供显示的最佳匹配字体。
+然后，它将相应的字体对象存储为该面的@code{:font}属性的实际值。
 
-  The following functions can be used to obtain information about a
-font.  For these functions, the @var{font} argument can be a font
-object, a font entity, or a font spec.
+  下面的函数可以用来获取字体的信息，对于这些函数，@var{font}参数可以是字体
+对象、字体实体或字体规格。
 
 @defun font-get font property
-This function returns the value of the font property @var{property}
-for @var{font}.
+此函数返回@var{font}的字体属性@var{property}的值。
 
-If @var{font} is a font spec and the font spec does not specify
-@var{property}, the return value is @code{nil}.  If @var{font} is a
-font object or font entity, the value for the @var{:script} property
-may be a list of scripts supported by the font.
+如果@var{font}是一个字体规范，而字体规范没有指定@var{property}，那么返回
+值是@code{nil}。如果@var{font}是一个字体对象或字体实体，那么@var{:script}
+属性的值可以是一个字体支持的脚本列表。
 @end defun
 
 @defun font-face-attributes font &optional frame
-This function returns a list of face attributes corresponding to
-@var{font}.  The optional argument @var{frame} specifies the frame on
-which the font is to be displayed.  If it is @code{nil}, the selected
-frame is used.  The return value has the form
+此函数返回与@var{font}对应的字体属性列表。参数@var{frame}为可选参数，指定
+显示字体的窗帧，如果是@code{nil}，则使用选定的窗帧。如果参数为@code{nil}，
+则使用选定的窗帧。返回值的形式是
 
 @smallexample
 (:family @var{family} :height @var{height} :weight @var{weight}
    :slant @var{slant} :width @var{width})
 @end smallexample
 
-where the values of @var{family}, @var{height}, @var{weight},
-@var{slant}, and @var{width} are face attribute values.  Some of these
-key-attribute pairs may be omitted from the list if they are not
-specified by @var{font}.
+其中@var{family},@var{height},@var{weight},@var{slant},和@var{width}的
+值是字形属性值。如果这些键属性对没有被@var{font}指定，那么它们中的一些可能
+会从列表中被省略。
 @end defun
 
 @defun font-xlfd-name font &optional fold-wildcards
-This function returns the XLFD (X Logical Font Descriptor), a string,
-matching @var{font}.  @xref{Fonts,,, emacs, The GNU Emacs Manual}, for
-information about XLFDs.  If the name is too long for an XLFD (which
-can contain at most 255 characters), the function returns @code{nil}.
+此函数返回XLFD（X逻辑字体描述符），是一个字符串，匹配@var{font}。关于XLFD
+的信息，请参考@xref{Fonts,,,emacs, The GNU Emacs Manual}。如果名称对于
+XLFD来说太长（最多可以包含255个字符），函数返回@code{nil}。
 
-If the optional argument @var{fold-wildcards} is non-@code{nil},
-consecutive wildcards in the XLFD are folded into one.
+如果可选参数@var{fold-wildcards}是非@code{nil}，则XLFD中的连续通配符将被
+折叠成一个。
 @end defun
 
-The following two functions return important information about a font.
+以下两个函数返回字体的重要信息。
 
 @defun font-info name &optional frame
-This function returns information about a font specified by its
-@var{name}, a string, as it is used on @var{frame}.  If @var{frame} is
-omitted or @code{nil}, it defaults to the selected frame.
+本函数返回由@var{name}（字符串）指定的字体信息，因为它是在@var{frame}上使
+用的。如果省略了@var{frame}或者@code{nil}，则默认为选定的窗帧。
 
-The value returned by the function is a vector of the form
+函数返回的值是一个
 @code{[@var{opened-name} @var{full-name} @var{size} @var{height}
 @var{baseline-offset} @var{relative-compose} @var{default-ascent}
 @var{max-width} @var{ascent} @var{descent} @var{space-width}
-@var{average-width} @var{filename} @var{capability}]}.  Here's the
-description of each components of this vector:
+@var{average-width} @var{filename} @var{capability}]}
+形式的向量。下面是这个向量的各个组成部分的描述:
 
 @table @var
 @item opened-name
-The name used to open the font, a string.
+用于打开字体的名称，一个字符串。
 
 @item full-name
-The full name of the font, a string.
+字体的全称，一个字符串。
 
 @item size
-The pixel size of the font.
+字体的像素大小。
 
 @item height
-The height of the font in pixels.
+字体的高度，单位为像素。
 
 @item baseline-offset
-The offset in pixels from the @acronym{ASCII} baseline, positive
-upward.
+从@acronym{ASCII}基线出发的偏移量，以像素为单位，正数向上。
 
 @item relative-compose
 @itemx default-ascent
-Numbers controlling how to compose characters.
+控制如何组成字符的数字。
 
 @item max-width
-The maximum advance width of the font.
+字体的最大前进宽度。
 
 @item ascent
 @itemx descent
-The ascent and descent of this font.  The sum of these two numbers
-should be equal to the value of @var{height} above.
+这个字体的上升和下降。这两个数字之和应该等于上面@var{height}的值。
 
 @item space-width
-The width, in pixels, of the font's space character.
+字体的空格字符的宽度，以像素为单位。
 
 @item average-width
-The average width of the font characters.  If this is zero, Emacs uses
-the value of @var{space-width} instead, when it calculates text layout
-on display.
+字体字符的平均宽度。如果这个值为0，Emacs在计算文字布局时使用
+@var{space-width}的值。
 
 @item filename
-The file name of the font as a string.  This can be @code{nil} if the
-font back-end does not provide a way to find out the font's file name.
+字体的文件名，作为一个字符串。如果字体后端没有提供查找字体文件名的方法，则
+可以是@code{nil}。
 
 @item capability
-A list whose first element is a symbol representing the font type, one
-of @code{x}, @code{opentype}, @code{truetype}, @code{type1},
-@code{pcf}, or @code{bdf}.  For OpenType fonts, the list includes 2
-additional elements describing the @sc{gsub} and @sc{gpos} features
-supported by the font.  Each of these elements is a list of the form
+一个列表，其第一个元素是代表字体类型的符号，是@code{x}、@code{opentype}、
+@code{truetype}、@code{type1}、@code{pcf}或@code{bdf}中的一个。对于
+OpenType字体，这个列表包括两个额外的元素，描述字体支持的@sc{gsub}和
+@sc{gpos}特性。每一个元素都是一个列表，其形式为
 @code{((@var{script} (@var{langsys} @var{feature} @dots{}) @dots{})
-@dots{})}, where @var{script} is a symbol representing an OpenType
-script tag, @var{langsys} is a symbol representing an OpenType langsys
-tag (or @code{nil}, which stands for the default langsys), and each
-@var{feature} is a symbol representing an OpenType feature tag.
+@dots{})}，其中@var{script}是一个代表OpenType脚本标签的符号，
+@var{langsys}是一个代表OpenType langsys标签的符号（或@code{nil}，代表默
+认的langsys），每个@var{feature}是一个代表OpenType特征标签的符号。
 @end table
 @end defun
 
 @defun query-font font-object
-This function returns information about a @var{font-object}.  (This is
-in contrast to @code{font-info}, which takes the font name, a string,
-as its argument.)
+这个函数返回@var{font-object}的信息。(这与@code{font-info}不同，
+@code{font-info}的参数是一个字符串，字体名称。)
 
-The value returned by the function is a vector of the form
+函数返回的值是一个
 @code{[@var{name} @var{filename} @var{pixel-size} @var{max-width}
 @var{ascent} @var{descent} @var{space-width} @var{average-width}
-@var{capability}]}.  Here's the description of each components of this
-vector:
+@var{capability}]}形式的向量。下面是这个向量的各个组成部分的描述:
 
 @table @var
 @item name
-The font name, a string.
+字体名称，一个字符串。
 
 @item filename
-The file name of the font as a string.  This can be @code{nil} if the
-font back-end does not provide a way to find out the font's file name.
+字体的文件名，作为一个字符串。如果字体后台没有提供查找字体文件名的方法。如
+果字体后端没有提供查找字体文件名的方法，则可以是@code{nil}。
 
 @item pixel-size
-The pixel size of the font used to open the font.
+用于打开字体的像素大小。
 
 @item max-width
-The maximum advance width of the font.
+字体的最大前进宽度。
 
 @item ascent
 @itemx descent
-The ascent and descent of this font.  The sum of these two numbers
-gives the font height.
+这个字体的上升和下降。这两个数字之和就是字体的高度。
 
 @item space-width
-The width, in pixels, of the font's space character.
+字体的空格字符的宽度，以像素为单位。
 
 @item average-width
-The average width of the font characters.  If this is zero, Emacs uses
-the value of @var{space-width} instead, when it calculates text layout
-on display.
+字体字符的平均宽度。如果这个值为0，Emacs在计算文字布局时使用
+@var{space-width}的值。
 
 @item capability
-A list whose first element is a symbol representing the font type, one
-of @code{x}, @code{opentype}, @code{truetype}, @code{type1},
-@code{pcf}, or @code{bdf}.  For OpenType fonts, the list includes 2
-additional elements describing the @sc{gsub} and @sc{gpos} features
-supported by the font.  Each of these elements is a list of the form
+一个列表，其第一个元素是代表字体类型的符号，是@code{x}、@code{opentype}、
+@code{truetype}、@code{type1}、@code{pcf}或@code{bdf}中的一个。对于
+OpenType字体，这个列表包括两个额外的元素，描述字体支持的@sc{gsub}和
+@sc{gpos}特性。每一个元素都是一个列表，其形式为
 @code{((@var{script} (@var{langsys} @var{feature} @dots{}) @dots{})
-@dots{})}, where @var{script} is a symbol representing an OpenType
-script tag, @var{langsys} is a symbol representing an OpenType langsys
-tag (or @code{nil}, which stands for the default langsys), and each
-@var{feature} is a symbol representing an OpenType feature tag.
+@dots{})}，其中@var{script}是一个代表OpenType脚本标签的符号，
+@var{langsys}是一个代表OpenType langsys标签的符号（或@code{nil}，代表默
+认的langsys），每个@var{feature}是一个代表OpenType特征标签的符号。
 @end table
 @end defun
 
 @cindex font information for layout
-The following four functions return size information about fonts used
-by various faces, allowing various layout considerations in Lisp
-programs.  These functions take face remapping into consideration,
-returning information about the remapped face, if the face in question
-was remapped.  @xref{Face Remapping}.
+下面的四个函数返回了各种字体的大小信息，允许在Lisp程序中进行各种布局考虑。
+这些函数考虑到了面孔重映射，如果相关的字形被重映射，则返回有关重映射字形的
+信息。@xref{Face Remapping}.
 
 @defun default-font-width
-This function returns the average width in pixels of the font used by
-the current buffer's default face, as that face is defined for the
-selected frame.
+该函数返回当前缓冲区默认字形的字体的平均宽度，以像素为单位，因为该字形是为
+所选窗帧定义的。
 @end defun
 
 @defun default-font-height
-This function returns the height in pixels of the font used by the
-current buffer's default face, as that face is defined for the
-selected frame.
+该函数返回当前缓冲区默认字形的字体的高度，以像素为单位，因为该字形是为所选
+窗帧定义的。
 @end defun
 
 @defun window-font-width &optional window face
-This function returns the average width in pixels for the font used by
-@var{face} in @var{window}.  The specified @var{window} must be a live
-window.  If @code{nil} or omitted, @var{window} defaults to the
-selected window, and @var{face} defaults to the default face in
-@var{window}.
+此函数返回@var{face}在@var{window}中使用的字体的平均宽度，单位为像素。指
+定的@var{window}必须是一个实时窗口。如果@code{nil}被省略，则@var{window}
+默认为选定的窗口，@var{face}默认为@var{window}中的默认字形。
 @end defun
 
 @defun window-font-height &optional window face
-This function returns the height in pixels for the font used by
-@var{face} in @var{window}.  The specified @var{window} must be a live
-window.  If @code{nil} or omitted, @var{window} defaults to the
-selected window, and @var{face} defaults to the default face in
-@var{window}.
+此函数以像素为单位返回@var{face}在@var{window}中使用的字体高度。指定的
+@var{window}必须是一个实时窗口，如果@code{nil}被省略，则@var{window}默认
+为选定的窗口。如果@code{nil}被省略，则@var{window}默认为选定的窗口，
+@var{face}默认为@var{window}中的默认字形。
 @end defun
 
 @node 边缘
 @section Fringes
 @cindex fringes
 
-  On graphical displays, Emacs draws @dfn{fringes} next to each
-window: thin vertical strips down the sides which can display bitmaps
-indicating truncation, continuation, horizontal scrolling, and so on.
+  在图形显示上，Emacs会在每个窗口旁边绘制@dfn{fringes}：细细的竖条向下，可
+以显示表示截断、延续、水平滚动等的位图。
 
 @menu
-* Fringe Size/Pos::     Specifying where to put the window fringes.
-* Fringe Indicators::   Displaying indicator icons in the window fringes.
-* Fringe Cursors::      Displaying cursors in the right fringe.
-* Fringe Bitmaps::      Specifying bitmaps for fringe indicators.
-* Customizing Bitmaps:: Specifying your own bitmaps to use in the fringes.
-* Overlay Arrow::       Display of an arrow to indicate position.
+* 边缘尺寸/位置::  指定窗口边缘的位置。
+* 边缘指示器::     在窗口边缘显示指示图标。
+* 边缘光标::       在右侧边缘显示光标。
+* 边缘位图::       为边缘指示器指定位图。
+* 自定义位图::     在边缘指定自己的位图。
+* 叠加箭头::       显示箭头以指示位置。
 @end menu
 
-@node Fringe Size/Pos
+@node 边缘尺寸/位置
 @subsection Fringe Size and Position
 
-  The following buffer-local variables control the position and width
-of fringes in windows showing that buffer.
+  以下缓冲区局部变量控制了显示该缓冲区的窗口中边缘的位置和宽度。
 
 @defvar fringes-outside-margins
-The fringes normally appear between the display margins and the window
-text.  If the value is non-@code{nil}, they appear outside the display
-margins.  @xref{Display Margins}.
+边缘通常出现在显示边框和窗口文字之间。如果数值是非@code{nil}，则出现在显示
+边框之外。@xref{Display Margins}。
 @end defvar
 
 @defvar left-fringe-width
-This variable, if non-@code{nil}, specifies the width of the left
-fringe in pixels.  A value of @code{nil} means to use the left fringe
-width from the window's frame.
+这个变量如果不是@code{nil}，则指定左边缘的宽度，单位为像素。值为@code{nil}
+表示使用窗口框架的左边缘宽度。
 @end defvar
 
 @defvar right-fringe-width
-This variable, if non-@code{nil}, specifies the width of the right
-fringe in pixels.  A value of @code{nil} means to use the right fringe
-width from the window's frame.
+这个变量如果不是@code{nil}，则指定右边缘的宽度，单位为像素。值为@code{nil}
+表示使用窗口框架中的右边缘宽度。
 @end defvar
 
-  Any buffer which does not specify values for these variables uses
-the values specified by the @code{left-fringe} and @code{right-fringe}
-frame parameters (@pxref{Layout Parameters}).
+  任何没有为这些变量指定值的缓冲区都会使用@code{left-fringe}和
+@code{right-fringe}窗框参数（@pxref{Layout Parameters}）指定的值。
 
-  The above variables actually take effect via the function
-@code{set-window-buffer} (@pxref{Buffers and Windows}), which calls
-@code{set-window-fringes} as a subroutine.  If you change one of these
-variables, the fringe display is not updated in existing windows
-showing the buffer, unless you call @code{set-window-buffer} again in
-each affected window.  You can also use @code{set-window-fringes} to
-control the fringe display in individual windows.
+  上述变量实际上是通过函数@code{set-window-buffer}来实现的。(
+@pxref{Buffers and Windows})，它调用@code{set-window-fringes}作为一个子
+程序。如果您更改了其中一个变量，除非您在每个受影响的窗口中再次调用
+@code{set-window-buffer}，否则在显示缓冲区的现有窗口中，边缘显示不会更新
+。您也可以使用 @code{set-window-fringes} 来控制各个窗口的边缘显示。
 
 @defun set-window-fringes window left &optional right outside-margins persistent
-This function sets the fringe widths of window @var{window}.
-If @var{window} is @code{nil}, the selected window is used.
+此函数用于设置@var{window}窗口的边缘宽度。如果@var{window}为@code{nil}，
+则使用选定的窗口。
 
-The argument @var{left} specifies the width in pixels of the left
-fringe, and likewise @var{right} for the right fringe.  A value of
-@code{nil} for either one stands for the default width.  If
-@var{outside-margins} is non-@code{nil}, that specifies that fringes
-should appear outside of the display margins.
+参数@var{left}指定了左边边缘的宽度，以像素为单位，同样@var{right}也指定了
+右边边缘的宽度。任意一个如果为非@code{nil}，则代表默认宽度。如果
+@var{outside-margins}是非@code{nil}，则指定边缘应该出现在显示边框之外。
 
-If @var{window} is not large enough to accommodate fringes of the
-desired width, this leaves the fringes of @var{window} unchanged.
+如果@var{window}的大小不足以容纳所需宽度的边缘，那么@var{window}的边缘将
+保持不变。
 
-The values specified here may be later overridden by invoking
-@code{set-window-buffer} (@pxref{Buffers and Windows}) on @var{window}
-with its @var{keep-margins} argument @code{nil} or omitted.  However,
-if the optional fifth argument @var{persistent} is non-@code{nil} and
-the other arguments are processed successfully, the values specified
-here unconditionally survive subsequent invocations of
-@code{set-window-buffer}.  This can be used to permanently turn off
-fringes in the minibuffer window, consult the description of
-@code{set-window-scroll-bars} for an example (@pxref{Scroll Bars}).
+这里指定的值可以在以后通过在@var{window}上调用@code{set-window-buffer}来
+覆盖。(@pxref{Buffers and Windows})，其@var{keep-margins}参数为
+@code{nil}或省略。然而，如果第五个参数@var{persistent}是非@code{nil}，并
+且其他参数都被成功处理，那么这里指定的值将无条件地在后续调用
+@code{set-window-buffer}时继续存在。这可以用来永久关闭minibuffer窗口中的
+边缘，请参考@code{set-window-scroll-bar}的描述，以了解一个例子(
+@pxref{Scroll Bars})。
 @end defun
 
 @defun window-fringes &optional window
-This function returns information about the fringes of a window
-@var{window}.  If @var{window} is omitted or @code{nil}, the selected
-window is used.  The value has the form @code{(@var{left-width}
-@var{right-width} @var{outside-margins} @var{persistent})}.
+此函数返回关于@var{window}窗口边缘的信息，如果@var{window}被省略或是
+@code{nil}，则使用选定的窗口。值的形式为@code{(@var{left-width} @var{right-width} @var{outside-margins} @var{persistent})}。
 @end defun
 
 
-@node Fringe Indicators
+@node 边缘指示器
 @subsection Fringe Indicators
 @cindex fringe indicators
 @cindex indicators, fringe
 
-  @dfn{Fringe indicators} are tiny icons displayed in the window
-fringe to indicate truncated or continued lines, buffer boundaries,
-etc.
+  @dfn{Fringe indicators}是显示在窗口边缘的微小图标，用于指示截断或延续的
+行、缓冲区边界等。
 
 @defopt indicate-empty-lines
 @cindex fringes, and empty line indication
 @cindex empty lines, indicating
-When this is non-@code{nil}, Emacs displays a special glyph in the
-fringe of each empty line at the end of the buffer, on graphical
-displays.  @xref{Fringes}.  This variable is automatically
-buffer-local in every buffer.
+当这个值是非@code{nil}时，Emacs会在缓冲区末尾的每一行空行的边缘显示一个特
+殊的字形。@xref{Fringes}。在每个缓冲区中，这个变量都是自动的缓冲区本地变量
+。
 @end defopt
 
 @defopt indicate-buffer-boundaries
 @cindex buffer boundaries, indicating
-This buffer-local variable controls how the buffer boundaries and
-window scrolling are indicated in the window fringes.
+这个缓冲区局部变量控制缓冲区边界和窗口滚动在窗口边缘的显示方式。
 
-Emacs can indicate the buffer boundaries---that is, the first and last
-line in the buffer---with angle icons when they appear on the screen.
-In addition, Emacs can display an up-arrow in the fringe to show
-that there is text above the screen, and a down-arrow to show
-there is text below the screen.
+Emacs可以在缓冲区边界--即缓冲区的第一行和最后一行--出现在屏幕上时用角度图
+标表示。此外，Emacs还可以在边框中显示一个向上的箭头来表示屏幕上方有文字，
+而向下的箭头则表示屏幕下方有文字。
 
-There are three kinds of basic values:
+基本值有三种：
 
 @table @asis
 @item @code{nil}
-Don't display any of these fringe icons.
+不要显示任何这些边缘的图标。
 @item @code{left}
-Display the angle icons and arrows in the left fringe.
+在左边缘显示角度图标和箭头。
 @item @code{right}
-Display the angle icons and arrows in the right fringe.
+在右边缘中显示角度图标和箭头。
 @item any non-alist
-Display the angle icons in the left fringe
-and don't display the arrows.
+在左边缘中显示角度图标，不要显示箭头。
 @end table
 
-Otherwise the value should be an alist that specifies which fringe
-indicators to display and where.  Each element of the alist should
-have the form @code{(@var{indicator} . @var{position})}.  Here,
-@var{indicator} is one of @code{top}, @code{bottom}, @code{up},
-@code{down}, and @code{t} (which covers all the icons not yet
-specified), while @var{position} is one of @code{left}, @code{right}
-and @code{nil}.
+否则，该值应该是一个alist，指定哪些边缘指标要显示，在哪里显示。alist的每个
+元素应该是@code{(@var{indicator} . @var{position})}的形式。这里，
+@var{indicator}是@code{top}、@code{bottom}、@code{up}、@code{down}和
+@code{t}中的一个。(它涵盖了所有尚未指定的图标)，而@var{position}是
+@code{left}、@code{right}和@code{nil}中的一个。
 
-For example, @code{((top . left) (t . right))} places the top angle
-bitmap in left fringe, and the bottom angle bitmap as well as both
-arrow bitmaps in right fringe.  To show the angle bitmaps in the left
-fringe, and no arrow bitmaps, use @code{((top .  left) (bottom . left))}.
+例如，@code{((top .left) (t .right))}将上角位图放在左边缘，下角位图和两个
+箭头位图放在右边缘。如果要在左边缘显示角度位图，而不显示箭头位图，请使用
+@code{((top . left) (bottom . left))}。
 @end defopt
 
 @defvar fringe-indicator-alist
-This buffer-local variable specifies the mapping from logical fringe
-indicators to the actual bitmaps displayed in the window fringes.  The
-value is an alist of elements @code{(@var{indicator}
-. @var{bitmaps})}, where @var{indicator} specifies a logical indicator
-type and @var{bitmaps} specifies the fringe bitmaps to use for that
-indicator.
+这个缓冲区局部变量指定了从逻辑边缘指示器到窗口边缘显示的实际位图的映射。值
+是一个元素@code{(@var{indicator} . @var{bitmaps})}的列表，其中
+@var{indicator}指定了一个逻辑指标类型，@var{bitmaps}指定了该指标的边缘位
+图。
 
-  Each @var{indicator} should be one of the following symbols:
+  每一个@var{indicator}应该是以下符号之一：
 
 @table @asis
 @item @code{truncation}, @code{continuation}.
-Used for truncation and continuation lines.
+用于截断和延续线。
 
 @item @code{up}, @code{down}, @code{top}, @code{bottom}, @code{top-bottom}
-Used when @code{indicate-buffer-boundaries} is non-@code{nil}:
-@code{up} and @code{down} indicate a buffer boundary lying above or
-below the window edge; @code{top} and @code{bottom} indicate the
-topmost and bottommost buffer text line; and @code{top-bottom}
-indicates where there is just one line of text in the buffer.
+当@code{indicate-buffer-boundaries}是非@code{nil}时使用。@code{up}和
+@code{down}表示缓冲区边界位于窗口边缘的上方或下方；@code{top}和
+@code{bottom}表示缓冲区最上方和最下方的文字行；@code{top-bottom}
+表示缓冲区中只有一行文字的地方。
 
 @item @code{empty-line}
-Used to indicate empty lines after the buffer end when
-@code{indicate-empty-lines} is non-@code{nil}.
+当@code{indicat-empty-lines}是非@code{nil}时，用于指示缓冲区结束后的空行
+。
 
 @item @code{overlay-arrow}
-Used for overlay arrows (@pxref{Overlay Arrow}).
-@c Is this used anywhere?
-@c @item Unknown bitmap indicator:
+用于叠加箭头（@pxref{Overlay Arrow}）。
+@c 这在哪里用过？
+@c @item 未知位图指示器:
 @c @code{unknown}.
 @end table
 
-  Each @var{bitmaps} value may be a list of symbols @code{(@var{left}
-@var{right} [@var{left1} @var{right1}])}.  The @var{left} and
-@var{right} symbols specify the bitmaps shown in the left and/or right
-fringe, for the specific indicator.  @var{left1} and @var{right1} are
-specific to the @code{bottom} and @code{top-bottom} indicators, and
-are used to indicate that the last text line has no final newline.
-Alternatively, @var{bitmaps} may be a single symbol which is used in
-both left and right fringes.
+  每个@var{bitmaps}值可以是一个符号列表@code{(@var{left} @var{right}
+[@var{left1} @var{right1}])}。@var{left}和@var{right}符号指定了特定指标
+在左边和/或右边边缘显示的位图。@var{left1}和@var{right1}是针对
+@code{bottom}和@code{top-bottom}指标的，用来表示最后一行文字没有最后的换
+行。另外，@var{bitmaps}也可以是一个单一的符号，它同时用于左、右边缘。
 
-  @xref{Fringe Bitmaps}, for a list of standard bitmap symbols and how
-to define your own.  In addition, @code{nil} represents the empty
-bitmap (i.e., an indicator that is not shown).
+  @xref{Fringe Bitmaps}，提供标准位图符号的列表以及如何定义您自己的位图。
+此外，@code{nil}代表空位图（即没有显示的指示符）。
 
-  When @code{fringe-indicator-alist} has a buffer-local value, and
-there is no bitmap defined for a logical indicator, or the bitmap is
-@code{t}, the corresponding value from the default value of
-@code{fringe-indicator-alist} is used.
+  当@code{fringe-indicator-alist}具有缓冲区局部值，且没有为逻辑指标定义位
+图，或者位图为@code{t}时，将使用@code{fringe-indicator-alist}默认值中的对
+应值。
 @end defvar
 
-@node Fringe Cursors
+@node 边缘光标
 @subsection Fringe Cursors
 @cindex fringe cursors
 @cindex cursor, fringe
@@ -3610,7 +3494,7 @@ no bitmap defined for a cursor type, the corresponding value from the
 default value of @code{fringes-indicator-alist} is used.
 @end defvar
 
-@node Fringe Bitmaps
+@node 边缘位图
 @subsection Fringe Bitmaps
 @cindex fringe bitmaps
 @cindex bitmaps, fringe
@@ -3706,7 +3590,7 @@ If @var{pos} is @code{nil}, that stands for the value of point in
 @var{window}.
 @end defun
 
-@node Customizing Bitmaps
+@node 自定义位图
 @subsection Customizing Fringe Bitmaps
 @cindex fringe bitmaps, customizing
 
@@ -3754,7 +3638,7 @@ bitmap's face controls the color to draw it in.
 @var{face} should specify only the foreground color.
 @end defun
 
-@node Overlay Arrow
+@node 叠加箭头
 @subsection The Overlay Arrow
 @c @cindex overlay arrow  Duplicates variable names
 
