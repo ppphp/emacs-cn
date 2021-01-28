@@ -3452,46 +3452,37 @@ Emacs可以在缓冲区边界--即缓冲区的第一行和最后一行--出现�
 @cindex fringe cursors
 @cindex cursor, fringe
 
-  When a line is exactly as wide as the window, Emacs displays the
-cursor in the right fringe instead of using two lines.  Different
-bitmaps are used to represent the cursor in the fringe depending on
-the current buffer's cursor type.
+  当一行与窗口的宽度完全相同时，Emacs将光标显示在右侧的边缘，而不是使用两
+行。根据当前缓冲区的光标类型，使用不同的位图来表示光标在边缘的位置。
 
 @defopt overflow-newline-into-fringe
-If this is non-@code{nil}, lines exactly as wide as the window (not
-counting the final newline character) are not continued.  Instead,
-when point is at the end of the line, the cursor appears in the right
-fringe.
+如果是非@code{nil}，那么与窗口完全一样宽的行（不包括最后的换行符）将不会继
+续。相反，当点在行尾时，光标会出现在右边的边缘。
 @end defopt
 
 @defvar fringe-cursor-alist
-This variable specifies the mapping from logical cursor type to the
-actual fringe bitmaps displayed in the right fringe.  The value is an
-alist where each element has the form @code{(@var{cursor-type}
-. @var{bitmap})}, which means to use the fringe bitmap @var{bitmap} to
-display cursors of type @var{cursor-type}.
+这个变量指定了从逻辑光标类型到实际边缘位图的映射。这个值是一个列表，里面每
+个元素的形式为@code{(@var{cursor-type} . @var{bitmap})}，表示使用边缘位
+图@var{bitmap}来显示类型为@var{cursor-type}的游标。
 
-Each @var{cursor-type} should be one of @code{box}, @code{hollow},
-@code{bar}, @code{hbar}, or @code{hollow-small}.  The first four have
-the same meanings as in the @code{cursor-type} frame parameter
-(@pxref{Cursor Parameters}).  The @code{hollow-small} type is used
-instead of @code{hollow} when the normal @code{hollow-rectangle}
-bitmap is too tall to fit on a specific display line.
+每个@var{cursor-type}应该是@code{box}、@code{hollow}、@code{bar}、
+@code{hbar}或@code{hollow-small}中的一个。前四个参数的含义与
+@code{cursor-type}窗框参数（@pxref{Cursor Parameters}）相同。当正常的
+@code{hollow-rectangle}位图太高，无法在特定的显示行上显示时，就会使用
+@code{hollow-small}类型来代替@code{hollow}。
 
-Each @var{bitmap} should be a symbol specifying the fringe bitmap to
-be displayed for that logical cursor type.
+每个@var{bitmap}都应该是一个符号，指定该逻辑光标类型的边缘位图。
 @iftex
-See the next subsection for details.
+详见下一小节。
 @end iftex
 @ifnottex
 @xref{Fringe Bitmaps}.
 @end ifnottex
 
-@c FIXME: I can't find the fringes-indicator-alist variable.  Maybe
-@c it should be fringe-indicator-alist or fringe-cursor-alist?  --xfq
-When @code{fringe-cursor-alist} has a buffer-local value, and there is
-no bitmap defined for a cursor type, the corresponding value from the
-default value of @code{fringes-indicator-alist} is used.
+@c FIXME: 我找不到fringes-indicator-alist变量。也许应该是
+@c fringe-indicator-alist还是fringe-cursor-alist？--xfq
+当@code{fringe-cursor-alist}有一个缓冲区本地值，并且没有为游标类型定义位
+图时，将使用@code{fringe-indicator-alist}默认值中的对应值。
 @end defvar
 
 @node 边缘位图
@@ -3499,41 +3490,32 @@ default value of @code{fringes-indicator-alist} is used.
 @cindex fringe bitmaps
 @cindex bitmaps, fringe
 
-  The @dfn{fringe bitmaps} are the actual bitmaps which represent the
-logical fringe indicators for truncated or continued lines, buffer
-boundaries, overlay arrows, etc.  Each bitmap is represented by a
-symbol.
+  @dfn{fringe bitmaps}是实际的位图，它表示截断或继续的线条、缓冲区边界、
+覆盖箭头等的逻辑边缘指标。每个位图用一个符号表示。
 @iftex
-These symbols are referred to by the variables
-@code{fringe-indicator-alist} and @code{fringe-cursor-alist},
-described in the previous subsections.
+这些符号由变量@code{fringe-indicator-alist}和@code{fringe-cursor-alist}
+来引用，在前面的小节中已经介绍过。
 @end iftex
 @ifnottex
-These symbols are referred to by the variable
-@code{fringe-indicator-alist}, which maps fringe indicators to bitmaps
-(@pxref{Fringe Indicators}), and the variable
-@code{fringe-cursor-alist}, which maps fringe cursors to bitmaps
-(@pxref{Fringe Cursors}).
+这些符号由@code{fringe-indicator-alist}变量和@code{fringe-cursor-alist}
+变量引用，前者将边缘指示器映射到位图（@pxref{Fringe Indicators}），后者将
+边缘光标映射到位图（@pxref{Fringe Cursors}）。
 @end ifnottex
 
-  Lisp programs can also directly display a bitmap in the left or
-right fringe, by using a @code{display} property for one of the
-characters appearing in the line (@pxref{Other Display Specs}).  Such
-a display specification has the form
+  Lisp程序也可以直接在左边缘或右边缘显示位图，通过对行中出现的一个字符使用
+@code{display}属性（@pxref{Other Display Specs}）。这种显示规范的形式是
 
 @example
 (@var{fringe} @var{bitmap} [@var{face}])
 @end example
 
 @noindent
-@var{fringe} is either the symbol @code{left-fringe} or
-@code{right-fringe}.  @var{bitmap} is a symbol identifying the bitmap
-to display.  The optional @var{face} names a face whose foreground
-color is used to display the bitmap; this face is automatically merged
-with the @code{fringe} face.
+@var{fringe}是符号@code{left-fringe}或@code{right-fringe}。@var{bitmap}
+是一个标识要显示的位图的符号。可选的@var{face}是一个字形，它的前景色是用来
+显示位图的；这个字形会自动与@code{fringe}字形合并。
 
-  For instance, to display an arrow in the left fringe, using the
-@code{warning} face, you could say something like:
+  例如，如果要在左侧边缘中显示一个箭头，使用@code{warning}字形，你可以这样
+写：
 
 @lisp
 (overlay-put
@@ -3543,51 +3525,47 @@ with the @code{fringe} face.
                  `(left-fringe right-arrow warning)))
 @end lisp
 
-  Here is a list of the standard fringe bitmaps defined in Emacs, and
-how they are currently used in Emacs (via
-@code{fringe-indicator-alist} and @code{fringe-cursor-alist}):
+  这里是Emacs中定义的标准边缘位图的列表，以及它们目前在Emacs中的使用方式（
+通过@code{fringe-indicator-alist}和@code{fringe-cursor-alist}）。
 
 @table @asis
 @item @code{left-arrow}, @code{right-arrow}
-Used to indicate truncated lines.
+用于表示截断的行。
 
 @item @code{left-curly-arrow}, @code{right-curly-arrow}
-Used to indicate continued lines.
+用来表示续行。
 
 @item @code{right-triangle}, @code{left-triangle}
-The former is used by overlay arrows.  The latter is unused.
+前者由覆盖箭头使用。后者是不用的。
 
 @item @code{up-arrow}, @code{down-arrow}
 @itemx @code{bottom-left-angle}, @code{bottom-right-angle}
 @itemx @code{top-left-angle}, @code{top-right-angle}
 @itemx @code{left-bracket}, @code{right-bracket}
 @itemx @code{empty-line}
-Used to indicate buffer boundaries.
+用来表示缓冲区的边界。
 
 @item @code{filled-rectangle}, @code{hollow-rectangle}
 @itemx @code{filled-square}, @code{hollow-square}
-@itemx @code{vertical-bar}, @code{horizontal-bar}
-Used for different types of fringe cursors.
+@itemx @code{vertical-bar}, @code{horizontal-bar}。
+用于不同类型的边缘光标。
 
 @item @code{exclamation-mark}, @code{question-mark}
-Not used by core Emacs features.
+不被Emacs核心功能使用。
 @end table
 
 @noindent
-The next subsection describes how to define your own fringe bitmaps.
+下一小节介绍如何定义自己的边缘位图。
 
 @defun fringe-bitmaps-at-pos &optional pos window
-This function returns the fringe bitmaps of the display line
-containing position @var{pos} in window @var{window}.  The return
-value has the form @code{(@var{left} @var{right} @var{ov})}, where @var{left}
-is the symbol for the fringe bitmap in the left fringe (or @code{nil}
-if no bitmap), @var{right} is similar for the right fringe, and @var{ov}
-is non-@code{nil} if there is an overlay arrow in the left fringe.
+此函数返回窗口@var{window}中包含位置@var{pos}的显示行的边缘位图。返回值的
+形式为@code{(@var{left} @var{right} @var{ov})}，其中@var{left}是左边缘的
+边缘位图的符号（如果没有位图，则为@code{nil}），@var{right}是右边缘的类似
+符号，如果左边缘有覆盖箭头，则@var{ov}是非@code{nil}。
 
-The value is @code{nil} if @var{pos} is not visible in @var{window}.
-If @var{window} is @code{nil}, that stands for the selected window.
-If @var{pos} is @code{nil}, that stands for the value of point in
-@var{window}.
+如果@var{pos}在@var{window}中不可见，则该值为@code{nil}。如果
+@var{window}是@code{nil}，则代表选定的窗口。如果@var{pos}是@code{nil}，
+则代表@var{window}中的点的值。
 @end defun
 
 @node 自定义位图
@@ -3595,192 +3573,147 @@ If @var{pos} is @code{nil}, that stands for the value of point in
 @cindex fringe bitmaps, customizing
 
 @defun define-fringe-bitmap bitmap bits &optional height width align
-This function defines the symbol @var{bitmap} as a new fringe bitmap,
-or replaces an existing bitmap with that name.
+这个函数定义符号@var{bitmap}为一个新的边缘位图，或者用该名称替换一个现有的
+位图。
 
-The argument @var{bits} specifies the image to use.  It should be
-either a string or a vector of integers, where each element (an
-integer) corresponds to one row of the bitmap.  Each bit of an integer
-corresponds to one pixel of the bitmap, where the low bit corresponds
-to the rightmost pixel of the bitmap.  (Note that this order of bits
-is opposite of the order in XBM images; @pxref{XBM Images}.)
+参数@var{bits}指定要使用的图像。它应该是一个字符串或整数向量，其中每个元素
+（整数）对应于位图的一行。整数的每一个位对应于位图的一个像素，其中低位对应
+于位图的最右边的像素。(请注意，这个位的顺序与XBM图像中的顺序相反；
+@pxref{XBM Images}。)
 
-The height is normally the length of @var{bits}.  However, you
-can specify a different height with non-@code{nil} @var{height}.  The width
-is normally 8, but you can specify a different width with non-@code{nil}
-@var{width}.  The width must be an integer between 1 and 16.
+高度通常是@var{bits}的长度。但是，您可以使用非@code{nil}的@var{height}指
+定不同的高度。宽度通常是8，但你可以用非@code{nil}的@var{width}指定不同的
+宽度。宽度必须是1到16之间的整数。
 
-The argument @var{align} specifies the positioning of the bitmap
-relative to the range of rows where it is used; the default is to
-center the bitmap.  The allowed values are @code{top}, @code{center},
-or @code{bottom}.
+参数@var{align}指定了位图相对于使用它的行的范围的定位，默认为位图居中。允
+许的值是@code{top}、@code{center}或@code{bottom}。
 
-The @var{align} argument may also be a list @code{(@var{align}
-@var{periodic})} where @var{align} is interpreted as described above.
-If @var{periodic} is non-@code{nil}, it specifies that the rows in
-@code{bits} should be repeated enough times to reach the specified
-height.
+@var{align}参数也可以是一个列表@code{(@var{align} @var{periodic})}，其中
+@var{align}的解释如上所述。如果@var{periodic}是非@code{nil}，则指定
+@code{bits}中的行应该重复足够的次数以达到指定的高度。
 @end defun
 
 @defun destroy-fringe-bitmap bitmap
-This function destroys the fringe bitmap identified by @var{bitmap}.
-If @var{bitmap} identifies a standard fringe bitmap, it actually
-restores the standard definition of that bitmap, instead of
-eliminating it entirely.
+此函数销毁由@var{bitmap}识别的边缘位图。如果@var{bitmap}识别了一个标准的
+边缘位图，那么它实际上会恢复该位图的标准定义，而不是完全删除它。
 @end defun
 
 @defun set-fringe-bitmap-face bitmap &optional face
-This sets the face for the fringe bitmap @var{bitmap} to @var{face}.
-If @var{face} is @code{nil}, it selects the @code{fringe} face.  The
-bitmap's face controls the color to draw it in.
+这将边缘位图@var{bitmap}的字形设置为@var{face}。如果@var{face}是
+@code{nil}，则选择@code{fringe}字形。位图的字形控制着绘制它的颜色。
 
-@var{face} is merged with the @code{fringe} face, so normally
-@var{face} should specify only the foreground color.
+@var{face}与@code{fringe}字形合并，所以通常@var{face}应该只指定前景色。
 @end defun
 
 @node 叠加箭头
 @subsection The Overlay Arrow
-@c @cindex overlay arrow  Duplicates variable names
+@c @cindex 叠加箭头 重复变量名
 
-  The @dfn{overlay arrow} is useful for directing the user's attention
-to a particular line in a buffer.  For example, in the modes used for
-interface to debuggers, the overlay arrow indicates the line of code
-about to be executed.  This feature has nothing to do with
-@dfn{overlays} (@pxref{Overlays}).
+  @dfn{overlay arrow}对于引导用户注意缓冲区中的某一行非常有用。例如，在用
+于调试器接口的模式中，叠加箭头指示即将执行的代码行。这个功能与
+@dfn{overlays}(@pxref{Overlays})无关。
 
 @defvar overlay-arrow-string
-This variable holds the string to display to call attention to a
-particular line, or @code{nil} if the arrow feature is not in use.
-On a graphical display the contents of the string are ignored; instead a
-glyph is displayed in the fringe area to the left of the display area.
+这个变量保存了要显示的字符串，以引起对某一行的注意，如果没有使用箭头功能，
+则显示@code{nil}。在图形显示中，字符串的内容会被忽略；相反，在显示区域左侧
+的边缘区域会显示一个字形。
 @end defvar
 
 @defvar overlay-arrow-position
-This variable holds a marker that indicates where to display the overlay
-arrow.  It should point at the beginning of a line.  On a non-graphical
-display the arrow text
-appears at the beginning of that line, overlaying any text that would
-otherwise appear.  Since the arrow is usually short, and the line
-usually begins with indentation, normally nothing significant is
-overwritten.
+这个变量拥有一个标记，指示在哪里显示叠加箭头。它应该指向一行的开头。在非图
+形化显示中，箭头文本出现在该行的开头，覆盖任何本来会出现的文本。由于箭头通
+常很短，而且该行通常以缩进的方式开始，通常不会覆盖任何重要的内容。
 
-The overlay-arrow string is displayed in any given buffer if the value
-of @code{overlay-arrow-position} in that buffer points into that
-buffer.  Thus, it is possible to display multiple overlay arrow strings
-by creating buffer-local bindings of @code{overlay-arrow-position}.
-However, it is usually cleaner to use
-@code{overlay-arrow-variable-list} to achieve this result.
-@c !!! overlay-arrow-position: but the overlay string may remain in the display
-@c of some other buffer until an update is required.  This should be fixed
-@c now.  Is it?
+如果该缓冲区中@code{overlay-arrow-position}的值指向该缓冲区，则在任何给定
+的缓冲区中都会显示叠加箭头字符串。因此，可以通过创建
+@code{overlay-arrow-position}的缓冲区本地绑定来显示多个叠加箭头字符串。然
+而，通常使用 @code{overlay-arrow-variable-list} 来实现这一结果更为简洁。
+@c !!! overlay-arrow-position: 但覆盖的字符串可以保留在其他缓冲区的显示中
+@c 直到需要更新为止。这一点现在应该得到修正。是吗？
 @end defvar
 
-  You can do a similar job by creating an overlay with a
-@code{before-string} property.  @xref{Overlay Properties}.
+  您可以通过使用@code{before-string}属性创建一个叠加层来完成类似的工作。
+@xref{Overlay Properties}。
 
-  You can define multiple overlay arrows via the variable
-@code{overlay-arrow-variable-list}.
+  您可以通过变量@code{overlay-arrow-variable-list}定义多个叠加箭头。
 
 @defvar overlay-arrow-variable-list
-This variable's value is a list of variables, each of which specifies
-the position of an overlay arrow.  The variable
-@code{overlay-arrow-position} has its normal meaning because it is on
-this list.
+这个变量的值是一个变量列表，每个变量都指定了叠加箭头的位置。变量
+@code{overlay-arrow-position}具有正常意义，因为它在这个列表中。
 @end defvar
 
-Each variable on this list can have properties
-@code{overlay-arrow-string} and @code{overlay-arrow-bitmap} that
-specify an overlay arrow string (for text terminals) or fringe bitmap
-(for graphical terminals) to display at the corresponding overlay
-arrow position.  If either property is not set, the default
-@code{overlay-arrow-string} or @code{overlay-arrow} fringe indicator
-is used.
-
+这个列表中的每个变量都可以拥有@code{overlay-arrow-string}和
+@code{overlay-arrow-bitmap}属性，这些属性指定了要在相应的叠加箭头位置显示
+的叠加箭头字符串（对于文本终端）或边缘位图（对于图形终端）。如果没有设置任
+何一个属性，则使用默认的@code{overlay-arrow-string}或
+@code{overlay-arrow}边缘指示器。
 
 @node 滚动条
 @section Scroll Bars
 @cindex scroll bars
 
-Normally the frame parameter @code{vertical-scroll-bars} controls
-whether the windows in the frame have vertical scroll bars, and whether
-they are on the left or right.  The frame parameter
-@code{scroll-bar-width} specifies how wide they are (@code{nil} meaning
-the default).
+通常情况下，窗框参数@code{vertical-scroll-bar}控制窗框中的窗口是否有垂直
+滚动条，以及它们是在左边还是右边。窗框参数@code{scroll-bar-width}指定了它
+们的宽度（@code{nil} 表示默认值）。
 
-   The frame parameter @code{horizontal-scroll-bars} controls whether
-the windows in the frame have horizontal scroll bars.  The frame
-parameter @code{scroll-bar-height} specifies how high they are
-(@code{nil} meaning the default).  @xref{Layout Parameters}.
+窗框参数@code{horizontal-scroll-bar}控制窗框中的窗口是否有水平滚动条。窗
+框参数@code{scroll-bar-height}指定了它们的高度（@code{nil}表示默认值）。
+@xref{Layout Parameters}。
 
 @vindex horizontal-scroll-bars-available-p
-   Horizontal scroll bars are not available on all platforms.  The
-function @code{horizontal-scroll-bars-available-p} which takes no
-argument returns non-@code{nil} if they are available on your system.
+  并非所有平台上都有水平滚动条。函数
+@code{horizontal-scroll-bar-available-p}不接受任何参数，如果它们在你的系
+统上可用，则返回非@code{nil}。
 
-   The following three functions take as argument a live frame which
-defaults to the selected one.
+  以下三个函数以一个默认为选定的实时窗框作为参数。
 
 @defun frame-current-scroll-bars &optional frame
-This function reports the scroll bar types for frame @var{frame}.  The
-value is a cons cell @code{(@var{vertical-type} .@:
-@var{horizontal-type})}, where @var{vertical-type} is either
-@code{left}, @code{right}, or @code{nil} (which means no vertical scroll
-bar.)  @var{horizontal-type} is either @code{bottom} or @code{nil}
-(which means no horizontal scroll bar).
+这个函数报告框架@var{frame}的滚动条类型。值是一个cons单元格
+@code{(@var{vertical-type} .@: @var{horizontal-type})}，其中
+@var{vertical-type}是@code{left}、@code{right}或@code{nil}。(这意味着没
+有垂直滚动条。)@var{horizontal-type}是@code{bottom}或@code{nil}。这意味
+着没有水平滚动条）。
 @end defun
 
 @defun frame-scroll-bar-width &optional frame
-This function returns the width of vertical scroll bars of @var{frame}
-in pixels.
+此函数返回@var{frame}的垂直滚动条的宽度，单位为像素。
 @end defun
 
 @defun frame-scroll-bar-height &optional frame
-This function returns the height of horizontal scroll bars of
-@var{frame} in pixels.
+此函数返回@var{frame}的水平滚动条的高度，单位为像素。
 @end defun
 
-You can override the frame specific settings for individual windows by
-using the following function:
+您可以通过使用以下功能覆盖各个窗口的窗框特定设置：
 
 @defun set-window-scroll-bars window &optional width vertical-type height horizontal-type persistent
-This function sets the width and/or height and the types of scroll bars
-for window @var{window}.  If @var{window} is @code{nil}, the selected
-window is used.
+此函数用于设置窗口@var{window}的宽度和/或高度以及滚动条的类型。如果
+@var{window}为@code{nil}，则使用选定的窗口。
 
-@var{width} specifies the width of the vertical scroll bar in pixels
-(@code{nil} means use the width specified for the frame).
-@var{vertical-type} specifies whether to have a vertical scroll bar and,
-if so, where.  The possible values are @code{left}, @code{right},
-@code{t}, which means to use the frame's default, and @code{nil} for no
-vertical scroll bar.
+@var{width}指定垂直滚动条的宽度，单位为像素(@code{nil}表示使用为窗框指定
+的宽度)。@var{vertical-type}指定是否使用垂直滚动条，如果是，则指定在哪里使
+用。可能的值有@code{left}、@code{right}、@code{t}（表示使用框架的默认值）
+和@code{nil}（表示没有垂直滚动条）。
 
-@var{height} specifies the height of the horizontal scroll bar in
-pixels (@code{nil} means use the height specified for the frame).
-@var{horizontal-type} specifies whether to have a horizontal scroll
-bar.  The possible values are @code{bottom}, @code{t}, which means to
-use the frame's default, and @code{nil} for no horizontal scroll bar.
-Note that for a mini window the value @code{t} has the same meaning as
-@code{nil}, namely to not show a horizontal scroll bar.  You have to
-explicitly specify @code{bottom} in order to show a horizontal scroll
-bar in a mini window.
+@var{height}指定水平滚动条的高度，单位为像素（@code{nil}表示使用窗框指定
+的高度）。@var{horizontal-type}指定是否使用水平滚动条。可能的值是
+@code{bottom}，@code{t}表示使用框架的默认值，@code{nil}表示没有水平滚动条
+。请注意，对于迷你窗口来说，@code{t}和@code{nil}的含义相同，即不显示水平滚
+动条。你必须明确指定@code{bottom}才能在迷你窗口中显示水平滚动条。
 
-If @var{window} is not large enough to accommodate a scroll bar of the
-desired dimension, this leaves the corresponding scroll bar unchanged.
+如果@var{window}不够大，无法容纳所需尺寸的滚动条，那么相应的滚动条将保持不
+变。
 
-The values specified here may be later overridden by invoking
-@code{set-window-buffer} (@pxref{Buffers and Windows}) on @var{window}
-with its @var{keep-margins} argument @code{nil} or omitted.  However,
-if the optional fifth argument @var{persistent} is non-@code{nil} and
-the other arguments are processed successfully, the values specified
-here unconditionally survive subsequent invocations of
-@code{set-window-buffer}.
+这里指定的值可以在以后通过调用@code{set-window-buffer}来覆盖。(
+@pxref{Buffers and Windows})上的@var{window}，其@var{keep-margins}参数
+为@code{nil}或省略。然而，如果可选的第五个参数@var{persistent}是非
+@code{nil}，并且其他参数都被成功处理，那么这里指定的值将无条件地在后续调用
+@code{set-window-buffer}时继续存在。
 @end defun
 
-Using the @var{persistent} argument of @code{set-window-scroll-bars}
-and @code{set-window-fringes} (@pxref{Fringe Size/Pos}) you can
-reliably and permanently turn off scroll bars and/or fringes in any
-minibuffer window by adding the following snippet to your early init
-file (@pxref{Init File}).
+使用@code{set-window-scroll-bar}和@code{set-window-fringes}的
+var{persistent}参数。(@pxref{Fringe Size/Pos})您可以通过在您的早期初始文
+件(@pxref{Init File})中添加以下代码段来可靠地永久关闭任何迷你缓冲区窗口中
+的滚动条和/或边缘。
 
 @smallexample
 @group
@@ -3793,99 +3726,79 @@ file (@pxref{Init File}).
 @end group
 @end smallexample
 
-The following four functions take as argument a live window which
-defaults to the selected one.
+以下四个函数以一个默认为所选窗口的实时窗口作为参数。
 
 @defun window-scroll-bars &optional window
-This function returns a list of the form @code{(@var{width}
-@var{columns} @var{vertical-type} @var{height} @var{lines}
-@var{horizontal-type} @var{persistent})}.
+这个函数返回一个形式为@code{(@var{width} @var{columns}
+@var{vertical-type} @var{height} @var{lines} @var{horizontal-type}
+@var{persistent})}的列表。
 
-The value @var{width} is the value that was specified for the width of
-the vertical scroll bar (which may be @code{nil}); @var{columns} is the
-(possibly rounded) number of columns that the vertical scroll bar
-actually occupies.
+值@var{width}是为垂直滚动条的宽度指定的值（可能是@code{nil}）；
+@var{columns}是垂直滚动条实际占用的列数（可能是四舍五入）。
 
-The value @var{height} is the value that was specified for the height of
-the horizontal scroll bar (which may be @code{nil}); @var{lines} is the
-(possibly rounded) number of lines that the horizontally scroll bar
-actually occupies.
+值@var{height}是为水平滚动条的高度指定的值（可能是@code{nil}）；
+@var{lines}是水平滚动条实际占用的行数（可能是四舍五入）。
 
-The value of @var{persistent} is the value specified for @var{window}
-with the last successful invocation of @code{set-window-scroll-bars},
-@code{nil} if there never was one.
+@var{persistent}的值是最后一次成功调用@code{set-window-scroll-bar}时为
+@var{window}指定的值，如果没有成功调用，则为@code{nil}。
 @end defun
 
 @defun window-current-scroll-bars &optional window
-This function reports the scroll bar type for window @var{window}.  The
-value is a cons cell @code{(@var{vertical-type} .@:
-@var{horizontal-type})}.  Unlike @code{window-scroll-bars}, this reports
-the scroll bar type actually used, once frame defaults and
-@code{scroll-bar-mode} are taken into account.
+此函数报告窗口@var{window}的滚动条类型。值是一个cons单元格
+@code{(@var{vertical-type} .@: @var{horizontal-type})}。与
+@code{window-scroll-bar}不同的是，当考虑到框架默认值和
+@code{scroll-bar-mode}时，这个函数报告的是实际使用的滚动条类型。
 @end defun
 
 @defun window-scroll-bar-width &optional window
-This function returns the width in pixels of @var{window}'s vertical
-scrollbar.
+此函数返回@var{window}的垂直滚动条的宽度，单位为像素。
 @end defun
 
 @defun window-scroll-bar-height &optional window
-This function returns the height in pixels of @var{window}'s horizontal
-scrollbar.
+此函数返回@var{window}的水平滚动条的高度，单位为像素。
 @end defun
 
-If you do not specify a window's scroll bar settings via
-@code{set-window-scroll-bars}, the buffer-local variables
-@code{vertical-scroll-bar}, @code{horizontal-scroll-bar},
-@code{scroll-bar-width} and @code{scroll-bar-height} in the buffer being
-displayed control the window's scroll bars.  The function
-@code{set-window-buffer} examines these variables.  If you change them
-in a buffer that is already visible in a window, you can make the window
-take note of the new values by calling @code{set-window-buffer}
-specifying the same buffer that is already displayed.
+如果您没有通过@code{set-window-scroll-bar}来指定窗口的滚动条设置，那么缓
+冲区中的局部变量@code{vertical-scroll-bar}、@code{horizontal-scroll-bar}
+、@code{scroll-bar-width}和@code{scroll-bar-height}将控制窗口的滚动条。
+函数@code{set-window-buffer}检查这些变量。如果您改变了一个已经在窗口中可
+见的缓冲区中的变量，您可以通过调用@code{set-window-buffer}指定已经显示的
+同一缓冲区来使窗口注意到新的值。
 
-You can control the appearance of scroll bars for a particular buffer by
-setting the following variables which automatically become buffer-local
-when set.
+您可以通过设置以下变量来控制特定缓冲区的滚动条的外观，这些变量在设置后会自
+动成为缓冲区的本地变量。
 
 @defvar vertical-scroll-bar
-This variable specifies the location of the vertical scroll bar.  The
-possible values are @code{left}, @code{right}, @code{t}, which means to
-use the frame's default, and @code{nil} for no scroll bar.
+这个变量指定了垂直滚动条的位置。可能的值有@code{left}、@code{right}、
+@code{t}（表示使用窗框的默认值）和@code{nil}（表示没有滚动条）。
 @end defvar
 
 @defvar horizontal-scroll-bar
-This variable specifies the location of the horizontal scroll bar.  The
-possible values are @code{bottom}, @code{t}, which means to use the
-frame's default, and @code{nil} for no scroll bar.
+这个变量指定了水平滚动条的位置。可能的值是@code{bottom}，@code{t}，表示使
+用窗框的默认值，@code{nil}表示没有滚动条。
 @end defvar
 
 @defvar scroll-bar-width
-This variable specifies the width of the buffer's vertical scroll bars,
-measured in pixels.  A value of @code{nil} means to use the value
-specified by the frame.
+这个变量指定了缓冲区垂直滚动条的宽度，以像素为单位。值为@code{nil}表示使用
+窗框指定的值。
 @end defvar
 
 @defvar scroll-bar-height
-This variable specifies the height of the buffer's horizontal scroll
-bar, measured in pixels.  A value of @code{nil} means to use the value
-specified by the frame.
+这个变量指定了缓冲区水平滚动条的高度，以像素为单位。值为@code{nil}表示使用
+窗框指定的值。
 @end defvar
 
-Finally you can toggle the display of scroll bars on all frames by
-customizing the variables @code{scroll-bar-mode} and
-@code{horizontal-scroll-bar-mode}.
+最后，您可以通过自定义@code{scroll-bar-mode}和
+@code{horizontal-scroll-bar-mode}这两个变量来切换所有窗框上滚动条的显示。
 
 @defopt scroll-bar-mode
-This variable controls whether and where to put vertical scroll bars in
-all frames.  The possible values are @code{nil} for no scroll bars,
-@code{left} to put scroll bars on the left and @code{right} to put
-scroll bars on the right.
+这个变量控制是否在所有窗框中放置垂直滚动条以及放置在哪里。可能的值是
+@code{nil}表示没有滚动条，@code{left}表示将滚动条放在左边，@code{right}表
+示将滚动条放在右边。
 @end defopt
 
 @defopt horizontal-scroll-bar-mode
-This variable controls whether to display horizontal scroll bars on all
-frames.
+这个变量控制是否在所有窗框上显示水平滚动条。
 @end defopt
 
 
@@ -3895,29 +3808,23 @@ frames.
 @cindex right dividers
 @cindex bottom dividers
 
-Window dividers are bars drawn between a frame's windows.  A right
-divider is drawn between a window and any adjacent windows on the right.
-Its width (thickness) is specified by the frame parameter
-@code{right-divider-width}.  A bottom divider is drawn between a
-window and adjacent windows on the bottom or the echo area.  Its width
-is specified by the frame parameter @code{bottom-divider-width}.  In
-either case, specifying a width of zero means to not draw such dividers.
+窗口分割器是在一个窗框的窗口之间画出的条状物。右边的分界线是在一个窗口和任
+何相邻的右边窗口之间绘制的，它的宽度（厚度）由窗框参数
+@code{right-divider-width}指定。它的宽度（厚度）由窗框参数
+@code{right-divider-width}指定。底部分隔线是在一个窗口和相邻窗口的底部或
+回音区之间绘制的。它的宽度由窗框参数@code{bottom-divider-width}指定。无论
+是哪种情况，指定宽度为零都意味着不绘制这种分隔线。
 @xref{Layout Parameters}.
 
-   Technically, a right divider belongs to the window on its left,
-which means that its width contributes to the total width of that
-window.  A bottom divider belongs to the window above it, which
-means that its width contributes to the total height of that window.
-@xref{Window Sizes}.  When a window has both, a right and a bottom
-divider, the bottom divider prevails.  This means that a bottom
-divider is drawn over the full total width of its window while the right
-divider ends above the bottom divider.
+从技术上讲，右边的分隔线属于它左边的窗口，这意味着它的宽度占该窗口的总宽度
+。底部的分隔线属于它上面的窗口，这意味着它的宽度占该窗口的总高度。
+@xref{Window Sizes}。当一个窗口同时拥有右边和底部分隔线时，以底部分隔线为
+准。这意味着，底部分隔线的宽度要画在窗口的整个总宽度上，而右侧分隔线的终点
+在底部分隔线的上方。
 
-   Dividers can be dragged with the mouse and are therefore useful for
-adjusting the sizes of adjacent windows with the mouse.  They also serve
-to visually set apart adjacent windows when no scroll bars or mode lines
-are present.  The following three faces allow the customization of the
-appearance of dividers:
+分隔线可以用鼠标拖动，因此可以用鼠标调整相邻窗口的大小。当没有滚动条或模式
+线存在时，它们还可以在视觉上将相邻窗口分开。以下三个字形允许自定义分隔线的
+外观:
 
 @table @code
 @item window-divider
