@@ -4,8 +4,20 @@ b=a.readlines
 
 c= open 'display_wode.texi', 'w'
 
+def start(l)
+  if l.start_with? "@"
+    for s in ["@var", "@code", "@pxref", "@xref", "@samp"]
+      if l.start_with? s
+        return false
+      end
+    end
+    return true
+  end
+  return false
+end
+
 for l in b
-  if l.start_with? "@" and not l.start_with? "@var"  and not l.start_with? "@code" and not l.start_with? "@pxref" and not l.start_with? "@xref"
+  if start(l)
     c.write "\n"
     c.write l
   elsif l.start_with? "\n"
