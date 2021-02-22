@@ -4328,81 +4328,63 @@ Emacs在图形终端上运行时，通常能够显示图像。在文本终端上
 如果这个属性被忽略了，默认是50。
 
 @item :relief @var{relief}
-This adds a shadow rectangle around the image.  The value,
-@var{relief}, specifies the width of the shadow lines, in pixels.  If
-@var{relief} is negative, shadows are drawn so that the image appears
-as a pressed button; otherwise, it appears as an unpressed button.
+这将在图像周围添加一个阴影矩形。值@var{relief}指定阴影线的宽度，单位为像素
+。如果@var{relief}为负值，则绘制的阴影会使图像显示为被按下的按钮，否则显示
+为未按下的按钮。
 
 @item :width @var{width}, :height @var{height}
-The @code{:width} and @code{:height} keywords are used for scaling the
-image.  If only one of them is specified, the other one will be
-calculated so as to preserve the aspect ratio.  If both are specified,
-aspect ratio may not be preserved.
+@code{:width}和@code{:height}关键字用于缩放图像。如果只指定了其中一个关键
+字，则会计算另一个关键字以保留长宽比。如果同时指定了这两个关键字，则可能不
+会保留长宽比。
 
 @item :max-width @var{max-width}, :max-height @var{max-height}
-The @code{:max-width} and @code{:max-height} keywords are used for
-scaling if the size of the image exceeds these values.  If
-@code{:width} is set, it will have precedence over @code{max-width},
-and if @code{:height} is set, it will have precedence over
-@code{max-height}, but you can otherwise mix these keywords as you
-wish.
+@code{:max-width}和@code{:max-height}关键字用于在图像的大小超过这些值时进
+行缩放。如果设置了@code{:width}，它将优先于@code{max-width}，如果设置了
+@code{:height}，它将优先于@code{max-height}，但您也可以根据自己的意愿混合
+使用这些关键字。
 
-If both @code{:max-width} and @code{:height} are specified, but
-@code{:width} is not, preserving the aspect ratio might require that
-width exceeds @code{:max-width}.  If this happens, scaling will use a
-smaller value for the height so as to preserve the aspect ratio while
-not exceeding @code{:max-width}.  Similarly when both
-@code{:max-height} and @code{:width} are specified, but @code{:height}
-is not.  For example, if you have a 200x100 image and specify that
-@code{:width} should be 400 and @code{:max-height} should be 150,
-you'll end up with an image that is 300x150: Preserving the aspect
-ratio and not exceeding the ``max'' setting.  This combination of
-parameters is a useful way of saying ``display this image as large as
-possible, but no larger than the available display area''.
+如果同时指定了@code{:max-width}和@code{:height}，但没有指定@code{:width}
+，那么为了保持长宽比，宽度可能需要超过@code{:max-width}。如果发生这种情况
+，缩放将使用一个较小的高度值，以便在不超过@code{:max-width}的情况下保留长
+宽比。同样地，当@code{:max-height}和@code{:width}都被指定，但
+@code{:height} 没有被指定时，也会出现这种情况。例如，如果您有一个200x100
+的图像，并指定@code{:width}应该是400，而@code{:max-height}应该是150，那
+么您最终会得到一个300x150的图像。保留长宽比，但不超过"最大"设置。这种参数
+组合是一种有用的方式，可以说"尽可能大地显示这张图片，但不能超过可用的显示区
+域"。
 
 @item :scale @var{scale}
-This should be a number, where values higher than 1 means to increase
-the size, and lower means to decrease the size, by multiplying both
-the width and height.  For instance, a value of 0.25 will make the
-image a quarter size of what it originally was.  If the scaling makes
-the image larger than specified by @code{:max-width} or
-@code{:max-height}, the resulting size will not exceed those two
-values.  If both @code{:scale} and @code{:height}/@code{:width} are
-specified, the height/width will be adjusted by the specified scaling
-factor.
+这应该是一个数字，大于1的值表示增加大小，小于1的值表示减少大小，将宽度和高
+度相乘。例如，0.25的值将使图像的大小为原来的四分之一。如果缩放使图像大于
+@code{:max-width}或@code{:max-height}所指定的尺寸，则产生的尺寸不会超过这
+两个值。如果同时指定了@code{:scale}和@code{:height}/@code{:width}，则高
+度/宽度将根据指定的缩放系数进行调整。
 
 @item :rotation @var{angle}
-Specifies a rotation angle in degrees.  Only multiples of 90 degrees
-are supported, unless the image type is @code{imagemagick}.  Positive
-values rotate clockwise, negative values counter-clockwise.  Rotation
-is performed after scaling and cropping.
+指定旋转角度，单位为度。只支持90度的倍数，除非图像类型是@code{imagemagick}
+。正值为顺时针旋转，负值为逆时针旋转。旋转是在缩放和裁剪之后进行的。
 
 @item :index @var{frame}
 @xref{Multi-Frame Images}.
 
 @item :conversion @var{algorithm}
-This specifies a conversion algorithm that should be applied to the
-image before it is displayed; the value, @var{algorithm}, specifies
-which algorithm.
+此项指定了在图像显示之前应该应用的转换算法；值@var{algorithm}指定了哪种算
+法。
 
 @table @code
 @item laplace
 @itemx emboss
-Specifies the Laplace edge detection algorithm, which blurs out small
-differences in color while highlighting larger differences.  People
-sometimes consider this useful for displaying the image for a
-disabled button.
+指定拉普拉斯边缘检测算法，该算法可以模糊掉小的颜色差异，同时突出较大的差异
+。人们有时认为这对显示禁用按钮的图像很有用。
 
 @item (edge-detection :matrix @var{matrix} :color-adjust @var{adjust})
 @cindex edge detection, images
-Specifies a general edge-detection algorithm.  @var{matrix} must be
-either a nine-element list or a nine-element vector of numbers.  A pixel
-at position @math{x/y} in the transformed image is computed from
-original pixels around that position.  @var{matrix} specifies, for each
-pixel in the neighborhood of @math{x/y}, a factor with which that pixel
-will influence the transformed pixel; element @math{0} specifies the
-factor for the pixel at @math{x-1/y-1}, element @math{1} the factor for
-the pixel at @math{x/y-1} etc., as shown below:
+指定一个通用的边缘检测算法。@var{matrix}必须是一个九元素的列表或一个九元素
+的数字向量。变换后的图像中@math{x/y}位置上的像素是根据该位置周围的原始像素
+计算出来的，@var{matrix}指定了每个像素的边缘检测算法。@var{matrix}为
+@math{x/y}附近的每一个像素指定了一个因子，该像素将对变换后的像素产生影响；
+@math{0}元素指定了@math{x-1/y-1}处像素的因子，@math{1}元素指定了
+@math{x/y-1}处像素的因子，等等，如下所示:
 @iftex
 @tex
 $$\pmatrix{x-1/y-1 & x/y-1  & x+1/y-1 \cr
@@ -4418,12 +4400,10 @@ $$\pmatrix{x-1/y-1 & x/y-1  & x+1/y-1 \cr
 @end display
 @end ifnottex
 
-The resulting pixel is computed from the color intensity of the color
-resulting from summing up the RGB values of surrounding pixels,
-multiplied by the specified factors, and dividing that sum by the sum
-of the factors' absolute values.
+将周围像素的RGB值相加，乘以指定的系数，再将该和除以系数的绝对值之和，计算出
+结果像素的颜色强度。
 
-Laplace edge-detection currently uses a matrix of
+拉普拉斯边缘检测目前使用的矩阵为
 @iftex
 @tex
 $$\pmatrix{1 & 0 & 0 \cr
@@ -4439,7 +4419,7 @@ $$\pmatrix{1 & 0 & 0 \cr
 @end display
 @end ifnottex
 
-Emboss edge-detection uses a matrix of
+浮雕边缘检测使用的是一个矩阵，其内容为
 @iftex
 @tex
 $$\pmatrix{ 2 & -1 &  0 \cr
@@ -4456,331 +4436,276 @@ $$\pmatrix{ 2 & -1 &  0 \cr
 @end ifnottex
 
 @item disabled
-Specifies transforming the image so that it looks disabled.
+指定转换图像，使其看起来被禁用。
 @end table
 
 @item :mask @var{mask}
-If @var{mask} is @code{heuristic} or @code{(heuristic @var{bg})}, build
-a clipping mask for the image, so that the background of a frame is
-visible behind the image.  If @var{bg} is not specified, or if @var{bg}
-is @code{t}, determine the background color of the image by looking at
-the four corners of the image, assuming the most frequently occurring
-color from the corners is the background color of the image.  Otherwise,
-@var{bg} must be a list @code{(@var{red} @var{green} @var{blue})}
-specifying the color to assume for the background of the image.
+如果@var{mask}是@code{heuristic}或@code{(heuristic @var{bg})}，为图像
+建立一个剪裁蒙版，使图像后面的帧背景可见。如果没有指定@var{bg}，或者
+@var{bg}是@code{t}，则通过观察图像的四个角来确定图像的背景色，假设从角上最
+常出现的颜色就是图像的背景色。否则，@var{bg}必须是一个列表
+@code{(@var{red} @var{green} @var{blue})}，指定图像背景的颜色。
 
-If @var{mask} is @code{nil}, remove a mask from the image, if it has
-one.  Images in some formats include a mask which can be removed by
-specifying @code{:mask nil}.
+如果@var{mask}是@code{nil}，那么如果图像中有蒙版，则从图像中移除蒙版。某
+些格式的图片中包含有蒙版，可以通过指定@code{:mask nil}来移除。
 
 @item :pointer @var{shape}
-This specifies the pointer shape when the mouse pointer is over this
-image.  @xref{Pointer Shape}, for available pointer shapes.
+这指定了鼠标指针在此图像上时的指针形状。@xref{Pointer Shape}，查看可用的
+指针形状。
 
 @item :map @var{map}
 @cindex image maps
-This associates an image map of @dfn{hot spots} with this image.
+这将@dfn{hot spots}的图像映射与此图像关联起来。
 
-An image map is an alist where each element has the format
-@code{(@var{area} @var{id} @var{plist})}.  An @var{area} is specified
-as either a rectangle, a circle, or a polygon.
+图像映射是一个alist，其中每个元素的格式为
+@code{(@var{area} @var{id} @var{plist})}。一个@var{area}被指定为一个矩形
+、一个圆形或一个多边形。
 
-A rectangle is a cons
-@code{(rect . ((@var{x0} . @var{y0}) . (@var{x1} . @var{y1})))}
-which specifies the pixel coordinates of the upper left and bottom right
-corners of the rectangle area.
+矩形是一个cons @code{(rect .((@var{x0} . @var{y0}) .(@var{x1} . @var{y1}))}，它指定了矩形区域左上角和右下角的像素坐标。
 
-A circle is a cons
-@code{(circle . ((@var{x0} . @var{y0}) . @var{r}))}
-which specifies the center and the radius of the circle; @var{r} may
-be a float or integer.
+圆是一个cons @code{(circle .((@var{x0} . @var{y0}) .((@var{r}))}指定了
+圆的中心和半径；@var{r}可以是一个浮点数或整数。
 
-A polygon is a cons
-@code{(poly . [@var{x0} @var{y0} @var{x1} @var{y1} ...])}
-where each pair in the vector describes one corner in the polygon.
+多边形是一个cons
+@code{(poly . [@var{x0} @var{y0} @var{x1} @var{y1} ...]}，其中向量中的
+每一对都描述了多边形中的一个角。
 
-When the mouse pointer lies on a hot-spot area of an image, the
-@var{plist} of that hot-spot is consulted; if it contains a @code{help-echo}
-property, that defines a tool-tip for the hot-spot, and if it contains
-a @code{pointer} property, that defines the shape of the mouse cursor when
-it is on the hot-spot.
-@xref{Pointer Shape}, for available pointer shapes.
+当鼠标指针位于图像的热点区域时，会查询该热点的@var{plist}，如果包含
+@code{help-echo}属性，则定义该热点的工具提示，如果包含@code{pointer}属性
+，则定义鼠标光标在热点上时的形状。@xref{Pointer Shape}，用于表示可用的指针
+形状。
 
-When you click the mouse when the mouse pointer is over a hot-spot, an
-event is composed by combining the @var{id} of the hot-spot with the
-mouse event; for instance, @code{[area4 mouse-1]} if the hot-spot's
-@var{id} is @code{area4}.
+当鼠标指针在热点上点击鼠标时，将热点的@var{id}与鼠标事件结合起来组成一个事
+件，例如，如果热点的@var{id}是@code{area4}，则@code{[area4 mouse-1]}。
 @end table
 
 @defun image-mask-p spec &optional frame
-This function returns @code{t} if image @var{spec} has a mask bitmap.
-@var{frame} is the frame on which the image will be displayed.
-@var{frame} @code{nil} or omitted means to use the selected frame
-(@pxref{Input Focus}).
+如果图像@var{spec}有蒙版位图，则该函数返回@code{t}。@var{frame}是显示图像
+的窗框。@code{nil}或省略表示使用选定的窗框（@pxref{Input Focus}）。
 @end defun
 
 @defun image-transforms-p &optional frame
-This function returns non-@code{nil} if @var{frame} supports image
-scaling and rotation.  @var{frame} @code{nil} or omitted means to use
-the selected frame (@pxref{Input Focus}).  The returned list includes
-symbols that indicate which image transform operations are supported:
+如果@var{frame}支持图像的缩放和旋转，则该函数返回非@code{nil}。如果
+@var{frame}支持图像的缩放和旋转，则返回非@code{nil}。@code{nil}或省略表示
+使用选定的窗框（@pxref{Input Focus}）。返回的列表中包含了表示支持哪些图像
+变换操作的符号:
 
 @table @code
 @item scale
-Image scaling is supported by @var{frame} via the @code{:scale},
-@code{:width}, @code{:height}, @code{:max-width}, and
-@code{:max-height} properties.
+图片缩放由@var{frame}通过@code{:scale}, @code{:width}, @code{:height},
+@code{:max-width}和@code{:max-height}属性支持。
 @item rotate90
-Image rotation is supported by @var{frame} if the rotation angle is an
-integral multiple of 90 degrees.
+如果旋转角度是90度的整数倍，则@var{frame}支持图像旋转。
 @end table
 
-If image transforms are not supported, @code{:rotation}, @code{:crop},
-@code{:width}, @code{:height}, @code{:scale}, @code{:max-width} and
-@code{:max-height} will only be usable through ImageMagick, if
-available (@pxref{ImageMagick Images}).
+如果不支持图像转换，@code{:rotation}、@code{:crop}、@code{:width}、
+@code{:height}、@code{:scale}、@code{:max-width}和@code{:max-height}
+将只能通过ImageMagick使用（如果可用的话） (@pxref{ImageMagick Images})。
 @end defun
 @node XBM图像
 @subsection XBM Images
 @cindex XBM
 
-  To use XBM format, specify @code{xbm} as the image type.  This image
-format doesn't require an external library, so images of this type are
-always supported.
+  要使用XBM格式，请指定@code{xbm}作为图像类型。这种图像格式不需要外部库，
+所以总是支持这种类型的图像。
 
-  Additional image properties supported for the @code{xbm} image type are:
+  @code{xbm}图像类型支持的其他图像属性有：
 
 @table @code
 @item :foreground @var{foreground}
-The value, @var{foreground}, should be a string specifying the image
-foreground color, or @code{nil} for the default color.  This color is
-used for each pixel in the XBM that is 1.  The default is the frame's
-foreground color.
+值@var{foreground}应该是指定图像前景色的字符串，或者@code{nil}表示默认颜
+色。这个颜色用于XBM中每一个像素为1的地方，默认为帧的前景色。
 
 @item :background @var{background}
-The value, @var{background}, should be a string specifying the image
-background color, or @code{nil} for the default color.  This color is
-used for each pixel in the XBM that is 0.  The default is the frame's
-background color.
+值@var{background}应该是一个指定图像背景颜色的字符串，或者@code{nil}表示
+默认颜色。这个颜色用于XBM中每个像素为0的地方，默认为帧的背景色。
 @end table
 
-  If you specify an XBM image using data within Emacs instead of an
-external file, use the following three properties:
+  如果您使用Emacs中的数据而不是外部文件来指定XBM图像，请使用以下三个属性:
 
 @table @code
 @item :data @var{data}
-The value, @var{data}, specifies the contents of the image.
-There are three formats you can use for @var{data}:
+值@var{data}，指定了图像的内容。有三种格式可以用于@var{data}：
 
 @itemize @bullet
 @item
-A vector of strings or bool-vectors, each specifying one line of the
-image.  Do specify @code{:height} and @code{:width}.
+由字符串或布尔向量组成的向量，每个向量指定一行图像。请指定@code{:height}
+和@code{:width}。
 
 @item
-A string containing the same byte sequence as an XBM file would contain.
-You must not specify @code{:height} and @code{:width} in this case,
-because omitting them is what indicates the data has the format of an
-XBM file.  The file contents specify the height and width of the image.
-
+一个包含与XBM文件相同字节序列的字符串。在这种情况下，您不能指定
+@code{:height}和@code{:width}，因为省略他们就表示数据具有XBM文件的格式。
+文件内容指定了图像的高度和宽度。
 @item
-A string or a bool-vector containing the bits of the image (plus
-perhaps some extra bits at the end that will not be used).  It should
-contain at least @w{@code{@var{stride} * @var{height}}} bits, where
-@var{stride} is the smallest multiple of 8 greater than or equal to
-the width of the image.  In this case, you should specify
-@code{:height}, @code{:width} and @code{:stride}, both to indicate
-that the string contains just the bits rather than a whole XBM file,
-and to specify the size of the image.
+一个字符串或一个布尔向量，包含图像的位数(加上最后一些不使用的额外位数)。它应该至少包含@w{@code{@var{stride} * @var{height}}}位，其中@var{stride}
+是大于或等于图像宽度的8的最小倍数。在这种情况下，您应该指定@code{:height}
+、@code{:width}和@code{:stride}，这既是为了表明字符串只包含位而不是整个
+XBM文件，也是为了指定图像的大小。
 @end itemize
 
 @item :width @var{width}
-The value, @var{width}, specifies the width of the image, in pixels.
+值@var{width}，指定图像的宽度，单位为像素。
 
 @item :height @var{height}
-The value, @var{height}, specifies the height of the image, in pixels.
+值@var{height}，指定图像的高度，单位为像素。
 
 @item :stride @var{stride}
-The number of bool vector entries stored for each row; the smallest
-multiple of 8 greater than or equal to @var{width}.
+每行存储的布尔向量条目数，大于或等于@var{width}的8的最小倍数。
 @end table
 
 @node XPM图像
 @subsection XPM Images
 @cindex XPM
 
-  To use XPM format, specify @code{xpm} as the image type.  The
-additional image property @code{:color-symbols} is also meaningful with
-the @code{xpm} image type:
+  要使用XPM格式，请指定@code{xpm}作为图像类型。附加的图像属性
+@code{:color-symbols}对@code{xpm}图像类型也有意义:
 
 @table @code
 @item :color-symbols @var{symbols}
-The value, @var{symbols}, should be an alist whose elements have the
-form @code{(@var{name} . @var{color})}.  In each element, @var{name} is
-the name of a color as it appears in the image file, and @var{color}
-specifies the actual color to use for displaying that name.
+值@var{symbols}应该是一个alist，其元素的形式为
+@code{(@var{name} . @var{color})}。在每个元素中，@var{name}是一个颜色的
+名称，因为它出现在图像文件中，而@var{color}则指定了用于显示该名称的实际颜
+色。
 @end table
 
-@node ImageMagick Images
+@node ImageMagick图像
 @subsection ImageMagick Images
 @cindex ImageMagick images
 @cindex images, support for more formats
 
-  If your Emacs build has ImageMagick support, you can use the
-ImageMagick library to load many image formats (@pxref{File
-Conveniences,,, emacs, The GNU Emacs Manual}).  The image type symbol
-for images loaded via ImageMagick is @code{imagemagick}, regardless of
-the actual underlying image format.
+  如果您的Emacs构建支持ImageMagick，您可以使用ImageMagick库来加载多种图像
+格式（@pxref{File Conveniences,,,emacs,The GNU Emacs Manual}）。通过
+ImageMagick加载的图像的图像类型符号是@code{imagemagick}，与实际的图像格式
+无关。
 
-To check for ImageMagick support, use the following:
+要检查ImageMagick是否支持，请使用以下方法:
 
 @lisp
 (image-type-available-p 'imagemagick)
 @end lisp
 
 @defun imagemagick-types
-This function returns a list of image file extensions supported by the
-current ImageMagick installation.  Each list element is a symbol
-representing an internal ImageMagick name for an image type, such as
-@code{BMP} for @file{.bmp} images.
+该函数返回当前ImageMagick安装支持的图像文件扩展名列表。每个列表元素都是一
+个符号，代表ImageMagick内部的图像类型名称，例如@code{BMP}代表@file{.bmp}
+图像。
 @end defun
 
 @defopt imagemagick-enabled-types
-The value of this variable is a list of ImageMagick image types which
-Emacs may attempt to render using ImageMagick.  Each list element
-should be one of the symbols in the list returned by
-@code{imagemagick-types}, or an equivalent string.  Alternatively, a
-value of @code{t} enables ImageMagick for all possible image types.
-Regardless of the value of this variable,
-@code{imagemagick-types-inhibit} (see below) takes precedence.
+这个变量的值是一个ImageMagick图像类型的列表，Emacs可以尝试使用ImageMagick
+来渲染。每个列表元素应该是@code{imagemagick-types}返回的列表中的一个符号
+，或者一个等价的字符串。或者，@code{t}的值可以使ImageMagick支持所有可能的
+图像类型。无论这个变量的值是多少，@code{imagemagick-types-inhibit}(见下文
+)优先。
 @end defopt
 
 @defopt imagemagick-types-inhibit
-The value of this variable lists the ImageMagick image types which
-should never be rendered using ImageMagick, regardless of the value of
-@code{imagemagick-enabled-types}.  A value of @code{t} disables
-ImageMagick entirely.
+不管@code{imagemagick-enabled-types}的值是多少，这个变量的值列出了永远不
+应该使用ImageMagick渲染的ImageMagick图像类型。值为@code{t}时，会完全禁用
+ImageMagick。
 @end defopt
 
 @defvar image-format-suffixes
-This variable is an alist mapping image types to file name extensions.
-Emacs uses this in conjunction with the @code{:format} image property
-(see below) to give a hint to the ImageMagick library as to the type
-of an image.  Each element has the form @code{(@var{type}
-@var{extension})}, where @var{type} is a symbol specifying an image
-content-type, and @var{extension} is a string that specifies the
-associated file name extension.
+这个变量是一个将图像类型映射到文件名扩展名的列表。Emacs结合@code{:format}
+图像属性(见下文)使用这个变量，以提示ImageMagick库了解图像的类型。每个元素
+都有@code{(@var{type} @var{extension})}的形式，其中@var{type}是一个指定
+图像内容类型的符号，@var{extension}是一个指定相关文件名扩展名的字符串。
 @end defvar
 
-  Images loaded with ImageMagick support the following additional
-image descriptor properties:
+  ImageMagick加载的图像支持以下附加的图像描述符属性：
 
 @table @code
 @item :background @var{background}
-@var{background}, if non-@code{nil}, should be a string specifying a
-color, which is used as the image's background color if the image
-supports transparency.  If the value is @code{nil}, it defaults to the
-frame's background color.
+如果@var{background}不是@code{nil}，则应该是一个指定颜色的字符串，如果图
+像支持透明，则用它作为图像的背景色。如果值是@code{nil}，则默认为窗框的背景
+色。
 
 @item :format @var{type}
-The value, @var{type}, should be a symbol specifying the type of the
-image data, as found in @code{image-format-suffixes}.  This is used
-when the image does not have an associated file name, to provide a
-hint to ImageMagick to help it detect the image type.
+值@var{type}应该是一个符号，指定图像数据的类型，如
+@code{image-format-suffixes}中所示。当图像没有相关的文件名时，这个值可以
+用来给ImageMagick提供一个提示，帮助它检测图像的类型。
 
 @item :crop @var{geometry}
-The value of @var{geometry} should be a list of the form
-@code{(@var{width} @var{height} @var{x} @var{y})}.  @var{width} and
-@var{height} specify the width and height of the cropped image.  If
-@var{x} is a positive number it specifies the offset of the cropped
-area from the left of the original image, and if negative the offset
-from the right.  If @var{y} is a positive number it specifies the
-offset from the top of the original image, and if negative from the
-bottom.  If @var{x} or @var{y} are @code{nil} or unspecified the crop
-area will be centered on the original image.
+@var{geometry}的值应该是一个
+@code{(@var{width} @var{height} @var{x} @var{y})}形式的列表。
+@var{width}和@var{height}指定了裁剪后图片的宽度和高度。如果@var{x}是一个
+正数，则指定裁剪后的区域与原图左边的偏移量，如果是负数，则指定与右边的偏移
+量。如果@var{y}是正数，则表示从原始图像的顶部开始偏移，如果是负数，则表示
+从底部开始偏移。如果@var{x}或@var{y}是@code{nil}或未指定，则裁剪区域将以
+原始图像为中心。
 
-If the crop area is outside or overlaps the edge of the image it will
-be reduced to exclude any areas outside of the image.  This means it
-is not possible to use @code{:crop} to increase the size of the image
-by entering large @var{width} or @var{height} values.
+如果裁剪区域在图像的边缘之外或与图像的边缘重叠，那么它将被缩小以排除图像之
+外的任何区域。这意味着不可能使用@code{:crop}通过输入较大的@var{width}或
+@var{height}值来增加图像的大小。
 
-Cropping is performed after scaling but before rotation.
+裁剪是在缩放之后但在旋转之前进行的。
 @end table
 
 @node SVG Images
 @subsection SVG Images
 @cindex SVG images
 
-SVG (Scalable Vector Graphics) is an XML format for specifying images.
-If your Emacs build has SVG support, you can create and manipulate
-these images with the following functions from the @file{svg.el}
-library.
+SVG（Scalable Vector Graphics）是一种用于指定图像的XML格式。如果您的Emacs
+构建有SVG支持，您可以使用@file{svg.el}库中的以下函数创建和操作这些图像。
 
 @defun svg-create width height &rest args
-Create a new, empty SVG image with the specified dimensions.
-@var{args} is an argument plist with you can specify following:
+创建一个新的、空的SVG图像，并指定其尺寸。@var{args}是一个参数列表，你可以
+指定以下参数:
 
 @table @code
 @item :stroke-width
-The default width (in pixels) of any lines created.
+创建的任何线条的默认宽度（像素）。
 
 @item :stroke
-The default stroke color on any lines created.
+创建的任何线条上的默认填充颜色。
 @end table
 
 @cindex SVG object
-This function returns an @dfn{SVG object}, a Lisp data structure that
-specifies an SVG image, and all the following functions work on that
-structure.  The argument @var{svg} in the following functions
-specifies such an SVG object.
+这个函数返回一个@dfn{SVG object}，这是一个指定SVG图像的Lisp数据结构，下面
+的所有函数都在这个结构上工作。在下面的函数中，参数@var{svg}指定了这样一个
+SVG对象。
 @end defun
 
 @defun svg-gradient svg id type stops
-Create a gradient in @var{svg} with identifier @var{id}.  @var{type}
-specifies the gradient type, and can be either @code{linear} or
-@code{radial}.  @var{stops} is a list of percentage/color pairs.
+在@var{svg}中创建一个渐变，标识符为@var{id}。@var{type}是指定渐变类型，可
+以是@code{linear}或@code{radial}。@var{stops}是一个百分比/颜色对的列表，
+可以是@code{linear}或@code{radial}。
 
-The following will create a linear gradient that goes from red at the
-start, to green 25% of the way, to blue at the end:
+下面将创建一个线性梯度，从开始的红色，到25%的绿色，再到最后的蓝色:
 
 @lisp
 (svg-gradient svg "gradient1" 'linear
               '((0 . "red") (25 . "green") (100 . "blue")))
 @end lisp
 
-The gradient created (and inserted into the SVG object) can later be
-used by all functions that create shapes.
+创建的梯度（并插入到SVG对象中）以后可以被所有创建形状的函数使用。
 @end defun
 
-All the following functions take an optional list of keyword
-parameters that alter the various attributes from their default
-values.  Valid attributes include:
+下面的所有函数都采用了一个可选的关键字参数列表，用于改变各种属性的默认值。
+有效的属性包括：
 
 @table @code
 @item :stroke-width
-The width (in pixels) of lines drawn, and outlines around solid
-shapes.
+绘制的线条宽度（像素），以及实线形状周围的轮廓。
 
 @item :stroke-color
-The color of lines drawn, and outlines around solid shapes.
+绘制的线条的颜色，以及实线形状周围的轮廓。
 
 @item :fill-color
-The color used for solid shapes.
+用于实线形状的颜色。
 
 @item :id
-The identified of the shape.
+形状的标识。
 
 @item :gradient
-If given, this should be the identifier of a previously defined
-gradient object.
+如果给定，这应该是先前定义的梯度对象的标识符。
 
 @item :clip-path
-Identifier of a clip path.
+夹子路径的标识符。
 @end table
 
 @defun svg-rectangle svg x y width height &rest args
-Add to @var{svg} a rectangle whose upper left corner is at
-position @var{x}/@var{y} and whose size is @var{width}/@var{height}.
+在@var{svg}中添加一个左上角位于@var{x}/@var{y}位置，大小为@var{width}/
+@var{height}的矩形。
 
 @lisp
 (svg-rectangle svg 100 100 500 500 :gradient "gradient1")
@@ -4788,24 +4713,22 @@ position @var{x}/@var{y} and whose size is @var{width}/@var{height}.
 @end defun
 
 @defun svg-circle svg x y radius &rest args
-Add to @var{svg} a circle whose center is at @var{x}/@var{y} and whose
-radius is @var{radius}.
+在@var{svg}中添加一个圆，圆心在@var{x}/@var{y}，半径为@var{radius}。
 @end defun
 
 @defun svg-ellipse svg x y x-radius y-radius &rest args
-Add to @var{svg} an ellipse whose center is at @var{x}/@var{y}, and
-whose horizontal radius is @var{x-radius} and the vertical radius is
-@var{y-radius}.
+在@var{svg}中添加一个中心位于@var{x}/@var{y}的椭圆，其水平半径为
+@var{x-radius}，垂直半径为@var{y-radius}。
 @end defun
 
 @defun svg-line svg x1 y1 x2 y2 &rest args
-Add to @var{svg} a line that starts at @var{x1}/@var{y1} and extends
-to @var{x2}/@var{y2}.
+在@var{svg}中添加从@var{x1}/@var{y1}开始并延伸到@var{x2}/@var{y2}的一行
+。
 @end defun
 
 @defun svg-polyline svg points &rest args
-Add to @var{svg} a multiple-segment line (a.k.a.@: ``polyline'') that
-goes through @var{points}, which is a list of X/Y position pairs.
+在@var{svg}中添加一条多段线 (又名@: ``polyline'')，它穿过@var{points}，
+这是一个X/Y位置对的列表。
 
 @lisp
 (svg-polyline svg '((200 . 100) (500 . 450) (80 . 100))
@@ -4814,8 +4737,8 @@ goes through @var{points}, which is a list of X/Y position pairs.
 @end defun
 
 @defun svg-polygon svg points &rest args
-Add a polygon to @var{svg} where @var{points} is a list of X/Y pairs
-that describe the outer circumference of the polygon.
+在@var{svg}中添加一个多边形，其中@var{points}是描述多边形外周长的X/Y对的
+列表。
 
 @lisp
 (svg-polygon svg '((100 . 100) (200 . 150) (150 . 90))
@@ -4824,16 +4747,13 @@ that describe the outer circumference of the polygon.
 @end defun
 
 @defun svg-path svg commands &rest args
-Add the outline of a shape to @var{svg} according to @var{commands},
-see @ref{SVG Path Commands}.
+根据@var{commands}将形状的轮廓添加到@var{svg}中，参见
+@ref{SVG Path Commands}。
 
-Coordinates by default are absolute.  To use coordinates relative to
-the last position, or -- initially -- to the origin, set the attribute
-@var{:relative} to @code{t}.  This attribute can be specified for the
-function or for individual commands.  If specified for the function,
-then all commands use relative coordinates by default.  To make an
-individual command use absolute coordinates, set @var{:relative} to
-@code{nil}.
+默认情况下，坐标是绝对坐标。要使用相对于最后位置的坐标，或者--最初--相对于原点的坐标，请将属性@var{:relative}设置为@code{t}。这个属性可以为函数指定
+，也可以为单个命令指定。如果为函数指定了这个属性，那么所有命令都默认使用相
+对坐标。要让个别命令使用绝对坐标，请将@var{:relative}属性设置为@code{nil}
+。
 
 @lisp
 (svg-path svg
@@ -4847,7 +4767,7 @@ individual command use absolute coordinates, set @var{:relative} to
 @end defun
 
 @defun svg-text svg text &rest args
-Add the specified @var{text} to @var{svg}.
+将指定的@var{text}添加到@var{svg}中。
 
 @lisp
 (svg-text
@@ -4865,10 +4785,10 @@ Add the specified @var{text} to @var{svg}.
 @end defun
 
 @defun svg-embed svg image image-type datap &rest args
-Add an embedded (raster) image to @var{svg}.  If @var{datap} is
-@code{nil}, @var{image} should be a file name; otherwise it should be a
-string containing the image data as raw bytes.  @var{image-type} should be a
-@acronym{MIME} image type, for instance @code{"image/jpeg"}.
+在@var{svg}中添加一个嵌入式(栅格)图像。如果@var{datap}是@code{nil}，则
+@var{image}应该是一个文件名，否则应该是一个包含原始字节的图像数据的字符串
+。@var{image-type}应该是一个@acronym{MIME}图像类型，例如
+@code{"image/jpeg"}。
 
 @lisp
 (svg-embed svg "~/rms.jpg" "image/jpeg" nil
@@ -4878,9 +4798,8 @@ string containing the image data as raw bytes.  @var{image-type} should be a
 @end defun
 
 @defun svg-clip-path svg &rest args
-Add a clipping path to @var{svg}.  If applied to a shape via the
-@var{:clip-path} property, parts of that shape which lie outside of
-the clipping path are not drawn.
+为@var{svg}添加一个剪切路径。如果通过@var{:clip-path}属性应用于一个形状，
+那么位于剪切路径之外的形状部分将不会被绘制。
 
 @lisp
 (let ((clip-path (svg-clip-path svg :id "foo")))
@@ -4892,7 +4811,7 @@ the clipping path are not drawn.
 @end defun
 
 @defun svg-node svg tag &rest args
-Add the custom node @var{tag} to @var{svg}.
+将自定义节点@var{tag}添加到@var{svg}。
 
 @lisp
 (svg-node svg
@@ -4902,17 +4821,15 @@ Add the custom node @var{tag} to @var{svg}.
 @end defun
 
 @defun svg-remove svg id
-Remove the element with identifier @code{id} from the @code{svg}.
+从@code{svg}中删除带有标识符@code{id}的元素。
 @end defun
 
 @defun svg-image svg
-Finally, the @code{svg-image} takes an SVG object as its argument and
-returns an image object suitable for use in functions like
-@code{insert-image}.
+最后，@code{svg-image}接收一个SVG对象作为参数，并返回一个适合在
+@code{insert-image}等函数中使用的图像对象。
 @end defun
 
-Here's a complete example that creates and inserts an image with a
-circle:
+这里有一个完整的例子，可以创建并插入一个带有圆形的图像:
 
 @lisp
 (let ((svg (svg-create 400 400 :stroke-width 10)))
@@ -4927,15 +4844,13 @@ circle:
 
 @cindex svg path commands
 @anchor{SVG Path Commands}
-@dfn{SVG paths} allow creation of complex images by combining lines,
-curves, arcs, and other basic shapes.  The functions described below
-allow invoking SVG path commands from a Lisp program.
+@dfn{SVG路径}允许通过组合线条创建复杂的图像。曲线、弧线和其他基本形状。下
+面描述的函数允许从Lisp程序中调用SVG路径命令。
 
 @deffn Command moveto points
-Move the pen to the first point in @var{points}.  Additional points
-are connected with lines.  @var{points} is a list of X/Y coordinate
-pairs.  Subsequent @command{moveto} commands represent the start of a
-new @dfn{subpath}.
+将笔移动到@var{points}中的第一个点。其他的点用线连接。@var{points}是一个X
+/Y坐标对的列表。随后的@command{moveto}命令代表一个新的@dfn{subpath}的开始
+。
 
 @lisp
 (svg-path svg '((moveto ((200 . 100) (100 . 200) (0 . 100))))
@@ -4944,8 +4859,7 @@ new @dfn{subpath}.
 @end deffn
 
 @deffn Command closepath
-End the current subpath by connecting it back to its initial point.  A
-line is drawn along the connection.
+将当前子路径连接回初始点，结束当前子路径。沿着连接点画一条线。
 
 @lisp
 (svg-path svg '((moveto ((200 . 100) (100 . 200) (0 . 100)))
@@ -4957,9 +4871,8 @@ line is drawn along the connection.
 @end deffn
 
 @deffn Command lineto points
-Draw a line from the current point to the first element in
-@var{points}, a list of X/Y position pairs.  If more than one point is
-specified, draw a polyline.
+从当前点到@var{points}中的第一个元素（X/Y位置对的列表）画一条直线。如果指
+定了一个以上的点，则画一条多段线。
 @lisp
 (svg-path svg '((moveto ((200 . 100)))
                 (lineto ((100 . 200) (0 . 100))))
@@ -4968,9 +4881,8 @@ specified, draw a polyline.
 @end deffn
 
 @deffn Command horizontal-lineto x-coordinates
-Draw a horizontal line from the current point to the first element in
-@var{x-coordinates}.  Specifying multiple coordinates is possible,
-although usually this doesn’t make sense.
+从当前点到@var{x-coordinates}中的第一个元素画一条水平线。可以指定多个坐标
+，尽管通常这样做没有意义。
 
 @lisp
 (svg-path svg '((moveto ((100 . 200)))
@@ -4980,7 +4892,7 @@ although usually this doesn’t make sense.
 @end deffn
 
 @deffn Command vertical-lineto y-coordinates
-Draw vertical lines.
+画出垂直线。
 
 @lisp
 (svg-path svg '((moveto ((200 . 100)))
