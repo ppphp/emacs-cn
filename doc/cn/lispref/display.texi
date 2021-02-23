@@ -4902,13 +4902,11 @@ SVG对象。
 @end deffn
 
 @deffn Command curveto coordinate-sets
-Using the first element in @var{coordinate-sets}, draw a cubic Bézier
-curve from the current point.  If there are multiple coordinate sets,
-draw a polybezier.  Each coordinate set is a list of the form
-@code{(@var{x1} @var{y1} @var{x2} @var{y2} @var{x} @var{y})}, where
-@w{(@var{x}, @var{y})} is the curve’s end point.  @w{(@var{x1},
-@var{y1})} and @w{(@var{x2}, @var{y2})} are control points at the
-beginning and at the end, respectively.
+使用@var{coordinate-sets}中的第一个元素，从当前点开始画一条立方贝塞尔曲线。如果
+有多个坐标集，请画出一个多边形贝塞尔曲线。每个坐标集都是一个形式为
+@code{(@var{x1} @var{y1} @var{x2} @var{y2} @var{x} @var{y})}
+的列表，其中的@w{(@var{x}, @var{y})}是曲线的端点。@w{(@var{x1}, @var{y1})}和
+@w{(@var{x2}, @var{y2})}分别是起点和终点的控制点。
 
 @lisp
 (svg-path svg '((moveto ((100 . 100)))
@@ -4919,16 +4917,12 @@ beginning and at the end, respectively.
 @end deffn
 
 @deffn Command smooth-curveto coordinate-sets
-Using the first element in @var{coordinate-sets}, draw a cubic Bézier
-curve from the current point.  If there are multiple coordinate sets,
-draw a polybezier.  Each coordinate set is a list of the form
-@code{(@var{x2} @var{y2} @var{x} @var{y})}, where @w{(@var{x},
-@var{y})} is the curve’s end point and @w{(@var{x2}, @var{y2})} is the
-corresponding control point.  The first control point is the
-reflection of the second control point of the previous command
-relative to the current point, if that command was @command{curveto}
-or @command{smooth-curveto}.  Otherwise the first control point
-coincides with the current point.
+使用@var{coordinate-sets}中的第一个元素，从当前点开始画一条立方贝塞尔曲线。如果
+有多个坐标集，请画出一个多边形贝塞尔曲线。每个坐标集都是一个形式为
+@code{(@var{x2} @var{y2} @var{x} @var{y})}的列表，其中
+@w{(@var{x}, @var{y})}是曲线的端点，@w{(@var{x2}, @var{y2})}是对应的控制点。
+第一个控制点是前一个命令的第二个控制点相对于当前点的反射，如果该命令是
+@command{curveto}或@command{smooth-curveto}。否则，第一个控制点与当前点重合。
 
 @lisp
 (svg-path svg '((moveto ((100 . 100)))
@@ -4939,12 +4933,10 @@ coincides with the current point.
 @end deffn
 
 @deffn Command quadratic-bezier-curveto coordinate-sets
-Using the first element in @var{coordinate-sets}, draw a quadratic
-Bézier curve from the current point.  If there are multiple coordinate
-sets, draw a polybezier.  Each coordinate set is a list of the form
-@code{(@var{x1} @var{y1} @var{x} @var{y})}, where @w{(@var{x},
-@var{y})} is the curve’s end point and @w{(@var{x1}, @var{y1})} is the
-control point.
+使用@var{coordinate-sets}中的第一个元素，从当前点开始画一条二次方程贝塞尔曲线。
+如果有多个坐标集，则画一条多边形贝塞尔曲线。每个坐标集都是
+@code{(@var{x1} @var{y1} @var{x} @var{y})}形式的列表，其中
+@w{(@var{x}, @var{y})}是曲线的端点，@w{(@var{x1}, @var{y1})}是控制点。
 
 @lisp
 (svg-path svg '((moveto ((200 . 100)))
@@ -4957,15 +4949,12 @@ control point.
 @end deffn
 
 @deffn Command smooth-quadratic-bezier-curveto coordinate-sets
-Using the first element in @var{coordinate-sets}, draw a quadratic
-Bézier curve from the current point.  If there are multiple coordinate
-sets, draw a polybezier.  Each coordinate set is a list of the form
-@code{(@var{x} @var{y})}, where @w{(@var{x}, @var{y})} is the curve’s
-end point.  The control point is the reflection of the control point
-of the previous command relative to the current point, if that command
-was @command{quadratic-bezier-curveto} or
-@command{smooth-quadratic-bezier-curveto}.  Otherwise the control
-point coincides with the current point.
+使用@var{coordinate-sets}中的第一个元素，从当前点开始画一条二次方程贝塞尔曲线。
+如果有多个坐标集，请画出一个多边形贝塞尔曲线。每个坐标集都是
+@code{(@var{x} @var{y})}形式的列表，其中@w{(@var{x}, @var{y})}是曲线的端点。
+控制点是前一个命令的控制点相对于当前点的反射，如果那个命令是
+@command{quadratic-bezier-curveto}或
+@command{smooth-quadratic-bezier-curveto}。否则控制点与当前点重合。
 
 @lisp
 (svg-path svg '((moveto ((200 . 100)))
@@ -4978,27 +4967,23 @@ point coincides with the current point.
 @end deffn
 
 @deffn Command elliptical-arc coordinate-sets
-Using the first element in @var{coordinate-sets}, draw an elliptical
-arc from the current point.  If there are multiple coordinate sets,
-draw a sequence of elliptical arcs.  Each coordinate set is a list of
-the form @code{(@var{rx} @var{ry} @var{x} @var{y})}, where
-@w{(@var{x}, @var{y})} is the end point of the ellipse, and
-@w{(@var{rx}, @var{ry})} are its radii.  Attributes may be appended to
-the list:
+使用@var{coordinate-sets}中的第一个元素，从当前点开始画一个椭圆弧。如果有多个坐
+标集，则绘制一系列的椭圆弧。每个坐标集都是
+@code{(@var{rx} @var{ry} @var{x} @var{y})} 形式的列表，其中的
+@w{(@var{x}, @var{y})}是椭圆的端点，而@w{(@var{rx}, @var{ry})}是其半径。
+以下属性可以附加到列表中:
 
 @table @code
 @item :x-axis-rotation
-The angle in degrees by which the x-axis of the ellipse is rotated
-relative to the x-axis of the current coordinate system.
+椭圆的X轴相对于当前坐标系的X轴旋转的角度，以度为单位。
 
 @item :large-arc
-If set to @code{t}, draw an arc sweep greater than or equal to 180
-degrees.  Otherwise, draw an arc sweep smaller than or equal to 180
-degrees.
+如果设置为@code{t}，则绘制大于或等于180度的弧线扫描。否则，画一个小于或等于180度的
+弧线扫描。
 
 @item :sweep
-If set to @code{t}, draw an arc in @dfn{positive angle direction}.
-Otherwise, draw it in @dfn{negative angle direction}.
+如果设置为@code{t}，则以@dfn{positive angle direction}画弧，否则以
+@dfn{negative angle direction}画弧。
 @end table
 
 @lisp
@@ -5027,89 +5012,75 @@ Otherwise, draw it in @dfn{negative angle direction}.
 @end deffn
 
 
-@node Other Image Types
+@node 其他图像类型
 @subsection Other Image Types
 @cindex PBM
 
-  For PBM images, specify image type @code{pbm}.  Color, gray-scale and
-monochromatic images are supported.   For mono PBM images, two additional
-image properties are supported.
+  对于PBM图像，请指定图像类型@code{pbm}。支持彩色、灰度和单色图像。对于单色PBM图
+像，支持两个额外的图像属性。
 
 @table @code
 @item :foreground @var{foreground}
-The value, @var{foreground}, should be a string specifying the image
-foreground color, or @code{nil} for the default color.  This color is
-used for each pixel in the PBM that is 1.  The default is the frame's
-foreground color.
+值@var{foreground}应该是一个指定图像前景色的字符串，或者@code{nil}表示默认颜色
+。PBM中每一个像素的颜色都是1，默认为窗框的前景色。
 
 @item :background @var{background}
-The value, @var{background}, should be a string specifying the image
-background color, or @code{nil} for the default color.  This color is
-used for each pixel in the PBM that is 0.  The default is the frame's
-background color.
+值@var{background}应该是一个字符串，指定图像的背景色，或者@code{nil}为默认颜色
+。这个颜色用于PBM中每个像素为0的地方，默认为窗框的背景色。
 @end table
 
 @noindent
-The remaining image types that Emacs can support are:
+Emacs能够支持的其余图像类型有：
 
 @table @asis
 @item GIF
-Image type @code{gif}.
-Supports the @code{:index} property.  @xref{Multi-Frame Images}.
+图片类型@code{gif}。
+支持@code{:index}属性。@xref{Multi-Frame Images}.
 
 @item JPEG
-Image type @code{jpeg}.
+图像类型@code{jpeg}。
 
 @item PNG
-Image type @code{png}.
+图片类型@code{png}。
 
 @item TIFF
-Image type @code{tiff}.
-Supports the @code{:index} property.  @xref{Multi-Frame Images}.
+图片类型@code{tiff}。
+支持@code{:index}属性。@xref{Multi-Frame Images}.
 @end table
 
-@node Defining Images
+@node 定义图像
 @subsection Defining Images
 @cindex define image
 
-  The functions @code{create-image}, @code{defimage} and
-@code{find-image} provide convenient ways to create image descriptors.
+  函数@code{creat-image}、@code{defimage}和@code{find-image}提供了创建图像
+描述符的便捷方法。
 
 @defun create-image file-or-data &optional type data-p &rest props
-This function creates and returns an image descriptor which uses the
-data in @var{file-or-data}.  @var{file-or-data} can be a file name or
-a string containing the image data; @var{data-p} should be @code{nil}
-for the former case, non-@code{nil} for the latter case.
+这个函数创建并返回一个使用@var{file-or-data}中数据的图像描述符。
+@var{file-or-data}可以是一个文件名，也可以是一个包含图像数据的字符串；
+@var{data-p}对于前一种情况应该是@code{nil}，对于后一种情况应该是非@code{nil}。
 
-The optional argument @var{type} is a symbol specifying the image type.
-If @var{type} is omitted or @code{nil}, @code{create-image} tries to
-determine the image type from the file's first few bytes, or else
-from the file's name.
+可选参数@var{type}是一个指定图像类型的符号。如果省略了@var{type}或者@code{nil}
+，则@code{creat-image}会尝试从文件的前几个字节或文件名中确定图像类型。
 
-The remaining arguments, @var{props}, specify additional image
-properties---for example,
+其余的参数 @var{props} 用于指定附加的图像属性--例如:
 
-@c ':heuristic-mask' is not documented?
+@c ':heuristic-mask'没有被记录下来？
 @example
 (create-image "foo.xpm" 'xpm nil :heuristic-mask t)
 @end example
 
-The function returns @code{nil} if images of this type are not
-supported.  Otherwise it returns an image descriptor.
+如果不支持这种类型的图像，函数返回@code{nil}，否则返回一个图像描述符。
 @end defun
 
 @defmac defimage symbol specs &optional doc
-This macro defines @var{symbol} as an image name.  The arguments
-@var{specs} is a list which specifies how to display the image.
-The third argument, @var{doc}, is an optional documentation string.
+这个宏定义了@var{symbol}作为图像的名称，参数@var{specs}是一个列表，用于指定如何
+显示图像。第三个参数@var{doc}是一个可选的文档字符串。
 
-Each argument in @var{specs} has the form of a property list, and each
-one should specify at least the @code{:type} property and either the
-@code{:file} or the @code{:data} property.  The value of @code{:type}
-should be a symbol specifying the image type, the value of
-@code{:file} is the file to load the image from, and the value of
-@code{:data} is a string containing the actual image data.  Here is an
-example:
+@var{specs}中的每个参数都是属性列表的形式，每个参数至少要指定@code{:type}属性和
+@code{:file}或@code{:data}属性。@code{:type}的值应该是一个指定图像类型的符号，
+@code{:file}的值是要从哪个文件加载图像，@code{:data}的值是一个包含实际图像数据的
+字符串。下面是一个例子:
 
 @example
 (defimage test-image
@@ -5117,53 +5088,40 @@ example:
    (:type xbm :file "~/test1.xbm")))
 @end example
 
-@code{defimage} tests each argument, one by one, to see if it is
-usable---that is, if the type is supported and the file exists.  The
-first usable argument is used to make an image descriptor which is
-stored in @var{symbol}.
+@code{defimage}逐个测试每个参数是否可用--也就是说，如果类型是被支持的，并且文件存
+在的话。第一个可用的参数被用来制作一个图像描述符，存储在@var{symbol}中。
 
-If none of the alternatives will work, then @var{symbol} is defined
-as @code{nil}.
+如果所有的选择都不行，那么@var{symbol}就被定义为@code{nil}。
 @end defmac
 
 @defun image-property image property
-Return the value of @var{property} in @var{image}.  Properties can be
-set by using @code{setf}.  Setting a property to @code{nil} will
-remove the property from the image.
+返回@var{image}中@var{property}的值。属性可以通过使用@code{setf}来设置。如果
+将属性设置为@code{nil}，则会从图片中删除该属性。
 @end defun
 
 @defun find-image specs
-This function provides a convenient way to find an image satisfying one
-of a list of image specifications @var{specs}.
+这个函数提供了一个方便的方法来寻找满足图像规格@var{specs}列表中的一个图像。
 
-Each specification in @var{specs} is a property list with contents
-depending on image type.  All specifications must at least contain the
-properties @code{:type @var{type}} and either @w{@code{:file @var{file}}}
-or @w{@code{:data @var{data}}}, where @var{type} is a symbol specifying
-the image type, e.g., @code{xbm}, @var{file} is the file to load the
-image from, and @var{data} is a string containing the actual image data.
-The first specification in the list whose @var{type} is supported, and
-@var{file} exists, is used to construct the image specification to be
-returned.  If no specification is satisfied, @code{nil} is returned.
+@var{specs}中的每个规范都是一个属性列表，其内容取决于图像类型。所有的规范必须至少
+包含@code{:type @var{type}}和@w{@code{:file @var{file}}或
+@w{@code{:data @var{data}}这两个属性，其中@var{type}是指定图像类型的符号，例
+如@code{xbm}，@var{file}是要从图像中加载的文件，@var{data}是包含实际图像数据的
+字符串。列表中第一个支持@var{type}的规范，并且@var{file}存在，就会被用来构造要返
+回的图像规范。如果不满足任何规范，则返回@code{nil}。
 
-The image is looked for in @code{image-load-path}.
+图片在@code{image-load-path}中寻找。
 @end defun
 
 @defopt image-load-path
-This variable's value is a list of locations in which to search for
-image files.  If an element is a string or a variable symbol whose
-value is a string, the string is taken to be the name of a directory
-to search.  If an element is a variable symbol whose value is a list,
-that is taken to be a list of directories to search.
+这个变量的值是搜索图像文件的位置列表。如果一个元素是字符串或变量符号，其值是字符串，
+则该字符串被认为是要搜索的目录名称。如果元素是一个变量符号，其值是一个列表，则表示要
+搜索的目录列表。
 
-The default is to search in the @file{images} subdirectory of the
-directory specified by @code{data-directory}, then the directory
-specified by @code{data-directory}, and finally in the directories in
-@code{load-path}.  Subdirectories are not automatically included in
-the search, so if you put an image file in a subdirectory, you have to
-supply the subdirectory explicitly.  For example, to find the
-image @file{images/foo/bar.xpm} within @code{data-directory}, you
-should specify the image as follows:
+默认是在@code{data-directory}指定的目录的@file{images}子目录中搜索，然后在
+@code{data-directory}指定的目录中搜索，最后在@code{load-path}的目录中搜索。子
+目录不会自动包含在搜索中，所以如果你把一个图片文件放在子目录中，你必须明确提供子目录
+。例如，要在@code{data-directory}中查找图片@file{images/foo/bar.xpm}，您应
+该指定图片如下:
 
 @example
 (defimage foo-image '((:type xpm :file "foo/bar.xpm")))
@@ -5171,26 +5129,21 @@ should specify the image as follows:
 @end defopt
 
 @defun image-load-path-for-library library image &optional path no-error
-This function returns a suitable search path for images used by the
-Lisp package @var{library}.
+这个函数返回一个适合Lisp包@var{library}使用的图片搜索路径。
 
-The function searches for @var{image} first using @code{image-load-path},
-excluding @file{@code{data-directory}/images}, and then in
-@code{load-path}, followed by a path suitable for @var{library}, which
-includes @file{../../etc/images} and @file{../etc/images} relative to
-the library file itself, and finally in
-@file{@code{data-directory}/images}.
+该函数首先使用@code{image-load-path}搜索@var{image}，不包括
+@file{@code{data-directory}/images}，然后在@code{load-path}中搜索，其次是
+适合@var{library}的路径，其中包括@file{.../.../etc/images}和
+@file{.../etc/images}相对于库文件本身，最后在
+@file{@code{data-directory}/images}。
 
-Then this function returns a list of directories which contains first
-the directory in which @var{image} was found, followed by the value of
-@code{load-path}.  If @var{path} is given, it is used instead of
-@code{load-path}.
+然后，这个函数返回一个目录列表，其中首先包含找到@var{image}的目录，然后是
+@code{load-path}的值。如果给定了@var{path}，则使用它代替@code{load-path}。
 
-If @var{no-error} is non-@code{nil} and a suitable path can't be
-found, don't signal an error.  Instead, return a list of directories as
-before, except that @code{nil} appears in place of the image directory.
+如果@var{no-error}是非@code{nil}，并且找不到合适的路径，不要发出错误信号。取而代
+之的是像之前一样返回一个目录列表，只是@code{nil}代替了image目录。
 
-Here is an example of using @code{image-load-path-for-library}:
+下面是一个使用@code{image-load-path-for-library}的例子:
 
 @example
 (defvar image-load-path) ; shush compiler
@@ -5203,267 +5156,209 @@ Here is an example of using @code{image-load-path-for-library}:
 @end defun
 
 @vindex image-scaling-factor
-Images are automatically scaled when created based on the
-@code{image-scaling-factor} variable.  The value is either a floating
-point number (where numbers higher than 1 means to increase the size
-and lower means to shrink the size), or the symbol @code{auto}, which
-will compute a scaling factor based on the font pixel size.
+图片在创建时，会根据@code{image-scaling-factor}变量自动缩放。这个值可以是一个浮
+点数（大于1的数字表示增大尺寸，小于1的数字表示缩小尺寸），也可以是符号@code{auto}
+，它将根据字体像素大小计算出一个缩放系数。
 
-@node Showing Images
+@node 显示图像
 @subsection Showing Images
 @cindex show image
 
-  You can use an image descriptor by setting up the @code{display}
-property yourself, but it is easier to use the functions in this
-section.
+  您可以通过自己设置@code{display}属性来使用图像描述符，但使用本节中的函数更容易。
 
 @defun insert-image image &optional string area slice
-This function inserts @var{image} in the current buffer at point.  The
-value @var{image} should be an image descriptor; it could be a value
-returned by @code{create-image}, or the value of a symbol defined with
-@code{defimage}.  The argument @var{string} specifies the text to put
-in the buffer to hold the image.  If it is omitted or @code{nil},
-@code{insert-image} uses @code{" "} by default.
+这个函数在当前缓冲区的点插入@var{image}。值@var{image}应该是一个图像描述符，它可
+以是@code{create-image}返回的值，也可以是@code{defimage}定义的一个符号的值。参
+数@var{string}指定了要放在缓冲区中的文本，用于保存图像。如果参数@var{string}被省
+略或@code{nil}，则@code{insert-image}默认使用@code{" "}。
 
-The argument @var{area} specifies whether to put the image in a margin.
-If it is @code{left-margin}, the image appears in the left margin;
-@code{right-margin} specifies the right margin.  If @var{area} is
-@code{nil} or omitted, the image is displayed at point within the
-buffer's text.
+参数@var{area}指定是否将图片放在页边距中。如果是@code{left-margin}，则图像显示
+在左边的空白处；@code{right-margin}指定的是右边的空白处。如果@var{area}为
+@code{nil}或被省略，则图像将显示在缓冲区内的文字点上。
 
-The argument @var{slice} specifies a slice of the image to insert.  If
-@var{slice} is @code{nil} or omitted the whole image is inserted.
-Otherwise, @var{slice} is a list @code{(@var{x} @var{y} @var{width}
-@var{height})} which specifies the @var{x} and @var{y} positions and
-@var{width} and @var{height} of the image area to insert.  Integer
-values are in units of pixels.  A floating-point number in the range
-0.0--1.0 stands for that fraction of the width or height of the entire
-image.
+参数@var{slice}指定了要插入的图片的一个片断，如果@var{slice}是@code{nil}或省略
+，则插入整个图片。如果@var{slice}是@code{nil}或者被省略，则插入整个图像，否则，
+@var{slice}是一个列表@code{(@var{x} @var{y} @var{width} @var{height})}，
+它指定了@var{x}和@var{y}的位置，以及@var{width}和@var{height}要插入的图像区域
+。整数值的单位是像素。0.0--1.0范围内的浮点数代表整个图像的宽度或高度的一部分。
 
-Internally, this function inserts @var{string} in the buffer, and gives
-it a @code{display} property which specifies @var{image}.  @xref{Display
-Property}.
+在内部，这个函数在缓冲区中插入@var{string}，并给它一个@code{display}属性，指定
+@var{image}。@xref{Display Property}。
 @end defun
 
 @cindex slice, image
 @cindex image slice
 @defun insert-sliced-image image &optional string area rows cols
-This function inserts @var{image} in the current buffer at point, like
-@code{insert-image}, but splits the image into @var{rows}x@var{cols}
-equally sized slices.
+这个函数在当前缓冲区中插入@var{image}点，就像@code{insert-image}一样，但是将图
+像分割成@var{rows}x@var{cols}大小相等的片断。
 
-Emacs displays each slice as a
-separate image, and allows more intuitive scrolling up/down, instead of
-jumping up/down the entire image when paging through a buffer that
-displays (large) images.
+Emacs将每个片断作为单独的图像显示，并允许更直观地向上/向下滚动，而不是在分页显示（大
+）图像的缓冲区时，向上/向下跳转整个图像。
 @end defun
 
 @defun put-image image pos &optional string area
-This function puts image @var{image} in front of @var{pos} in the
-current buffer.  The argument @var{pos} should be an integer or a
-marker.  It specifies the buffer position where the image should appear.
-The argument @var{string} specifies the text that should hold the image
-as an alternative to the default.
+此函数将图像@var{image}放在当前缓冲区的@var{pos}前面。参数@var{pos}应该是一个整
+数或一个标记，它指定了图片应该出现在缓冲区的位置。参数@var{string}指定了图片的文本
+，作为默认值的替代。
 
-The argument @var{image} must be an image descriptor, perhaps returned
-by @code{create-image} or stored by @code{defimage}.
+参数@var{image}必须是一个图像描述符，可能是由@code{create-image}返回或由
+@code{defimage}存储的。
 
-The argument @var{area} specifies whether to put the image in a margin.
-If it is @code{left-margin}, the image appears in the left margin;
-@code{right-margin} specifies the right margin.  If @var{area} is
-@code{nil} or omitted, the image is displayed at point within the
-buffer's text.
+参数@var{area}指定是否将图片放在页边距中。如果是@code{left-margin}，则图像显示
+在左边的空白处；@code{right-margin}指定的是右边的空白处。如果@var{area}为
+@code{nil}或被省略，则图像将显示在缓冲区内的文字点上。
 
-Internally, this function creates an overlay, and gives it a
-@code{before-string} property containing text that has a @code{display}
-property whose value is the image.  (Whew!)
+在内部，这个函数创建了一个叠加，并给它一个包含文本的@code{before-string}属性，该
+属性有一个@code{display}属性，其值是图像。(呼！)
 @end defun
 
 @defun remove-images start end &optional buffer
-This function removes images in @var{buffer} between positions
-@var{start} and @var{end}.  If @var{buffer} is omitted or @code{nil},
-images are removed from the current buffer.
+该函数用于删除@var{buffer}中位于@var{start}和@var{end}之间的图片。如果省略了
+@var{buffer}或者@code{nil}，则从当前的缓冲区中移除图片。
 
-This removes only images that were put into @var{buffer} the way
-@code{put-image} does it, not images that were inserted with
-@code{insert-image} or in other ways.
+这将只删除被放入@var{buffer}的图片，而不删除通过@code{insert-image}或其他方式
+插入的图片。
 @end defun
 
 @defun image-size spec &optional pixels frame
 @cindex size of image
-This function returns the size of an image as a pair
-@w{@code{(@var{width} . @var{height})}}.  @var{spec} is an image
-specification.  @var{pixels} non-@code{nil} means return sizes measured
-in pixels, otherwise return sizes measured in the default character size
-of @var{frame} (@pxref{Frame Font}).  @var{frame} is the frame on which
-the image will be displayed.  @var{frame} @code{nil} or omitted means
-use the selected frame (@pxref{Input Focus}).
+该函数以形式为一对@w{@code{(@var{width} . @var{height})}}返回图像的大小。
+@var{spec}是一个图像规范。@var{pixels}非@code{nil}表示返回以像素为单位的大小，
+否则返回以@var{frame}(@pxref{Frame Font})的默认字符大小为单位的大小。
+@var{frame}是显示图像的窗框。@code{nil}或省略表示使用选定的窗框（
+@pxref{Input Focus}）。
 @end defun
 
 @defvar max-image-size
-This variable is used to define the maximum size of image that Emacs
-will load.  Emacs will refuse to load (and display) any image that is
-larger than this limit.
+这个变量用于定义Emacs将加载的图像的最大尺寸，Emacs将拒绝加载（和显示）任何大于这个
+限制的图像。Emacs将拒绝加载（和显示）任何大于此限制的图像。
 
-If the value is an integer, it directly specifies the maximum
-image height and width, measured in pixels.  If it is floating
-point, it specifies the maximum image height and width
-as a ratio to the frame height and width.  If the value is
-non-numeric, there is no explicit limit on the size of images.
+如果值是整数，则直接指定最大图像的高度和宽度，以像素为单位。如果是浮点数，则指定最大
+图像高度和宽度与窗框高度和宽度的比例。如果该值为非数值，则对图像的大小没有明确的限制
+。
 
-The purpose of this variable is to prevent unreasonably large images
-from accidentally being loaded into Emacs.  It only takes effect the
-first time an image is loaded.  Once an image is placed in the image
-cache, it can always be displayed, even if the value of
-@code{max-image-size} is subsequently changed (@pxref{Image Cache}).
+这个变量的目的是为了防止不合理的大图片被意外地加载到Emacs中。它只在第一次加载图像时
+生效。一旦图像被放置在图像缓存中，即使@code{max-image-size}的值随后被改变，它也可
+以一直被显示(@pxref{Image Cache})。
 @end defvar
 
-Images inserted with the insertion functions above also get a local
-keymap installed in the text properties (or overlays) that span the
-displayed image.  This keymap defines the following commands:
+用上述插入功能插入的图像也会得到一个安装在文本属性(或覆盖)中的本地键图，该键图包括了
+显示的图像。这个键图定义了以下命令：
 
 @table @kbd
 @item +
-Increase the image size (@code{image-increase-size}).  A prefix value
-of @samp{4} means to increase the size by 40%.  The default is 20%.
+增加图片大小(@code{image-increase-size})。前缀值为@samp{4}表示增加40%的图片大
+小。默认值是20%。
 
 @item -
-Decrease the image size (@code{image-increase-size}).  A prefix value
-of @samp{4} means to decrease the size by 40%.  The default is 20%.
+减少图片大小(@code{image-increase-size})。前缀值为@samp{4}表示减少40%的图片大
+小。默认值是20%。
 
 @item r
-Rotate the image by 90 degrees clockwise (@code{image-rotate}).
-A prefix means to rotate by 90 degrees counter-clockwise instead.
+将图像顺时针旋转90度(@code{image-rotate})。前缀表示逆时针旋转90度。
 
 @item o
-Save the image to a file (@code{image-save}).
+将图像保存到文件中(@code{image-save})。
 @end table
 
-@node Multi-Frame Images
+@node 多帧图像
 @subsection Multi-Frame Images
 @cindex multi-frame images
 
 @cindex animation
 @cindex image animation
 @cindex image frames
-Some image files can contain more than one image.  We say that there
-are multiple ``frames'' in the image.  At present, Emacs supports
-multiple frames for GIF, TIFF, and certain ImageMagick formats such as
-DJVM@.
+有些图像文件可以包含一个以上的图像。我们说图像中存在多个"帧"。目前，Emacs支持GIF、
+TIFF和某些ImageMagick格式（如DJVM@）的多帧。
 
-The frames can be used either to represent multiple pages (this is
-usually the case with multi-frame TIFF files, for example), or to
-create animation (usually the case with multi-frame GIF files).
+帧可以用来表示多个页面（例如，这通常是多帧TIFF文件的情况），或者用来创建动画（通常是
+多帧GIF文件的情况）。
 
-A multi-frame image has a property @code{:index}, whose value is an
-integer (counting from 0) that specifies which frame is being displayed.
+多帧图像有一个属性@code{:index}，它的值是一个整数（从0开始计算），指定显示的是哪一
+帧。
 
 @defun image-multi-frame-p image
-This function returns non-@code{nil} if @var{image} contains more than
-one frame.  The actual return value is a cons @code{(@var{nimages}
-. @var{delay})}, where @var{nimages} is the number of frames and
-@var{delay} is the delay in seconds between them, or @code{nil}
-if the image does not specify a delay.  Images that are intended to be
-animated usually specify a frame delay, whereas ones that are intended
-to be treated as multiple pages do not.
+如果@var{image}包含多个帧，则此函数返回非@code{nil}。实际的返回值是一个cons
+@code{(@var{nimages} . @var{delay})}，其中@var{nimages}是帧数，
+@var{delay}是帧与帧之间的延迟，以秒为单位，如果图片没有指定延迟，则返回@code{nil}
+。如果图片是为了制作动画，通常会指定一个帧延迟，而如果图片是为了作为多页处理，则不会
+指定延迟。
 @end defun
 
 @defun image-current-frame image
-This function returns the index of the current frame number for
-@var{image}, counting from 0.
+此函数返回@var{image}当前帧数的索引，从0开始计算。
 @end defun
 
 @defun image-show-frame image n &optional nocheck
-This function switches @var{image} to frame number @var{n}.  It
-replaces a frame number outside the valid range with that of the end
-of the range, unless @var{nocheck} is non-@code{nil}.  If @var{image}
-does not contain a frame with the specified number, the image displays
-as a hollow box.
+此函数将@var{image}转换到帧号@var{n}。除非@var{nocheck}是非@code{nil}，否则
+它会用有效范围外的帧号来替换有效范围内的帧号。如果@var{image}不包含指定数量的帧，
+则图像显示为空心框。
 @end defun
 
 @defun image-animate image &optional index limit
-This function animates @var{image}.  The optional integer @var{index}
-specifies the frame from which to start (default 0).  The optional
-argument @var{limit} controls the length of the animation.  If omitted
-or @code{nil}, the image animates once only; if @code{t} it loops
-forever; if a number animation stops after that many seconds.
+此函数将对@var{image}进行动画处理。参数@var{index}是可选的整数，用于指定从哪一帧
+开始播放动画（默认为0）。可选参数@var{limit}用于控制动画的长度。如果省略或
+@code{nil}，则图像只做一次动画；如果@code{t}，则永远循环；如果是数字，则动画在这
+么多秒后停止。
 @end defun
 
 @vindex image-minimum-frame-delay
 @vindex image-default-frame-delay
-@noindent Animation operates by means of a timer.  Note that Emacs imposes a
-minimum frame delay of 0.01 (@code{image-minimum-frame-delay}) seconds.
-If the image itself does not specify a delay, Emacs uses
-@code{image-default-frame-delay}.
+@noindent 动画是通过定时器来操作的。请注意，Emacs强加了一个最小帧延迟0.01(
+@code{image-minimum-frame-delay})秒。如果图像本身没有指定延迟，Emacs使用
+@code{image-default-frame-delay}。
 
 @defun image-animate-timer image
-This function returns the timer responsible for animating @var{image},
-if there is one.
+此函数返回负责播放@var{image}动画的计时器（如果有的话）。
 @end defun
 
 
-@node Image Cache
+@node 图像缓存
 @subsection Image Cache
 @cindex image cache
 
-  Emacs caches images so that it can display them again more
-efficiently.  When Emacs displays an image, it searches the image
-cache for an existing image specification @code{equal} to the desired
-specification.  If a match is found, the image is displayed from the
-cache.  Otherwise, Emacs loads the image normally.
+  Emacs缓存图像，以便它能更有效地再次显示它们。当Emacs显示图像时，它会在图像缓存中
+搜索与所需规范相匹配的现有图像规范@code{equal}。如果找到了匹配的规范，则从缓存中显
+示图像。否则，Emacs将正常加载图像。
 
 @defun image-flush spec &optional frame
-This function removes the image with specification @var{spec} from the
-image cache of frame @var{frame}.  Image specifications are compared
-using @code{equal}.  If @var{frame} is @code{nil}, it defaults to the
-selected frame.  If @var{frame} is @code{t}, the image is flushed on
-all existing frames.
+此函数从@var{frame}的图像缓存中删除规格为@var{spec}的图像。使用@code{equal}比
+较图像的规格。如果@var{frame}是@code{nil}，则默认为选择的帧。如果@var{frame}是
+@code{t}，则会在所有现有的帧上刷新图像。
 
-In Emacs's current implementation, each graphical terminal possesses an
-image cache, which is shared by all the frames on that terminal
-(@pxref{Multiple Terminals}).  Thus, refreshing an image in one frame
-also refreshes it in all other frames on the same terminal.
+在Emacs当前的实现中，每个图形终端都拥有一个图像缓存，这个图像缓存由该终端上的所有窗
+框共享 (@pxref{Multiple Terminals})。因此，在一个窗框中刷新一个图像，也会在同一
+终端上的所有其他窗框中刷新它。
 @end defun
 
-  One use for @code{image-flush} is to tell Emacs about a change in an
-image file.  If an image specification contains a @code{:file}
-property, the image is cached based on the file's contents when the
-image is first displayed.  Even if the file subsequently changes,
-Emacs continues displaying the old version of the image.  Calling
-@code{image-flush} flushes the image from the cache, forcing Emacs to
-re-read the file the next time it needs to display that image.
+  @code{image-flush}的一个用途是告诉Emacs图像文件的变化。如果一个图像规范包含一
+个@code{:file}属性，当图像第一次显示时，图像会根据文件的内容进行缓存。即使文件随后
+发生变化，Emacs也会继续显示旧版本的图像。调用@code{image-flush}会将图像从缓存中
+清除，迫使Emacs在下次需要显示该图像时重新读取文件。
 
-  Another use for @code{image-flush} is for memory conservation.  If
-your Lisp program creates a large number of temporary images over a
-period much shorter than @code{image-cache-eviction-delay} (see
-below), you can opt to flush unused images yourself, instead of
-waiting for Emacs to do it automatically.
+  @code{image-flush}的另一个用途是用于内存保护。如果你的Lisp程序在比
+@code{image-cache-eviction-delay}短得多的时间内创建了大量的临时图像，那么就可
+以使用@code{image-flush}来保存内存。(见下文)，你可以选择自己刷新未使用的图像，而
+不是等待Emacs自动刷新。
 
 @defun clear-image-cache &optional filter
-This function clears an image cache, removing all the images stored in
-it.  If @var{filter} is omitted or @code{nil}, it clears the cache for
-the selected frame.  If @var{filter} is a frame, it clears the cache
-for that frame.  If @var{filter} is @code{t}, all image caches are
-cleared.  Otherwise, @var{filter} is taken to be a file name, and all
-images associated with that file name are removed from all image
-caches.
+此函数清除图像缓存，并删除所有存储在缓存中的图像。如果@var{filter}被省略或者
+@code{nil}被删除，则清除所选窗框的缓存。如果@var{filter}是一个窗框，则清除该窗框
+的缓存。如果@var{filter}是@code{t}，则清除所有图像的缓存。否则，@var{filter}将
+被视为一个文件名，并且所有与该文件名相关联的图像将从所有图像缓存中移除。
 @end defun
 
-If an image in the image cache has not been displayed for a specified
-period of time, Emacs removes it from the cache and frees the
-associated memory.
+如果图像缓存中的图像在指定的时间内没有显示，Emacs就会将其从缓存中删除并释放相关的内
+存。
 
 @defvar image-cache-eviction-delay
-This variable specifies the number of seconds an image can remain in
-the cache without being displayed.  When an image is not displayed for
-this length of time, Emacs removes it from the image cache.
+这个变量指定了图像在缓存中不被显示的秒数，当图像在这个时间段不被显示时，Emacs会从图
+像缓存中删除它。当图像在这个时间段内不显示时，Emacs会将其从图像缓存中删除。
 
-Under some circumstances, if the number of images in the cache grows
-too large, the actual eviction delay may be shorter than this.
+在某些情况下，如果缓存中的图片数量增长过大，实际的驱逐延迟可能会比这个时间短。
 
-If the value is @code{nil}, Emacs does not remove images from the cache
-except when you explicitly clear it.  This mode can be useful for
-debugging.
+如果值是@code{nil}，Emacs不会从缓存中删除图像，除非你明确地清除它。这个模式对调试
+很有用。
 @end defvar
 
 @node Xwidgets
@@ -5472,109 +5367,92 @@ debugging.
 @cindex embedded widgets
 @cindex webkit browser widget
 
-  Emacs is able to display native widgets, such as GTK+ WebKit widgets,
-in Emacs buffers when it was built with the necessary support
-libraries and is running on a graphical terminal.  To test whether
-Emacs supports display of embedded widgets, check that the
-@code{xwidget-internal} feature is available (@pxref{Named Features}).
+  当Emacs使用必要的支持库构建并在图形终端上运行时，Emacs能够在Emacs缓冲区中显示原
+生widget，如GTK+ WebKit widgets。要测试Emacs是否支持显示嵌入式widget，请检查
+@code{xwidget-internal}功能是否可用（@pxref{Named Features}）。
 
-  To display an embedded widget in a buffer, you must first create an
-xwidget object, and then use that object as the display specifier
-in a @code{display} text or overlay property (@pxref{Display
-Property}).
+  要在缓冲区中显示嵌入式小组件，您必须首先创建一个xwidget对象，然后将该对象用作
+@code{display}文本或覆盖属性(@pxref{Display Property})中的显示指定器。
 
 @defun make-xwidget type title width height arguments &optional buffer
-This creates and returns an xwidget object.  If
-@var{buffer} is omitted or @code{nil}, it defaults to the current
-buffer.  If @var{buffer} names a buffer that doesn't exist, it will be
-created.  The @var{type} identifies the type of the xwidget component,
-it can be one of the following:
+该函数创建并返回一个xwidget对象，如果省略@var{buffer}或@code{nil}，则默认为当前
+缓冲区。如果省略了@var{buffer}或者@code{nil}，则默认为当前的缓冲区。如果
+@var{buffer}命名了一个不存在的缓冲区，那么就会被创建。@var{type}表示xwidget组件
+的类型，可以是以下类型之一:
 
 @table @code
 @item webkit
-The WebKit component.
+WebKit组件。
 @end table
 
-The @var{width} and @var{height} arguments specify the widget size in
-pixels, and @var{title}, a string, specifies its title.
+参数@var{width}和@var{height}以像素为单位指定小组件的大小，@var{title}是一个字
+符串，指定其标题。
 @end defun
 
 @defun xwidgetp object
-This function returns @code{t} if @var{object} is an xwidget,
-@code{nil} otherwise.
+如果@var{object}是一个xwidget，则该函数返回@code{t}，否则返回@code{nil}。
 @end defun
 
 @defun xwidget-plist xwidget
-This function returns the property list of @var{xwidget}.
+此函数返回@var{xwidget}的属性列表。
 @end defun
 
 @defun set-xwidget-plist xwidget plist
-This function replaces the property list of @var{xwidget} with a new
-property list given by @var{plist}.
+此函数将@var{xwidget}的属性列表替换为@var{plist}给出的新属性列表。
 @end defun
 
 @defun xwidget-buffer xwidget
-This function returns the buffer of @var{xwidget}.
+此函数返回@var{xwidget}的缓冲区。
 @end defun
 
 @defun get-buffer-xwidgets buffer
-This function returns a list of xwidget objects associated with the
-@var{buffer}, which can be specified as a buffer object or a name of
-an existing buffer, a string.  The value is @code{nil} if @var{buffer}
-contains no xwidgets.
+该函数返回与@var{buffer}相关联的xwidget对象列表，可以指定为一个缓冲区对象或一个现
+有缓冲区的名称，也可以指定为一个字符串。如果@var{buffer}中没有xwidget对象，则返回
+@code{nil}。
 @end defun
 
 @defun xwidget-webkit-goto-uri xwidget uri
-This function browses the specified @var{uri} in the given
-@var{xwidget}.  The @var{uri} is a string that specifies the name of a
-file or a URL.  @c FIXME: What else can a URI specify in this context?
+此函数在给定的@var{xwidget}中浏览指定的@var{uri}。@var{uri}是一个字符串，指定
+了一个文件或URL的名称。@c FIXME: 在这个上下文中，URI还可以指定什么？
 @end defun
 
 @defun xwidget-webkit-execute-script xwidget script
-This function causes the browser widget specified by @var{xwidget} to
-execute the specified JavaScript @code{script}.
+该函数使@var{xwidget}指定的浏览器小部件执行指定的JavaScript @code{script}。
 @end defun
 
 @defun xwidget-webkit-execute-script-rv xwidget script &optional default
-This function executes the specified @var{script} like
-@code{xwidget-webkit-execute-script} does, but it also returns the
-script's return value as a string.  If @var{script} doesn't return a
-value, this function returns @var{default}, or @code{nil} if
-@var{default} was omitted.
+这个函数像@code{xwidget-webkit-execute-script}一样执行指定的@var{script}，
+但它也以字符串形式返回脚本的返回值。如果@var{script}没有返回值，这个函数将返回
+@var{default}，如果省略了@var{default}，则返回@code{nil}。
 @end defun
 
 @defun xwidget-webkit-get-title xwidget
-This function returns the title of @var{xwidget} as a string.
+此函数以字符串形式返回@var{xwidget}的标题。
 @end defun
 
 @defun xwidget-resize xwidget width height
-This function resizes the specified @var{xwidget} to the size
-@var{width}x@var{height} pixels.
+该函数将指定的@var{xwidget}调整为@var{width}x@var{height}像素大小。
 @end defun
 
 @defun xwidget-size-request xwidget
-This function returns the desired size of @var{xwidget} as a list of
-the form @code{(@var{width} @var{height})}.  The dimensions are in
-pixels.
+此函数以@code{(@var{width} @var{height})}的形式返回@var{xwidget}所需的尺寸。
+尺寸以像素为单位。
 @end defun
 
 @defun xwidget-info xwidget
-This function returns the attributes of @var{xwidget} as a vector of
-the form @code{[@var{type} @var{title} @var{width} @var{height}]}.
-The attributes are usually determined by @code{make-xwidget} when the
-xwidget is created.
+这个函数以@code{[@var{type} @var{title} @var{width} @var{height}]}的形式返
+回@var{xwidget}的属性。当创建xwidget时，这些属性通常由@code{make-xwidget}决定
+。
 @end defun
 
 @defun set-xwidget-query-on-exit-flag xwidget flag
-This function allows you to arrange that Emacs will ask the user for
-confirmation before exiting or before killing a buffer that has
-@var{xwidget} associated with it.  If @var{flag} is non-@code{nil},
-Emacs will query the user, otherwise it will not.
+这个函数允许你安排Emacs在退出之前或在杀死与@var{xwidget}相关联的缓冲区之前询问用
+户确认。如果@var{flag}是非@code{nil}，Emacs会询问用户，否则不会。
 @end defun
 
 @defun xwidget-query-on-exit-flag xwidget
-This function returns the current setting of @var{xwidget}s
-query-on-exit flag, either @code{t} or @code{nil}.
+此函数返回@var{xwidget}s query-on-exit标志的当前设置，可以是@code{t}或
+@code{nil}。
 @end defun
 
 @node 按钮
