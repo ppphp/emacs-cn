@@ -6,7 +6,7 @@ c= open 'display_wode.texi', 'w'
 
 def start(l)
   if l.start_with? "@"
-    for s in ["@var", "@code", "@pxref", "@xref", "@samp"]
+    for s in ["@var", "@code", "@pxref", "@xref", "@samp", "@sc", "@acronym"]
       if l.start_with? s
         return false
       end
