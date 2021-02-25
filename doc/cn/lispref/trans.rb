@@ -1,16 +1,17 @@
-a= open 'display.texi'
+a= open ARGV[0]+'.texi'
 
 b=a.readlines
 
-c= open 'display_wode.texi', 'w'
+c= open ARGV[0]+'_wode.texi', 'w'
 
 def start(l)
-  if l.start_with? "@"
-    for s in ["@var", "@code", "@pxref", "@xref", "@samp", "@sc", "@acronym"]
-      if l.start_with? s
-        return false
-      end
+  for s in ["@var", "@code", "@pxref", "@xref", "@samp", "@sc", "@acronym", "* ", "@anchor", "@dfn"]
+    if l.start_with? s
+      return false
     end
+  end
+
+  if l.start_with? "@"
     return true
   end
   return false
