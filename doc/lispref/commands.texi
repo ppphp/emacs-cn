@@ -8,215 +8,172 @@
 @cindex editor command loop
 @cindex command loop
 
-  When you run Emacs, it enters the @dfn{editor command loop} almost
-immediately.  This loop reads key sequences, executes their definitions,
-and displays the results.  In this chapter, we describe how these things
-are done, and the subroutines that allow Lisp programs to do them.
+  当你运行Emacs时，它几乎立即进入@dfn{editor command loop}。这个循环读取按键序列
+，执行它们的定义，并显示结果。在本章中，我们将描述这些事情是如何完成的，以及允许Lisp程
+序完成这些事情的子程序。
 
 @menu
-* Command Overview::    How the command loop reads commands.
-* Defining Commands::   Specifying how a function should read arguments.
-* Interactive Call::    Calling a command, so that it will read arguments.
-* Distinguish Interactive::     Making a command distinguish interactive calls.
-* Command Loop Info::   Variables set by the command loop for you to examine.
-* Adjusting Point::     Adjustment of point after a command.
-* Input Events::        What input looks like when you read it.
-* Reading Input::       How to read input events from the keyboard or mouse.
-* Special Events::      Events processed immediately and individually.
-* Waiting::             Waiting for user input or elapsed time.
-* Quitting::            How @kbd{C-g} works.  How to catch or defer quitting.
-* Prefix Command Arguments::    How the commands to set prefix args work.
-* Recursive Editing::   Entering a recursive edit,
-                          and why you usually shouldn't.
-* Disabling Commands::  How the command loop handles disabled commands.
-* Command History::     How the command history is set up, and how accessed.
-* Keyboard Macros::     How keyboard macros are implemented.
+* 命令概述::   命令循环如何读取命令。
+* 定义命令::   指定一个函数应该如何读取参数。
+* 交互式调用:: 调用一个命令，使其读取参数。
+* 区分交互式:: 使一个命令与交互式调用不同。
+* 命令循环信息::令循环设置的变量，供你检查。
+* 调整点::    命令后调整光标点。
+* 输入事件:：  读取输入时的样子。
+* 读取输入:：  从键盘或鼠标读取输入事件的方法。
+* 特殊事件::  立即和单独处理的事件。
+* 等待:：     等待用户的输入或过期的时间。
+* 退出::     @kbd{C-g}的工作方式。 如何捕捉或推迟退出。
+* 前缀命令参数:: 设置前缀参数的命令如何工作。
+* 递归编辑::  进入递归编辑,以及为什么你通常不应该这样做。
+* 禁用命令：:  命令循环如何处理被禁用的命令。
+* 命令历史::  如何设置命令历史，以及如何访问。
+* 键盘宏::    键盘宏的实现方式。
 @end menu
 
-@node Command Overview
+@node 命令概述
 @section Command Loop Overview
 
-  The first thing the command loop must do is read a key sequence,
-which is a sequence of input events that translates into a command.
-It does this by calling the function @code{read-key-sequence}.  Lisp
-programs can also call this function (@pxref{Key Sequence Input}).
-They can also read input at a lower level with @code{read-key} or
-@code{read-event} (@pxref{Reading One Event}), or discard pending
-input with @code{discard-input} (@pxref{Event Input Misc}).
+  命令循环必须做的第一件事是读取一个按键序列，这是一个转换为命令的输入事件序列，它通过
+调用函数@code{read-key-sequence}来完成。Lisp程序也可以调用这个函数（
+@pxref{key Sequence Input}）。它们也可以通过@code{read-key}或
+@code{read-event}来读取更低层次的输入(@pxref{Reading One Event})，或者用
+@code{discard-input}（@pxref{Event Input Misc}）丢弃待定的输入。
 
-  The key sequence is translated into a command through the currently
-active keymaps.  @xref{Key Lookup}, for information on how this is done.
-The result should be a keyboard macro or an interactively callable
-function.  If the key is @kbd{M-x}, then it reads the name of another
-command, which it then calls.  This is done by the command
-@code{execute-extended-command} (@pxref{Interactive Call}).
+  按键序列通过当前活动键位图转化为命令。关于如何做到这一点的信息，请参见
+@xref{Key Lookup}。其结果应该是一个键盘宏或一个可交互调用的函数。如果按键是
+@kbd{M-x}，那么它就会读取另一个命令的名称，然后调用它。这是由命令
+@code{execute-extended-command}（@pxref{Interactive Call}）完成的。
 
-  Prior to executing the command, Emacs runs @code{undo-boundary} to
-create an undo boundary.  @xref{Maintaining Undo}.
+在执行命令之前，Emacs会运行@code{undo-boundary}来创建一个撤销边界。
+@xref{Maintaining Undo}。
 
-  To execute a command, Emacs first reads its arguments by calling
-@code{command-execute} (@pxref{Interactive Call}).  For commands
-written in Lisp, the @code{interactive} specification says how to read
-the arguments.  This may use the prefix argument (@pxref{Prefix
-Command Arguments}) or may read with prompting in the minibuffer
-(@pxref{Minibuffers}).  For example, the command @code{find-file} has
-an @code{interactive} specification which says to read a file name
-using the minibuffer.  The function body of @code{find-file} does not
-use the minibuffer, so if you call @code{find-file} as a function from
-Lisp code, you must supply the file name string as an ordinary Lisp
-function argument.
+要执行一个命令，Emacs首先通过调用@code{command-execute}来读取其参数。(
+@pxref{Interactive Call})。对于用Lisp编写的命令，@code{interactive}规范规定
+了是如何读取参数。 这可能使用前缀参数（@pxref{Prefix Command Arguments}），也可
+能在minibuffer中提示读取（@pxref{Minibuffers}）。例如，命令@code{find-file}有
+一个@code{interactive}规范，说是使用minibuffer读取文件名。而@code{find-file}
+的函数体并没有使用minibuffer，所以如果你从Lisp代码中调用@code{find-file}作为函数
+，你必须提供文件名字符串作为普通Lisp函数参数。
 
-  If the command is a keyboard macro (i.e., a string or vector),
-Emacs executes it using @code{execute-kbd-macro} (@pxref{Keyboard
-Macros}).
+如果命令是键盘宏(即字符串或向量)，Emacs会使用@code{execute-kbd-macro}来执行它(
+@pxref{Keyboard Macros})
 
 @defvar pre-command-hook
-This normal hook is run by the editor command loop before it executes
-each command.  At that time, @code{this-command} contains the command
-that is about to run, and @code{last-command} describes the previous
-command.  @xref{Command Loop Info}.
+这个正常的钩子是由编辑器命令循环执行每个命令之前运行的。此时，@code{this-command}包
+含即将运行的命令，@code{last-command}描述前一个命令。
+@xref{Command Loop Info}。
 @end defvar
 
 @defvar post-command-hook
-This normal hook is run by the editor command loop after it executes
-each command (including commands terminated prematurely by quitting or
-by errors).  At that time, @code{this-command} refers to the command
-that just ran, and @code{last-command} refers to the command before
-that.
+这个正常的钩子是在编辑器命令循环执行完每一条命令（包括因退出或错误而提前终止的命令）后
+，由编辑器命令循环运行的。此时，@code{this-command}指的是刚刚运行的命令，
+@code{last-command}指的是之前的命令。
 
-This hook is also run when Emacs first enters the command loop (at
-which point @code{this-command} and @code{last-command} are both
-@code{nil}).
+当Emacs第一次进入命令循环时，也会运行这个钩子（此时@code{this-command}和
+@code{last-command}都是@code{nil}）。
 @end defvar
 
-  Quitting is suppressed while running @code{pre-command-hook} and
-@code{post-command-hook}.  If an error happens while executing one of
-these hooks, it does not terminate execution of the hook; instead
-the error is silenced and the function in which the error occurred
-is removed from the hook.
+  在运行@code{pre-command-hook}和@code{post-command-hook}时，会抑制退出。如
+果在执行这些钩子中的一个钩子时发生了错误，并不会终止钩子的执行；相反，错误会被沉默，发
+生错误的函数会从钩子中移除。
 
-  A request coming into the Emacs server (@pxref{Emacs Server,,,
-emacs, The GNU Emacs Manual}) runs these two hooks just as a keyboard
-command does.
+进入Emacs服务器的请求(
+@pxref{Emacs Server,,,emacs,The GNU Emacs Manual})会像键盘命令一样运行这两
+个钩子。
 
-@node Defining Commands
+@node 定义命令
 @section Defining Commands
 @cindex defining commands
 @cindex commands, defining
 @cindex functions, making them interactive
 @cindex interactive function
 
-  The special form @code{interactive} turns a Lisp function into a
-command.  The @code{interactive} form must be located at top-level in
-the function body, usually as the first form in the body; this applies
-to both lambda expressions (@pxref{Lambda Expressions}) and
-@code{defun} forms (@pxref{Defining Functions}).  This form does
-nothing during the actual execution of the function; its presence
-serves as a flag, telling the Emacs command loop that the function can
-be called interactively.  The argument of the @code{interactive} form
-specifies how the arguments for an interactive call should be read.
-
+  特殊表单@code{interactive}可以将一个Lisp函数变成一条命令。
+@code{interactive}表单必须位于函数体的顶层，通常作为函数体的第一个表单；这适用于
+lambda表达式（@pxref{Lambda Expressions}）和@code{defun}表单（
+@pxref{Declare Form}）。此表单在实际执行函数的过程中没有任何作用；它的存在作为一个
+标志，告诉Emacs命令循环可以交互式调用函数。@code{interactive}表单的参数指定了交互
+式调用的参数应该如何读取。
 @cindex @code{interactive-form} property
-  Alternatively, an @code{interactive} form may be specified in a
-function symbol's @code{interactive-form} property.  A non-@code{nil}
-value for this property takes precedence over any @code{interactive}
-form in the function body itself.  This feature is seldom used.
-
+  另外，@code{interactive}表单可以在函数符号的@code{interactive-form}属性中指
+定。这个属性的非@code{nil}值优先于函数体中的任何@code{interactive}形式。这个特性
+很少被使用。
 @anchor{The interactive-only property}
 @cindex @code{interactive-only} property
-  Sometimes, a function is only intended to be called interactively,
-never directly from Lisp.  In that case, give the function a
-non-@code{nil} @code{interactive-only} property, either directly
-or via @code{declare} (@pxref{Declare Form}).  This causes the
-byte compiler to warn if the command is called from Lisp.  The output
-of @code{describe-function} will include similar information.
-The value of the property can be: a string, which the byte-compiler
-will use directly in its warning (it should end with a period, and not
-start with a capital, e.g., @code{"use (system-name) instead."}); @code{t}; any
-other symbol, which should be an alternative function to use in Lisp
-code.
+  有时，一个函数只打算被交互式调用，而不是直接从Lisp中调用。在这种情况下，可以给函数一
+个非@code{nil}的@code{interactive-only}属性，可以直接地或通过@code{declare}
+。(@pxref{Declare Form})。这将导致字节编译器警告说从Lisp调用命令。
+@code{describe-function}的输出将包括类似的信息。该属性的值可以是：一个字符串，字
+节编译器将在其警告中直接使用该字符串（它应该以句号结束，而不是以大写开始，例如，
+@code{"use (system-name) instead."}）；@code{t}；任何其他符号，它应该是
+一个Lisp代码中使用的替代函数。
 
-Generic functions (@pxref{Generic Functions}) cannot be turned into
-commands by adding the @code{interactive} form to them.
+通用函数（@pxref{Generic Functions}）不能通过添加@code{interactive}形式来变成
+命令。
 
 @menu
-* Using Interactive::     General rules for @code{interactive}.
-* Interactive Codes::     The standard letter-codes for reading arguments
-                             in various ways.
-* Interactive Examples::  Examples of how to read interactive arguments.
-* Generic Commands::      Select among command alternatives.
+* 使用交互式::  @code{interactive}的一般规则。
+* 交互式代码::  各种方式读取参数的标准字母代码。
+* 交互式例子::  如何读取交互式参数的例子。
+* 通用命令::    在命令替代品中进行选择。
 @end menu
 
-@node Using Interactive
+@node 使用交互式
 @subsection Using @code{interactive}
 @cindex arguments, interactive entry
 @cindex interactive spec, using
 
-  This section describes how to write the @code{interactive} form that
-makes a Lisp function an interactively-callable command, and how to
-examine a command's @code{interactive} form.
+  本节介绍了如何编写@code{interactive}形式，使一个Lisp函数成为可交互调用的命令，
+以及如何检查一个命令的@code{interactive}形式。
 
 @defspec interactive arg-descriptor
-This special form declares that a function is a command, and that it
-may therefore be called interactively (via @kbd{M-x} or by entering a
-key sequence bound to it).  The argument @var{arg-descriptor} declares
-how to compute the arguments to the command when the command is called
-interactively.
+这个特殊的表单声明一个函数是一个命令，因此它可以被交互式调用（通过@kbd{M-x}或输入一个
+与之绑定的键序）。参数@var{arg-descriptor}声明了当命令被交互式调用时，如何计算命令
+的参数。
 
-A command may be called from Lisp programs like any other function, but
-then the caller supplies the arguments and @var{arg-descriptor} has no
-effect.
+命令可以像其他函数一样从Lisp程序中调用，但这时调用者提供参数，
+@var{arg-descriptor}没有任何作用。
 
 @cindex @code{interactive-form}, symbol property
-The @code{interactive} form must be located at top-level in the
-function body, or in the function symbol's @code{interactive-form}
-property (@pxref{Symbol Properties}).  It has its effect because the
-command loop looks for it before calling the function
-(@pxref{Interactive Call}).  Once the function is called, all its body
-forms are executed; at this time, if the @code{interactive} form
-occurs within the body, the form simply returns @code{nil} without
-even evaluating its argument.
+@code{interactive}形式必须位于函数体的顶层，或者位于函数符号的
+@code{interactive-form}属性中（@pxref{Symbol Properties}）。它之所以有效果，
+是因为命令循环在调用函数之前会寻找它（@pxref{Interactive Call}）。一旦函数被调用
+，它的所有主体表单都会被执行；此时，如果@code{interactive}表单发生在主体内，该表单
+就会简单地返回@code{nil}，甚至不运算其参数。
 
-By convention, you should put the @code{interactive} form in the
-function body, as the first top-level form.  If there is an
-@code{interactive} form in both the @code{interactive-form} symbol
-property and the function body, the former takes precedence.  The
-@code{interactive-form} symbol property can be used to add an
-interactive form to an existing function, or change how its arguments
-are processed interactively, without redefining the function.
+按照惯例，你应该把@code{interactive}形式放在函数体中，作为第一个顶层形式。如果在
+@code{interactive-form}符号属性和函数体中都有@code{interactive}表单，则前者优
+先。可以使用@code{interactive-form}符号属性为现有的函数添加交互式表单，或者改变其
+参数的交互式处理方式，而无需重新定义函数。
 @end defspec
 
-There are three possibilities for the argument @var{arg-descriptor}:
+参数@var{arg-descriptor}有三种可能：
 
 @itemize @bullet
 @item
-It may be omitted or @code{nil}; then the command is called with no
-arguments.  This leads quickly to an error if the command requires one
-or more arguments.
+它可以被省略或@code{nil}，然后命令被调用时不需要任何参数。如果命令需要一个或多个参数
+，这将很快导致错误。
 
 @item
-It may be a string; its contents are a sequence of elements separated
-by newlines, one for each argument@footnote{Some elements actually
-supply two arguments.}.  Each element consists of a code character
-(@pxref{Interactive Codes}) optionally followed by a prompt (which
-some code characters use and some ignore).  Here is an example:
+它可以是一个字符串；它的内容是一个由换行符分隔的元素序列，每个参数一个
+@footnote{有些元素实际上提供了两个参数}。每个元素都由一个代码字符（
+@pxref{Interactive Codes}）组成，后面可选择地跟着一个提示符（有些代码字符使用，有
+些忽略）。下面是一个例子:
 
 @smallexample
 (interactive "P\nbFrobnicate buffer: ")
 @end smallexample
 
 @noindent
-The code letter @samp{P} sets the command's first argument to the raw
-command prefix (@pxref{Prefix Command Arguments}).  @samp{bFrobnicate
-buffer: } prompts the user with @samp{Frobnicate buffer: } to enter
-the name of an existing buffer, which becomes the second and final
-argument.
+代码字母@samp{P}将命令的第一个参数设置为原始命令前缀（
+@pxref{Prefix Command Arguments}）。@samp{bFrobnicate buffer: }用
+@samp{Frobnicate buffer: }提示用户输入现有缓冲区的名称，该名称成为第二个也是最后
+一个参数。
 
-The prompt string can use @samp{%} to include previous argument values
-(starting with the first argument) in the prompt.  This is done using
-@code{format-message} (@pxref{Formatting Strings}).  For example, here is how
-you could read the name of an existing buffer followed by a new name to
-give to that buffer:
+提示字符串可以使用@samp{%}将之前的参数值（从第一个参数开始）包含在提示中。
+这可以通过@code{format-message}来完成。(@pxref{Formatting Strings})。
+例如，以下是你可以如何读取一个现有缓冲区的名称，然后给这个缓冲区起一个新的名字:
 
 @smallexample
 @group
@@ -226,46 +183,33 @@ give to that buffer:
 
 @cindex @samp{*} in @code{interactive}
 @cindex read-only buffers in interactive
-If @samp{*} appears at the beginning of the string, then an error is
-signaled if the buffer is read-only.
+如果@samp{*}出现在字符串的开头，那么如果缓冲区是只读的，就会发出错误信号。
 
 @cindex @samp{@@} in @code{interactive}
-If @samp{@@} appears at the beginning of the string, and if the key
-sequence used to invoke the command includes any mouse events, then
-the window associated with the first of those events is selected
-before the command is run.
+如果@samp{@@}出现在字符串的开头，并且如果用于调用命令的键序包括任何鼠标事件，那么在命
+令运行之前，与第一个事件相关联的窗口被选中。
 
 @cindex @samp{^} in @code{interactive}
 @cindex shift-selection, and @code{interactive} spec
-If @samp{^} appears at the beginning of the string, and if the command
-was invoked through @dfn{shift-translation}, set the mark and activate
-the region temporarily, or extend an already active region, before the
-command is run.  If the command was invoked without shift-translation,
-and the region is temporarily active, deactivate the region before the
-command is run.  Shift-translation is controlled on the user level by
-@code{shift-select-mode}; see @ref{Shift Selection,,, emacs, The GNU
-Emacs Manual}.
+如果@samp{^}出现在字符串的开头，并且如果命令是通过@dfn{shift-translation}调用的
+，则在命令运行前设置标记并暂时激活该区域，或者拓展一个已经激活的区域。如果命令是在没有
+shift-translation的情况下调用的，并且区域暂时处于活动状态，则在命令运行前停用该区域
+。Shift-translation在用户层面由@code{shift-select-mode}控制；参见
+@ref{Shift Selection,,,,emacs,The GNU Emacs Manual}。
 
-You can use @samp{*}, @samp{@@}, and @code{^} together; the order does
-not matter.  Actual reading of arguments is controlled by the rest of
-the prompt string (starting with the first character that is not
-@samp{*}, @samp{@@}, or @samp{^}).
+您可以同时使用@samp{*},@samp{@@},和@code{^}，顺序并不重要。参数的实际读取是由提示
+字符串的其余部分控制的（从第一个不是@samp{*},@samp{@@},或@samp{^}的字符开始）。
 
 @item
-It may be a Lisp expression that is not a string; then it should be a
-form that is evaluated to get a list of arguments to pass to the
-command.  Usually this form will call various functions to read input
-from the user, most often through the minibuffer (@pxref{Minibuffers})
-or directly from the keyboard (@pxref{Reading Input}).
+它可能是一个不是字符串的Lisp表达式；那么它应该是一个表单，通过运算得到要传递给命令的参
+数列表。通常这个表单会调用各种函数来读取用户的输入，最常见的是通过迷你缓冲区（
+@pxref{Minibuffers}）或直接从键盘（@pxref{Reading Input}）读取。
 
-Providing point or the mark as an argument value is also common, but
-if you do this @emph{and} read input (whether using the minibuffer or
-not), be sure to get the integer values of point or the mark after
-reading.  The current buffer may be receiving subprocess output; if
-subprocess output arrives while the command is waiting for input, it
-could relocate point and the mark.
+提供点或标记作为参数值也是很常见的，但如果你这样@emph{和}读输入（无论是否使用迷你缓冲
+区），一定要在读完后得到点或标记的整数值。当前缓冲区可能正在接收子进程的输出；如果在命
+令等待输入时子进程的输出到达，它可能会重新定位点和标记。
 
-Here's an example of what @emph{not} to do:
+下面是一个@emph{不}要做的例子。
 
 @smallexample
 (interactive
@@ -274,8 +218,7 @@ Here's an example of what @emph{not} to do:
 @end smallexample
 
 @noindent
-Here's how to avoid the problem, by examining point and the mark after
-reading the keyboard input:
+以下是如何避免这个问题，通过阅读键盘输入后检查点和标记：
 
 @smallexample
 (interactive
@@ -283,260 +226,209 @@ reading the keyboard input:
    (list (region-beginning) (region-end) string)))
 @end smallexample
 
-@strong{Warning:} the argument values should not include any data
-types that can't be printed and then read.  Some facilities save
-@code{command-history} in a file to be read in the subsequent
-sessions; if a command's arguments contain a data type that prints
-using @samp{#<@dots{}>} syntax, those facilities won't work.
+@strong{Warning:}参数值不应该包含任何不能打印和读取的数据类型。有些设施会将
+@code{command-history}保存在一个文件中，以便在以后的会话中读取；如果一个命令的参数
+包含了使用@samp{#<@dots{}>}语法打印的数据类型，那么这些设施将无法工作。
 
-There are, however, a few exceptions: it is ok to use a limited set of
-expressions such as @code{(point)}, @code{(mark)},
-@code{(region-beginning)}, and @code{(region-end)}, because Emacs
-recognizes them specially and puts the expression (rather than its
-value) into the command history.  To see whether the expression you
-wrote is one of these exceptions, run the command, then examine
-@code{(car command-history)}.
+不过，也有一些例外：使用有限的一组表达式是可以的，比如@code{(point)}、
+@code{(mark)}、@code{(region-beginning)}和@code{(region-end)}，因为Emacs
+会特别识别它们，并将表达式（而不是其值）放入命令历史记录中。要查看您写的表达式是否属于
+这些例外情况，请运行命令，然后检查 @code{(car command-history)}。
+
 @end itemize
 
 @cindex examining the @code{interactive} form
 @defun interactive-form function
-This function returns the @code{interactive} form of @var{function}.
-If @var{function} is an interactively callable function
-(@pxref{Interactive Call}), the value is the command's
-@code{interactive} form @code{(interactive @var{spec})}, which
-specifies how to compute its arguments.  Otherwise, the value is
-@code{nil}.  If @var{function} is a symbol, its function definition is
-used.
+这个函数返回@var{function}的@code{interactive}表单。如果@var{function}是一个
+可交互调用的函数 (@pxref{Interactive Call})，那么值就是命令的@code{交互式}形式
+@code{(interactive @var{spec})}，它指定了如何计算其参数。否则，其值为
+@code{nil}。如果@var{function}是一个符号，则使用其函数定义。
 @end defun
 
-@node Interactive Codes
+@node 交互式代码
 @subsection Code Characters for @code{interactive}
 @cindex interactive code description
 @cindex description for interactive codes
 @cindex codes, interactive, description of
 @cindex characters for interactive codes
 
-  The code character descriptions below contain a number of key words,
-defined here as follows:
+  下面的代码字符描述包含一些关键词，在此定义如下：
 
 @table @b
 @item Completion
 @cindex interactive completion
-Provide completion.  @key{TAB}, @key{SPC}, and @key{RET} perform name
-completion because the argument is read using @code{completing-read}
-(@pxref{Completion}).  @kbd{?} displays a list of possible completions.
+提供补全。@key{TAB}、@key{SPC}和@key{RET}执行名称补全，因为参数是用
+@code{completing-read}读取的。(@pxref{Completion})。@kbd{?}
+显示一个可能的完成列表。
 
 @item Existing
-Require the name of an existing object.  An invalid name is not
-accepted; the commands to exit the minibuffer do not exit if the current
-input is not valid.
+要求使用现有对象的名称。不接受无效的名称；如果当前输入无效，退出minibuffer的命令不会
+退出。
 
 @item Default
 @cindex default argument string
-A default value of some sort is used if the user enters no text in the
-minibuffer.  The default depends on the code character.
+如果用户在minibuffer中没有输入文字，则使用某种默认值。默认值取决于代码字符。
 
 @item No I/O
-This code letter computes an argument without reading any input.
-Therefore, it does not use a prompt string, and any prompt string you
-supply is ignored.
+这个代码信在不读取任何输入的情况下计算一个参数，因此，它不使用提示字符串，你提供的任何
+提示符都会被忽略。
 
-Even though the code letter doesn't use a prompt string, you must follow
-it with a newline if it is not the last code character in the string.
+即使代码字母没有使用提示字符串，但如果它不是字符串中的最后一个代码字符，你必须在它后面
+加上一个新行。
 
 @item Prompt
-A prompt immediately follows the code character.  The prompt ends either
-with the end of the string or with a newline.
+在代码字符后面紧跟着一个提示符。提示符以字符串的结尾或换行结束。
 
 @item Special
-This code character is meaningful only at the beginning of the
-interactive string, and it does not look for a prompt or a newline.
-It is a single, isolated character.
+这个代码字符只有在交互式字符串的开头才有意义，它不会寻找提示符或换行符。它是一个单独的
+、孤立的字符。
 @end table
 
 @cindex reading interactive arguments
-  Here are the code character descriptions for use with @code{interactive}:
+下面是与@code{interactive}配合使用的代码字符说明：
 
 @table @samp
 @item *
-Signal an error if the current buffer is read-only.  Special.
+如果当前缓冲区为只读，则发出错误信号。Special。
 
 @item @@
-Select the window mentioned in the first mouse event in the key
-sequence that invoked this command.  Special.
+选择调用该命令的键序中第一个鼠标事件中提到的窗口。Special。
 
 @item ^
-If the command was invoked through shift-translation, set the mark and
-activate the region temporarily, or extend an already active region,
-before the command is run.  If the command was invoked without
-shift-translation, and the region is temporarily active, deactivate
-the region before the command is run.  Special.
+如果命令是通过移位翻译调用的，则在命令运行前设置标记并暂时激活该区域，或扩展已经激活的
+区域。如果命令是在没有移位翻译的情况下调用的，且区域暂时处于活动状态，则在命令运行前停
+用该区域。Special。
 
 @item a
-A function name (i.e., a symbol satisfying @code{fboundp}).  Existing,
-Completion, Prompt.
+一个函数名（比如满足@code{fboundp}的符号）。Existing, Completion, Prompt.
 
 @item b
-The name of an existing buffer.  By default, uses the name of the
-current buffer (@pxref{Buffers}).  Existing, Completion, Default,
-Prompt.
+现有缓冲区的名称。默认情况下，使用当前缓冲区的名称（@pxref{Buffers}）。
+Existing, Completion, Prompt。
 
 @item B
-A buffer name.  The buffer need not exist.  By default, uses the name of
-a recently used buffer other than the current buffer.  Completion,
-Default, Prompt.
+缓冲区名称。缓冲区不需要存在。默认情况下，使用当前缓冲区以外的最近使用的缓冲区的名称。
+Existing, Completion, Prompt。
 
 @item c
-A character.  The cursor does not move into the echo area.  Prompt.
+一个字符。光标不会移动到回音区。Prompt.
 
 @item C
-A command name (i.e., a symbol satisfying @code{commandp}).  Existing,
-Completion, Prompt.
+一个命令名称（即满足@code{commandp}的符号）。Existing, Completion, Prompt.
 
 @item d
 @cindex position argument
-The position of point, as an integer (@pxref{Point}).  No I/O.
+点的位置，是一个整数（@pxref{Point}）。No I/O。
 
 @item D
-A directory.  The default is the current default directory of the
-current buffer, @code{default-directory} (@pxref{File Name Expansion}).
-Existing, Completion, Default, Prompt.
+一个目录。默认为当前缓冲区的默认目录，@code{default-directory}。(
+@pxref{File Name Expansion})。Existing, Completion, Default, Prompt.
 
 @item e
-The first or next non-keyboard event in the key sequence that invoked
-the command.  More precisely, @samp{e} gets events that are lists, so
-you can look at the data in the lists.  @xref{Input Events}.  No I/O.
+在调用命令的按键序列中的第一个或下一个非键盘事件。更准确地说，@samp{e}得到的事件是列表，所以你可以查看列表中的数据。@xref{Input Events}。No I/O。
 
-You use @samp{e} for mouse events and for special system events
-(@pxref{Misc Events}).  The event list that the command receives
-depends on the event.  @xref{Input Events}, which describes the forms
-of the list for each event in the corresponding subsections.
+您可以使用@samp{e}来处理鼠标事件和特殊系统事件（@pxref{Misc Events}）。命令接收
+的事件列表取决于事件。@xref{Input Events}，它在相应的小节中描述了每个事件的列表
+表单。
 
-You can use @samp{e} more than once in a single command's interactive
-specification.  If the key sequence that invoked the command has
-@var{n} events that are lists, the @var{n}th @samp{e} provides the
-@var{n}th such event.  Events that are not lists, such as function keys
-and @acronym{ASCII} characters, do not count where @samp{e} is concerned.
+您可以在一个命令的交互式规范中使用@samp{e}一次以上。如果调用命令的键序列中有@var{n}
+个事件是列表，那么第@var{n}个@samp{e}提供了第@var{n}个这样的事件。不是列表的事件，
+例如函数键和 @acronym{ASCII} 字符，在 @samp{e} 中不计算。
 
 @item f
-A file name of an existing file (@pxref{File Names}).  The default
-directory is @code{default-directory}.  Existing, Completion, Default,
+一个现有文件的文件名(@pxref{File Names}).默认目录是@code{default-directory}。
+默认目录是@code{default-directory}。Existing, Completion, Default,
 Prompt.
 
 @item F
-A file name.  The file need not exist.  Completion, Default, Prompt.
+一个文件名。文件不需要存在。 Completion, Default, Prompt.
 
 @item G
-A file name.  The file need not exist.  If the user enters just a
-directory name, then the value is just that directory name, with no
-file name within the directory added.  Completion, Default, Prompt.
+一个文件名。该文件不需要存在。如果用户只输入一个目录名，那么值就只是该目录名，不添加目录内的文件名。 Completion, Default, Prompt.
 
 @item i
-An irrelevant argument.  This code always supplies @code{nil} as
-the argument's value.  No I/O.
+一个不相关的参数。此代码总是提供@code{nil}作为参数的值。 No I/O.
 
 @item k
-A key sequence (@pxref{Key Sequences}).  This keeps reading events
-until a command (or undefined command) is found in the current key
-maps.  The key sequence argument is represented as a string or vector.
-The cursor does not move into the echo area.  Prompt.
+一个键序列（@pxref{Key Sequences}）。这将持续读取事件，直到在当前键映射中找到一条
+命令（或未定义的命令）。键序列参数用字符串或向量表示。光标不会移动到回音区。Prompt.
 
-If @samp{k} reads a key sequence that ends with a down-event, it also
-reads and discards the following up-event.  You can get access to that
-up-event with the @samp{U} code character.
+如果@samp{k}读取了一个以向下事件结束的键序列，它也会读取并丢弃下面的向上事件。您可以
+使用@samp{U}代码字符来访问该上行事件。
 
-This kind of input is used by commands such as @code{describe-key} and
-@code{global-set-key}.
+这种输入被@code{describe-key}和@code{global-set-key}等命令使用。
 
 @item K
-A key sequence, whose definition you intend to change.  This works like
-@samp{k}, except that it suppresses, for the last input event in the key
-sequence, the conversions that are normally used (when necessary) to
-convert an undefined key into a defined one.
+一个你想改变其定义的键序列。其工作原理如@samp{k}，但对于键中的最后一个输入事件，它抑
+制了键序列，通常用于（必要时）将未定义的键转换为定义的键的转换。
 
 @item m
 @cindex marker argument
-The position of the mark, as an integer.  No I/O.
+标记的位置，为整数。 No I/O.
 
 @item M
-Arbitrary text, read in the minibuffer using the current buffer's input
-method, and returned as a string (@pxref{Input Methods,,, emacs, The GNU
-Emacs Manual}).  Prompt.
+任意文本，使用当前缓冲区的输入方法在minibuffer中读取，并以字符串形式返回（
+@pxref{Input Methods,,, emacs, The GNU Emacs Manual}）。 Prompt.
 
 @item n
-A number, read with the minibuffer.  If the input is not a number, the
-user has to try again.  @samp{n} never uses the prefix argument.
-Prompt.
+一个数字，用minibuffer读取。如果输入的不是数字，用户必须再试一次。@samp{n}从不使用前缀参数。Prompt.
 
 @item N
-The numeric prefix argument; but if there is no prefix argument, read
-a number as with @kbd{n}.  The value is always a number.  @xref{Prefix
-Command Arguments}.  Prompt.
+数字前缀参数；但如果没有前缀参数，则像@kbd{n}一样读取一个数字。值总是一个数字。
+@xref{Prefix Command Arguments}.  Prompt.
 
 @item p
 @cindex numeric prefix argument usage
-The numeric prefix argument.  (Note that this @samp{p} is lower case.)
-No I/O.
+数字前缀参数。(注意这个@samp{p}是小写的。) No I/O.
 
 @item P
 @cindex raw prefix argument usage
-The raw prefix argument.  (Note that this @samp{P} is upper case.)  No
-I/O.
+原始前缀参数。(注意，这个@samp{P}是大写的。) No I/O.
 
 @item r
 @cindex region argument
-Point and the mark, as two numeric arguments, smallest first.  This is
-the only code letter that specifies two successive arguments rather than
-one.  This will signal an error if the mark is not set in the buffer
-which is current when the command is invoked.  No I/O.
+点和标记，作为两个数字参数，先小后大。这是唯一一个指定两个连续参数而不是一个参数的代码
+字母。如果标记没有设置在缓冲区中，这将发出错误信号，而缓冲区在命令被调用时是当前的。
+No I/O.
 
 @item s
-Arbitrary text, read in the minibuffer and returned as a string
-(@pxref{Text from Minibuffer}).  Terminate the input with either
-@kbd{C-j} or @key{RET}.  (@kbd{C-q} may be used to include either of
-these characters in the input.)  Prompt.
+任意文本，从迷你缓冲区中读取并以字符串形式返回(@pxref{Text from Minibuffer})。用
+以下两种方式终止输入@kbd{C-j}或@key{RET}。(@kbd{C-q}可用于包含输入里两种个之一。
+) Prompt.
 
 @item S
-An interned symbol whose name is read in the minibuffer.  Terminate
-the input with either @kbd{C-j} or @key{RET}.  Other characters that
-normally terminate a symbol (e.g., whitespace, parentheses and
-brackets) do not do so here.  Prompt.
+在minibuffer中读取一个内部符号的名称。用@kbd{C-j}或@key{RET}终止输入。其他通常终
+止符号的字符(如：空格、括号和大括号)在这里不能终止。 Prompt.
 
 @item U
-A key sequence or @code{nil}.  Can be used after a @samp{k} or
-@samp{K} argument to get the up-event that was discarded (if any)
-after @samp{k} or @samp{K} read a down-event.  If no up-event has been
-discarded, @samp{U} provides @code{nil} as the argument.  No I/O.
+一个按键序列或@code{nil}。可以在@samp{k}或@samp{K}参数之后使用，用来获取被丢弃的
+@samp{k}或@samp{K}读取一个向下事件后的上位事件（如果有的话）。如果没有上行事件被丢
+弃，则@samp{U}提供@code{nil}作为参数。 No I/O.
 
 @item v
-A variable declared to be a user option (i.e., satisfying the
-predicate @code{custom-variable-p}).  This reads the variable using
-@code{read-variable}.  @xref{Definition of read-variable}.  Existing,
-Completion, Prompt.
+一个声明为用户选项的变量(即满足前提条件@code{custom-variable-p})。这将使用
+@code{read-variable}读取变量。@xref{Definition of read-variable}。
+Existing, Completion, Prompt.
 
 @item x
-A Lisp object, specified with its read syntax, terminated with a
-@kbd{C-j} or @key{RET}.  The object is not evaluated.  @xref{Object from
-Minibuffer}.  Prompt.
+一个Lisp对象，用它的读取语法指定，以@kbd{C-j}或@key{RET}结束。该对象没有被评估。
+@xref{Object from Minibuffer}。 Prompt.
 
 @item X
 @cindex evaluated expression argument
-A Lisp form's value.  @samp{X} reads as @samp{x} does, then evaluates
-the form so that its value becomes the argument for the command.
-Prompt.
+一个Lisp表单的值。@samp{X}像@samp{x}一样读取，然后运算表单，使其值成为命令的参数
+。 Prompt.
 
 @item z
-A coding system name (a symbol).  If the user enters null input, the
-argument value is @code{nil}.  @xref{Coding Systems}.  Completion,
-Existing, Prompt.
+一个编码系统名称（一个符号）。如果用户输入为空，参数值为@code{nil}。
+@xref{Coding Systems}.  Completion, Existing, Prompt.
 
 @item Z
-A coding system name (a symbol)---but only if this command has a prefix
-argument.  With no prefix argument, @samp{Z} provides @code{nil} as the
-argument value.  Completion, Existing, Prompt.
+一个编码系统名称（一个符号），仅当这个命令有前缀参数时。如果没有前缀参数，@samp{Z}提
+供@code{nil}作为参数值。 Completion, Existing, Prompt.
 @end table
 
-@node Interactive Examples
+@node 交互式例子
 @subsection Examples of Using @code{interactive}
 @cindex examples of using @code{interactive}
 @cindex @code{interactive}, examples of using
@@ -588,77 +480,59 @@ Put them into three windows, selecting the last one."
 @end group
 @end example
 
-@node Generic Commands
+@node 通用命令
 @subsection Select among Command Alternatives
 @cindex generic commands
 @cindex alternatives, defining
 
-The macro @code{define-alternatives} can be used to define
-@dfn{generic commands}.  These are interactive functions whose
-implementation can be selected from several alternatives, as a matter
-of user preference.
+宏@code{define-alternatives}可以用来定义@dfn{generic commands}。这些是交互
+式函数，按照用户的喜好，可以从几个备选方案中选择实施。
 
 @defmac define-alternatives command &rest customizations
-Define the new command @var{command}, a symbol.
+定义新的命令@var{command}，一个符号。
 
-When a user runs @kbd{M-x @var{command} @key{RET}} for the first time,
-Emacs prompts for which real form of the command to use, and records
-the selection by way of a custom variable.  Using a prefix argument
-repeats this process of choosing an alternative.
+当用户在第一次运行@kbd{M-x @var{command} @key{RET}}时，Emacs会提示使用命令的
+实际表单，并通过自定义变量记录选择。使用前缀参数会重复这个选择过程。
 
-The variable @code{@var{command}-alternatives} should contain an alist
-with alternative implementations of @var{command}.
-Until this variable is set, @code{define-alternatives} has no effect.
+变量@code{@var{command}-alternatives}应该包含一个@var{command}的替代实现的
+列表。在这个变量被设置之前，@code{define-alternatives}没有任何作用。
 
-If @var{customizations} is non-@code{nil}, it should consist of
-alternating @code{defcustom} keywords (typically @code{:group} and
-@code{:version}) and values to add to the declaration of
-@code{@var{command}-alternatives}.
+如果@var{customizations}是非@code{nil}，它应该由替代的@code{defcustom}关键
+字（通常是@code{:group}和@code{:version}）和值组成，以添加到
+@code{@var{command}-alternatives}的声明中。
 @end defmac
 
-@node Interactive Call
+@node 交互式调用
 @section Interactive Call
 @cindex interactive call
 
-  After the command loop has translated a key sequence into a command,
-it invokes that command using the function @code{command-execute}.  If
-the command is a function, @code{command-execute} calls
-@code{call-interactively}, which reads the arguments and calls the
-command.  You can also call these functions yourself.
+  在命令循环将一个键序列翻译成命令后，它使用函数@code{command-execute}来调用这个
+命令。如果命令是一个函数，那么@code{command-execute}会调用
+@code{call-inactively}，后者读取参数并调用命令。你也可以自己调用这些函数。
 
-  Note that the term ``command'', in this context, refers to an
-interactively callable function (or function-like object), or a
-keyboard macro.  It does not refer to the key sequence used to invoke
-a command (@pxref{Keymaps}).
+  请注意，术语"命令"在这里指的是一个可交互调用的函数（或类似函数的对象），或一个键盘
+宏。它不是指用于调用命令的键序（@pxref{Keymaps}）。
 
 @defun commandp object &optional for-call-interactively
-This function returns @code{t} if @var{object} is a command.
-Otherwise, it returns @code{nil}.
+如果@var{object}是一条命令，则该函数返回@code{t}。否则，返回@code{nil}。
 
-Commands include strings and vectors (which are treated as keyboard
-macros), lambda expressions that contain a top-level
-@code{interactive} form (@pxref{Using Interactive}), byte-code
-function objects made from such lambda expressions, autoload objects
-that are declared as interactive (non-@code{nil} fourth argument to
-@code{autoload}), and some primitive functions.  Also, a symbol is
-considered a command if it has a non-@code{nil}
-@code{interactive-form} property, or if its function definition
-satisfies @code{commandp}.
+命令包括字符串和向量（被视为键盘宏）、包含顶级@code{interactive}表单的lambda表达
+式（@pxref{Using Interactive}）、由这些lambda表达式构成的字节码函数对象、被声
+明为交互式的自动加载对象（@code{autoload}的第四个参数非@code{nil}），以及一些原
+始函数。另外，如果一个符号有一个非@code{nil}的@code{interactive-form}属性，或者它的函数定义满足@code{commandp}，第四个参数，那么它就被认为是一个命令。
 
-If @var{for-call-interactively} is non-@code{nil}, then
-@code{commandp} returns @code{t} only for objects that
-@code{call-interactively} could call---thus, not for keyboard macros.
+如果@var{for-call-interactively}是非@code{nil}，那么@code{commandp}只对
+@code{call-interactively}可以调用的对象返回@code{t}--因此，不对键盘宏返回。
 
-See @code{documentation} in @ref{Accessing Documentation}, for a
-realistic example of using @code{commandp}.
+参见@ref{Accessing Documentation}中的@code{documentation}，这是一个使用
+@code{commandp}的实际例子。
 @end defun
 
 @defun call-interactively command &optional record-flag keys
-This function calls the interactively callable function @var{command},
-providing arguments according to its interactive calling specifications.
-It returns whatever @var{command} returns.
+这个函数调用可交互调用的函数@var{command}，并根据其交互调用规范提供参数。无论
+@var{command}返回什么，它都会返回。
 
-If, for instance, you have a function with the following signature:
+例如，如果你有一个具有以下签名的函数:
 
 @example
 (defun foo (begin end)
@@ -666,86 +540,70 @@ If, for instance, you have a function with the following signature:
   ...)
 @end example
 
-then saying
+然后
 
 @example
 (call-interactively 'foo)
 @end example
 
-will call @code{foo} with the region (@code{point} and @code{mark}) as
-the arguments.
+将调用@code{foo}，把区域（@code{point}和@code{mark}）作为参数。
 
-An error is signaled if @var{command} is not a function or if it
-cannot be called interactively (i.e., is not a command).  Note that
-keyboard macros (strings and vectors) are not accepted, even though
-they are considered commands, because they are not functions.  If
-@var{command} is a symbol, then @code{call-interactively} uses its
-function definition.
+如果@var{command}不是函数，或者不能交互调用（即不是命令），就会发出错误信号。请注意
+，键盘宏（字符串和向量）即使被认为是命令，也不会被接受，因为它们不是函数。如果
+@var{command}是一个符号，那么@code{call-interactively}使用它的函数定义。
 
 @cindex record command history
-If @var{record-flag} is non-@code{nil}, then this command and its
-arguments are unconditionally added to the list @code{command-history}.
-Otherwise, the command is added only if it uses the minibuffer to read
-an argument.  @xref{Command History}.
+如果@var{record-flag}是非@code{nil}，那么这条命令和它的参数就会无条件地添加到
+@code{command-history}列表中。否则，只有当该命令使用迷你缓冲区读取参数时，才会被
+添加到列表中。@xref{Command History}。
 
-The argument @var{keys}, if given, should be a vector which specifies
-the sequence of events to supply if the command inquires which events
-were used to invoke it.  If @var{keys} is omitted or @code{nil}, the
-default is the return value of @code{this-command-keys-vector}.
-@xref{Definition of this-command-keys-vector}.
+如果给定参数@var{keys}，那么它应该是一个向量，用于指定在命令询问哪些事件被用来调用
+时要提供的事件序列。如果省略了@var{keys}或@code{nil}，则默认为
+@code{this-command-keys-vector}的返回值。
+@xref{this-command-keys-vector}。
 @end defun
 
 @defun funcall-interactively function &rest arguments
-This function works like @code{funcall} (@pxref{Calling Functions}),
-but it makes the call look like an interactive invocation: a call to
-@code{called-interactively-p} inside @var{function} will return
-@code{t}.  If @var{function} is not a command, it is called without
-signaling an error.
+这个函数的工作原理与@code{funcall}类似。(@pxref{Calling Functions})，但它使
+调用看起来像一个交互式调用：在@var{function}内调用
+@code{called-interactively-p}将返回@code{t}。如果@var{function}不是一个命
+令，那么它在被调用时不会发出错误信号。
 @end defun
 
 @defun command-execute command &optional record-flag keys special
 @cindex keyboard macro execution
-This function executes @var{command}.  The argument @var{command} must
-satisfy the @code{commandp} predicate; i.e., it must be an interactively
-callable function or a keyboard macro.
+这个函数执行@var{command}，参数@var{command}必须满足@code{commandp}谓词，也
+就是说，它必须是一个可交互调用的函数或键盘宏。
 
-A string or vector as @var{command} is executed with
-@code{execute-kbd-macro}.  A function is passed to
-@code{call-interactively} (see above), along with the
-@var{record-flag} and @var{keys} arguments.
+作为@var{command}的字符串或向量会被@code{execute-kbd-macro}执行。一个函数与
+@var{record-flag}和@var{keys}参数一起传递给@code{call-interactively}（见上
+文）。
 
-If @var{command} is a symbol, its function definition is used in its
-place.  A symbol with an @code{autoload} definition counts as a
-command if it was declared to stand for an interactively callable
-function.  Such a definition is handled by loading the specified
-library and then rechecking the definition of the symbol.
+如果@var{command}是一个符号，那么使用它的函数定义。如果一个带有@code{autoload}
+定义的符号被声明为代表一个可交互调用的函数，那么这个符号也算作一个命令。这种定义是通过
+加载指定的库，然后重新检查符号的定义来处理的。
 
-The argument @var{special}, if given, means to ignore the prefix
-argument and not clear it.  This is used for executing special events
-(@pxref{Special Events}).
+如果给定参数@var{special}，意味着忽略前缀参数，而且不清除它。这用于执行特殊事件（
+@pxref{Special Events}）。
 @end defun
 
 @deffn Command execute-extended-command prefix-argument
 @cindex read command name
-This function reads a command name from the minibuffer using
-@code{completing-read} (@pxref{Completion}).  Then it uses
-@code{command-execute} to call the specified command.  Whatever that
-command returns becomes the value of @code{execute-extended-command}.
+该函数使用@code{completing-read}从minibuffer中读取命令名。(
+@pxref{Completion})。然后它使用@code{command-execute}来调用指定的命令。无论
+该命令返回什么，都会成为@code{execute-extended-command}的值。
 
 @cindex execute with prefix argument
-If the command asks for a prefix argument, it receives the value
-@var{prefix-argument}.  If @code{execute-extended-command} is called
-interactively, the current raw prefix argument is used for
-@var{prefix-argument}, and thus passed on to whatever command is run.
+如果命令要求使用前缀参数，它将接收@var{prefix-argument}的值。如果交互式地调用了
+@code{execute-extended-command}，那么当前的原始前缀参数将被用于
+@var{prefix-argument}，从而传递给任何运行的命令。
 
-@c !!! Should this be @kindex?
+@c !!!应该是@kindex?
 @cindex @kbd{M-x}
-@code{execute-extended-command} is the normal definition of @kbd{M-x},
-so it uses the string @w{@samp{M-x }} as a prompt.  (It would be better
-to take the prompt from the events used to invoke
-@code{execute-extended-command}, but that is painful to implement.)  A
-description of the value of the prefix argument, if any, also becomes
-part of the prompt.
+@code{execute-extended-command}是@kbd{M-x}的普通定义，所以它使用了字符串
+@w{@samp{M-x }}作为提示符。(最好是从调用@code{execute-extended-command}的事
+件中获取提示符，但实现起来很麻烦。)如果有的话，对前缀参数值的描述也会成为提示的一部分
+。
 
 @example
 @group
@@ -758,18 +616,15 @@ part of the prompt.
 @end example
 @end deffn
 
-@node Distinguish Interactive
+@node 区分交互式
 @section Distinguish Interactive Calls
 @cindex distinguish interactive calls
 @cindex is this call interactive
 
-  Sometimes a command should display additional visual feedback (such
-as an informative message in the echo area) for interactive calls
-only.  There are three ways to do this.  The recommended way to test
-whether the function was called using @code{call-interactively} is to
-give it an optional argument @code{print-message} and use the
-@code{interactive} spec to make it non-@code{nil} in interactive
-calls.  Here's an example:
+  有时，命令应该只为交互式呼叫显示额外的视觉反馈（如在回音区显示信息信息）。有三种方
+法可以做到这一点。测试函数是否通过@code{call-interactively}调用，推荐的方法是给
+函数一个可选的参数@code{print-message}，并使用@code{interactive}规范使其在交
+互式调用中不@code{nil}。下面是一个例子:
 
 @example
 (defun foo (&optional print-message)
@@ -779,37 +634,31 @@ calls.  Here's an example:
 @end example
 
 @noindent
-We use @code{"p"} because the numeric prefix argument is never
-@code{nil}.  Defined in this way, the function does display the
-message when called from a keyboard macro.
+我们使用@code{"p"}，因为数字前缀参数永远不会是@code{nil}。以这种方式定义的函数，
+在从键盘宏调用时确实会显示消息。
 
-  The above method with the additional argument is usually best,
-because it allows callers to say ``treat this call as interactive''.
-But you can also do the job by testing @code{called-interactively-p}.
+上面的方法加上额外的参数通常是最好的，因为它允许调用者说"把这个调用当作交互式"。但你
+也可以通过测试@code{called-interactively-p}来完成这项工作。
 
 @defun called-interactively-p kind
-This function returns @code{t} when the calling function was called
-using @code{call-interactively}.
+当使用@code{call-inactively}调用调用函数时，该函数返回@code{t}。
 
-The argument @var{kind} should be either the symbol @code{interactive}
-or the symbol @code{any}.  If it is @code{interactive}, then
-@code{called-interactively-p} returns @code{t} only if the call was
-made directly by the user---e.g., if the user typed a key sequence
-bound to the calling function, but @emph{not} if the user ran a
-keyboard macro that called the function (@pxref{Keyboard Macros}).  If
-@var{kind} is @code{any}, @code{called-interactively-p} returns
-@code{t} for any kind of interactive call, including keyboard macros.
+参数@var{kind}应该是符号@code{interactive}或者符号@code{any}。如果是
+@code{interactive}，那么@code{called-interactively-p}只有在用户直接调用的情
+况下才返回@code{t}--例如，如果用户输入了一个绑定到调用函数的按键序列，但如果用户运
+行了一个调用函数的键盘宏(@pxref{Keyboard Macros})，则返回@emph{not}。如果
+@var{kind}是@code{any}，则@code{called-interactively-p}返回@code{t}，用于
+任何类型的交互式调用，包括键盘宏。
 
-If in doubt, use @code{any}; the only known proper use of
-@code{interactive} is if you need to decide whether to display a
-helpful message while a function is running.
+如果有疑问，请使用@code{any}；唯一已知的@code{interactive}的正确用法是当你需要
+决定是否在函数运行时显示一个有用的消息。
 
-A function is never considered to be called interactively if it was
-called via Lisp evaluation (or with @code{apply} or @code{funcall}).
+如果一个函数是通过Lisp运算调用的（或者使用@code{apply}或@code{funcall}），那么
+它永远不会被认为是交互式调用的。
 @end defun
 
 @noindent
-Here is an example of using @code{called-interactively-p}:
+下面是一个使用@code{called-interactively-p}的例子:
 
 @example
 @group
@@ -832,8 +681,7 @@ Here is an example of using @code{called-interactively-p}:
 @end example
 
 @noindent
-Here is another example that contrasts direct and indirect calls to
-@code{called-interactively-p}.
+下面是另一个例子，将直接和间接调用@code{called-interactively-p}进行对比。
 
 @example
 @group
@@ -848,63 +696,52 @@ Here is another example that contrasts direct and indirect calls to
 @end group
 @end example
 
-@node Command Loop Info
+@node 命令循环信息
 @section Information from the Command Loop
 @cindex command loop variables
 
-The editor command loop sets several Lisp variables to keep status
-records for itself and for commands that are run.  With the exception of
-@code{this-command} and @code{last-command} it's generally a bad idea to
-change any of these variables in a Lisp program.
+编辑器命令循环设置了几个Lisp变量来为自己和正在运行的命令保存状态记录。除了
+@code{this-command}和@code{last-command}之外，一般来说，在Lisp程序中改变这些
+变量是个坏主意。
 
 @defvar last-command
-This variable records the name of the previous command executed by the
-command loop (the one before the current command).  Normally the value
-is a symbol with a function definition, but this is not guaranteed.
+这个变量记录了命令循环执行的前一条命令的名称（当前命令之前的那条）。通常情况下，值是一
+个带有函数定义的符号，但这并不保证。
 
-The value is copied from @code{this-command} when a command returns to
-the command loop, except when the command has specified a prefix
-argument for the following command.
+当一个命令返回到命令循环时，该值会从@code{this-command}中复制出来，除非该命令已经
+为下面的命令指定了前缀参数。
 
-This variable is always local to the current terminal and cannot be
-buffer-local.  @xref{Multiple Terminals}.
+这个变量始终是当前终端的本地变量，不能是缓冲区本地变量。
+@xref{Multiple Terminals}。
 @end defvar
 
 @defvar real-last-command
-This variable is set up by Emacs just like @code{last-command},
-but never altered by Lisp programs.
+这个变量在Emacs中的设置就像@code{last-command}一样，但从未被Lisp程序改变。
 @end defvar
 
 @defvar last-repeatable-command
-This variable stores the most recently executed command that was not
-part of an input event.  This is the command @code{repeat} will try to
-repeat, @xref{Repeating,,, emacs, The GNU Emacs Manual}.
+这个变量存储了最近执行的不属于输入事件的命令。这是@code{repeat}将尝试重复执行的命令
+，@xref{Repeating,,,emacs, The GNU Emacs Manual}。
 @end defvar
 
 @defvar this-command
 @cindex current command
-This variable records the name of the command now being executed by
-the editor command loop.  Like @code{last-command}, it is normally a symbol
-with a function definition.
+这个变量记录了编辑器命令循环正在执行的命令的名称，和@code{last-command}一样，它通
+常是带有函数定义的符号。和@code{last-command}一样，它通常是一个带有函数定义的符号
+。
 
-The command loop sets this variable just before running a command, and
-copies its value into @code{last-command} when the command finishes
-(unless the command specified a prefix argument for the following
-command).
+命令循环在运行命令之前设置这个变量，并在命令完成后将其值复制到@code{last-command}
+中（除非命令为下面的命令指定了一个前缀参数）。
 
 @cindex kill command repetition
-Some commands set this variable during their execution, as a flag for
-whatever command runs next.  In particular, the functions for killing text
-set @code{this-command} to @code{kill-region} so that any kill commands
-immediately following will know to append the killed text to the
-previous kill.
+有些命令在执行过程中设置了这个变量，作为接下来运行的任何命令的标志。特别是，杀戮文本的
+函数将@code{this-command}设置为@code{kill-region}，这样紧接着的任何杀戮命令都
+会知道将杀戮文本附加到之前的杀戮中。
 @end defvar
 
-If you do not want a particular command to be recognized as the previous
-command in the case where it got an error, you must code that command to
-prevent this.  One way is to set @code{this-command} to @code{t} at the
-beginning of the command, and set @code{this-command} back to its proper
-value at the end, like this:
+如果您不希望某条命令在出错的情况下被识别为前一条命令，您必须对该命令进行编码以防止这种
+情况发生。一种方法是在命令的开头将@code{this-command}设置为@code{t}，然后在结尾
+处将@code{this-command} 设置为合适的值，就像这样:
 
 @example
 (defun foo (args@dots{})
@@ -916,9 +753,8 @@ value at the end, like this:
 @end example
 
 @noindent
-We do not bind @code{this-command} with @code{let} because that would
-restore the old value in case of error---a feature of @code{let} which
-in this case does precisely what we want to avoid.
+我们没有绑定@code{this-command}与@code{let}，因为这样做会在出错时恢复旧的值--这
+是@code{let}的一个特性，在这种情况下，它恰恰是我们想要避免的。
 
 @defvar this-original-command
 This has the same value as @code{this-command} except when command
@@ -1001,7 +837,7 @@ frame, the value is the frame to which the event was redirected.
 If the last event came from a keyboard macro, the value is @code{macro}.
 @end defvar
 
-@node Adjusting Point
+@node 调整点
 @section Adjusting Point After Commands
 @cindex adjusting point
 @cindex invisible/intangible text, and point
@@ -1032,7 +868,7 @@ If you set this variable to a non-@code{nil} value, the feature of
 moving point out of these sequences is completely turned off.
 @end defvar
 
-@node Input Events
+@node 输入事件
 @section Input Events
 @cindex events
 @cindex input events
@@ -2341,7 +2177,7 @@ the strings.
   However, most programs would do well to avoid these issues by
 following the recommendations at the beginning of this section.
 
-@node Reading Input
+@node 读取输入
 @section Reading Input
 @cindex read input
 @cindex keyboard input
@@ -2993,7 +2829,7 @@ during the sleep.
 @end example
 @end defun
 
-@node Special Events
+@node 特殊事件
 @section Special Events
 
 @cindex special events
@@ -3021,7 +2857,7 @@ The keymap which defines how to handle special events---and which
 events are special---is in the variable @code{special-event-map}
 (@pxref{Controlling Active Maps}).
 
-@node Waiting
+@node 等待
 @section Waiting for Elapsed Time or Input
 @cindex waiting
 
@@ -3082,7 +2918,7 @@ Use @code{sleep-for} when you wish to guarantee a delay.
 
   @xref{Time of Day}, for functions to get the current time.
 
-@node Quitting
+@node 退出
 @section Quitting
 @cindex @kbd{C-g}
 @cindex quitting
@@ -3208,7 +3044,7 @@ in @ref{Errors}.)
   You can specify a character other than @kbd{C-g} to use for quitting.
 See the function @code{set-input-mode} in @ref{Input Modes}.
 
-@node Prefix Command Arguments
+@node 前缀命令参数
 @section Prefix Command Arguments
 @cindex prefix argument
 @cindex raw prefix argument
@@ -3348,7 +3184,7 @@ command; its value is negated to form the new prefix argument.  Don't
 call this command yourself unless you know what you are doing.
 @end deffn
 
-@node Recursive Editing
+@node 递归编辑
 @section Recursive Editing
 @cindex recursive command loop
 @cindex recursive editing level
@@ -3467,7 +3303,7 @@ This function returns the current depth of recursive edits.  When no
 recursive edit is active, it returns 0.
 @end defun
 
-@node Disabling Commands
+@node 禁用命令
 @section Disabling Commands
 @cindex disabled command
 
@@ -3528,7 +3364,7 @@ By default, the value is a function that asks the user whether to
 proceed.
 @end defvar
 
-@node Command History
+@node 命令历史
 @section Command History
 @cindex command history
 @cindex complex command
@@ -3571,7 +3407,7 @@ previous commands.  The commands @code{repeat-complex-command}, and
 (@pxref{Repetition,,, emacs, The GNU Emacs Manual}).  Within the
 minibuffer, the usual minibuffer history commands are available.
 
-@node Keyboard Macros
+@node 键盘宏
 @section Keyboard Macros
 @cindex keyboard macros
 

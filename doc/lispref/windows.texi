@@ -6,255 +6,194 @@
 @node Windows
 @chapter Windows
 
-This chapter describes the functions and variables related to Emacs
-windows.  @xref{Frames}, for how windows are assigned an area of screen
-available for Emacs to use.  @xref{Display}, for information on how text
-is displayed in windows.
+本章介绍与Emacs窗口相关的函数和变量。@xref{Frames},用于了解如何为Emacs分配一个可
+用的屏幕区域。@xref{Display}, 用于了解如何在窗口中显示文本。
 
 @menu
-* Basic Windows::           Basic information on using windows.
-* Windows and Frames::      Relating windows to the frame they appear on.
-* Window Sizes::            Accessing a window's size.
-* Resizing Windows::        Changing the sizes of windows.
-* Preserving Window Sizes:: Preserving the size of windows.
-* Splitting Windows::       Creating a new window.
-* Deleting Windows::        Removing a window from its frame.
-* Recombining Windows::     Preserving the frame layout when splitting and
-                              deleting windows.
-* Selecting Windows::       The selected window is the one that you edit in.
-* Cyclic Window Ordering::  Moving around the existing windows.
-* Buffers and Windows::     Each window displays the contents of a buffer.
-* Switching Buffers::       Higher-level functions for switching to a buffer.
-* Displaying Buffers::      Displaying a buffer in a suitable window.
-* Window History::          Each window remembers the buffers displayed in it.
-* Dedicated Windows::       How to avoid displaying another buffer in
-                              a specific window.
-* Quitting Windows::        How to restore the state prior to displaying a
-                              buffer.
-* Side Windows::            Special windows on a frame's sides.
-* Atomic Windows::          Preserving parts of the window layout.
-* Window Point::            Each window has its own location of point.
-* Window Start and End::    Buffer positions indicating which text is
-                              on-screen in a window.
-* Textual Scrolling::       Moving text up and down through the window.
-* Vertical Scrolling::      Moving the contents up and down on the window.
-* Horizontal Scrolling::    Moving the contents sideways on the window.
-* Coordinates and Windows:: Converting coordinates to windows.
-* Mouse Window Auto-selection:: Automatically selecting windows with the mouse.
-* Window Configurations::   Saving and restoring the state of the screen.
-* Window Parameters::       Associating additional information with windows.
-* Window Hooks::            Hooks for scrolling, window size changes,
-                              redisplay going past a certain point,
-                              or window configuration changes.
+* 基本窗口::         关于使用窗口的基本信息。
+* 窗口和窗框::       将窗口与它们所处的窗框联系起来。
+* 窗口大小::         访问窗口的大小。
+* 调整窗口大小::      改变窗口的大小。
+* 保留窗口大小::      保留窗口的大小。
+* 分割窗口::         创建新窗口。
+* 删除窗口::         从窗框中删除窗口。
+* 重新组合窗口::      在分割和删除窗口时保留框架布局。
+* 选择窗口::         被选中的窗口就是你编辑的窗口。
+* 循环窗口排序::      在现有窗口中移动。
+* 缓冲区和窗口::      每个窗口都会显示一个缓冲区的内容。
+* 切换缓冲区::        切换缓冲区的高级功能。
+* 显示缓冲区::        在合适的窗口中显示缓冲区。
+* 窗口历史记录::      每个窗口都会记住显示在窗口中的缓冲区。
+* 专用窗口::         如何避免在特定窗口中显示另一个缓冲区。
+* 退出窗口::         如何恢复显示缓冲区前的状态。
+* 侧面窗口::         在窗框侧面的特殊窗口。
+* 原子窗口::        保留窗口布局的一部分。
+* 窗口点::          每个窗口都有自己的点的位置。
+* 窗口开始和结束::    缓冲区位置，表示窗口中哪些文字在屏幕上。
+* 文本滚动::        在窗口中上下移动文字。
+* 垂直滚动::         在窗口中上下移动文本。
+* 水平滚动::        在窗口中横向移动内容。
+* 坐标和窗口::       將座標轉換為視窗。
+* 鼠标自动选择窗口:: 用鼠标自动选择窗口。
+* 窗口配置::        保存和恢复屏幕状态。
+* 窗口参数::        将附加信息与窗口关联。
+* 窗口钩子::        钩子用于滚动、改变窗口大小、重新显示到某一点或改变窗口配置。
 @end menu
 
 
-@node Basic Windows
+@node 基本窗口
 @section Basic Concepts of Emacs Windows
 @cindex window
 
-A @dfn{window} is an area of the screen that is used to display a buffer
-(@pxref{Buffers}).  In Emacs Lisp, windows are represented by a special
-Lisp object type.
+一个@dfn{window}是屏幕上用来显示缓冲区的区域（@pxref{Buffers}）。在Emacs Lisp
+中，窗口由一个特殊的Lisp对象类型来表示。
 
 @cindex multiple windows
-  Windows are grouped into frames (@pxref{Frames}).  Each frame
-contains at least one window; the user can subdivide it into multiple,
-non-overlapping windows to view several buffers at once.  Lisp
-programs can use multiple windows for a variety of purposes.  In
-Rmail, for example, you can view a summary of message titles in one
-window, and the contents of the selected message in another window.
+  窗口被分组为窗框（@pxref{Frames}）。每个窗框至少包含一个窗口；用户可以将其细分为
+多个不重叠的窗口，以便同时查看多个缓冲区。Lisp程序可以将多个窗口用于各种用途。例如，
+在Rmail中，你可以在一个窗口中查看消息标题的摘要，在另一个窗口中查看所选消息的内容。
 
 @cindex terminal screen
 @cindex screen of terminal
-  Emacs uses the word ``window'' with a different meaning than in
-graphical desktop environments and window systems, such as the X
-Window System.  When Emacs is run on X, each of its graphical X
-windows is an Emacs frame (containing one or more Emacs windows).
-When Emacs is run on a text terminal, the frame fills the entire
-terminal screen.
+  Emacs使用的"窗口"一词与图形桌面环境和窗口系统（如X窗口系统）中的含义不同。当
+Emacs在X上运行时，其每一个图形X窗口都是一个Emacs窗框（包含一个或多个Emacs窗口）。
+当Emacs在文本终端上运行时，窗框会填满整个终端屏幕。
 
 @cindex tiled windows
-  Unlike X windows, Emacs windows are @dfn{tiled}; they never overlap
-within the area of the frame.  When a window is created, resized, or
-deleted, the change in window space is taken from or given to the
-adjacent windows, so that the total area of the frame is unchanged.
+  与X窗口不同的是，Emacs窗口是@dfn{tiled}的，它们在窗框的区域内从不重叠。当一个窗
+口被创建、调整大小或删除时，窗口空间的变化会从相邻的窗口中提取或给予相邻的窗口，因此窗框的总面积是不变的。
 
 @defun windowp object
-This function returns @code{t} if @var{object} is a window (whether or
-not it displays a buffer).  Otherwise, it returns @code{nil}.
+如果@var{object}是一个窗口（不管它是否显示缓冲区），这个函数返回@code{t}。否则，
+返回@code{nil}。
 @end defun
 
 @cindex live windows
-A @dfn{live window} is one that is actually displaying a buffer in a
-frame.
+一个@dfn{live window}是指在一个窗框中实际显示一个缓冲区。
 
 @defun window-live-p object
-This function returns @code{t} if @var{object} is a live window and
-@code{nil} otherwise.  A live window is one that displays a buffer.
+如果@var{object}是一个实时窗口，则该函数返回@code{t}，否则返回@code{nil}。实时
+窗口是指显示一个缓冲区的窗口。
 @end defun
 
 @cindex internal windows
-The windows in each frame are organized into a @dfn{window tree}.
-@xref{Windows and Frames}.  The leaf nodes of each window tree are live
-windows---the ones actually displaying buffers.  The internal nodes of
-the window tree are @dfn{internal windows}, which are not live.
+每个框架中的窗口都被组织成一个@dfn{window tree}。@xref{Windows and Frames}。
+每个窗口树的叶子节点是实时窗口--实际显示缓冲区的窗口。窗口树的内部节点是
+@dfn{internal windows}，它们不是实时的。
 
 @cindex valid windows
-   A @dfn{valid window} is one that is either live or internal.  A valid
-window can be @dfn{deleted}, i.e., removed from its frame
-(@pxref{Deleting Windows}); then it is no longer valid, but the Lisp
-object representing it might be still referenced from other Lisp
-objects.  A deleted window may be made valid again by restoring a saved
-window configuration (@pxref{Window Configurations}).
+  一个@dfn{valid window}是一个活的或内部的窗口。一个有效的窗口可以被
+@dfn{deleted}，即从它的有效窗框中移除 (@pxref{Deleting Windows})；那么它就不
+再有效了，但代表它的Lisp对象可能仍然可以从其它Lisp对象中引用。被删除的窗口可以通过
+恢复已保存的窗口配置来重新生效(@pxref{Window Configurations})。
 
-   You can distinguish valid windows from deleted windows with
-@code{window-valid-p}.
+  您可以使用@code{window-valid-p}区分有效窗口和被删除的窗口。
 
 @defun window-valid-p object
-This function returns @code{t} if @var{object} is a live window, or an
-internal window in a window tree.  Otherwise, it returns @code{nil},
-including for the case where @var{object} is a deleted window.
+如果@var{object}是一个实时窗口，或者是窗口树中的一个内部窗口，则该函数返回
+@code{t}。否则，它返回@code{nil}，包括@var{object}是一个被删除的窗口的情况。
 @end defun
 
 @cindex selected window
 @cindex window selected within a frame
-  In each frame, at any time, exactly one Emacs window is designated
-as @dfn{selected within the frame}.  For the selected frame, that
-window is called the @dfn{selected window}---the one in which most
-editing takes place, and in which the cursor for selected windows
-appears (@pxref{Cursor Parameters}).  Keyboard input that inserts or
-deletes text is also normally directed to this window.   The selected
-window's buffer is usually also the current buffer, except when
-@code{set-buffer} has been used (@pxref{Current Buffer}).  As for
-non-selected frames, the window selected within the frame becomes the
-selected window if the frame is ever selected.  @xref{Selecting
-Windows}.
+  在每个有效窗框中，在任何时候，正好有一个Emacs窗口被指定为
+@dfn{selected within the frame}。插入或删除文本的键盘输入通常也会指向这个窗口
+。所选窗口的缓冲区通常也是当前缓冲区，除非使用了@code{set-buffer}（
+@pxref{Current Buffer}）。对于非选择的窗框，如果该窗框被选中，那么选择窗框内被选
+中的窗口就会成为被选中的窗口。@xref{Selecting Windows}。
 
 @defun selected-window
-This function returns the selected window (which is always a live
-window).
+该函数返回所选窗口（始终是一个实时窗口）。
 @end defun
 
-@anchor{Window Group}Sometimes several windows collectively and
-cooperatively display a buffer, for example, under the management of
-Follow Mode (@pxref{Follow Mode,,, emacs}), where the windows together
-display a bigger portion of the buffer than one window could alone.
-It is often useful to consider such a @dfn{window group} as a single
-entity.  Several functions such as @code{window-group-start}
-(@pxref{Window Start and End}) allow you to do this by supplying, as
-an argument, one of the windows as a stand in for the whole group.
+@anchor{窗口组}有时几个窗口一起，而且还可以在窗口组中进行操作，合作显示一个缓冲区，
+例如，在Follow Mode(@pxref{Follow Mode,,, emacs})的管理下，这些窗口一起显示的
+缓冲区比一个窗口单独显示的缓冲区更大。将这样的@dfn{window group}视为一个单一的实
+体通常是很有用的。一些函数，如 @code{window-group-start} (
+@pxref{Window Start and End})，允许您通过提供其中一个窗口作为参数来代替整个组。
 
 @defun selected-window-group
 @vindex selected-window-group-function
-When the selected window is a member of a group of windows, this
-function returns a list of the windows in the group, ordered such that
-the first window in the list is displaying the earliest part of the
-buffer, and so on.  Otherwise the function returns a list containing
-just the selected window.
+当选中的窗口是一组窗口的成员时，该函数返回一组窗口的列表，排序方式是列表中的第一个窗
+口显示缓冲区的最早部分，以此类推。否则，该函数返回一个只包含所选窗口的列表。
 
-The selected window is considered part of a group when the buffer
-local variable @code{selected-window-group-function} is set to a
-function.  In this case, @code{selected-window-group} calls it with no
-arguments and returns its result (which should be the list of windows
-in the group).
+当缓冲区局部变量@code{selected-window-group-function}被设置为函数时，被选中的
+窗口被认为是一个组的一部分。在这种情况下，@code{selected-window-group}会在没有
+参数的情况下调用它，并返回它的结果（应该是组中的窗口列表）。
 @end defun
 
-@node Windows and Frames
+@node 窗口和窗框
 @section Windows and Frames
 
-Each window belongs to exactly one frame (@pxref{Frames}).
+每个窗口正好属于一个窗框（@pxref{Frames}）。
 
 @defun window-frame &optional window
-This function returns the frame that the window @var{window} belongs
-to.  If @var{window} is @code{nil}, it defaults to the selected
-window.
+此函数返回@var{window}窗口所属的窗框。如果@var{window}是@code{nil}，则默认为选
+定的窗口。
 @end defun
 
 @defun window-list &optional frame minibuffer window
-This function returns a list of live windows belonging to the frame
-@var{frame}.  If @var{frame} is omitted or @code{nil}, it defaults to
-the selected frame.
+此函数返回属于@var{frame}窗框的实时窗口列表。如果省略了@var{frame}或者是
+@code{nil}，则默认为选定的窗框。
 
-The optional argument @var{minibuffer} specifies whether to include
-the minibuffer window in the returned list.  If @var{minibuffer} is
-@code{t}, the minibuffer window is included.  If @var{minibuffer} is
-@code{nil} or omitted, the minibuffer window is included only if it is
-active.  If @var{minibuffer} is neither @code{nil} nor @code{t}, the
-minibuffer window is never included.
+可选参数@var{minibuffer}指定是否在返回的列表中包含minibuffer窗口，如果
+@var{minibuffer}是@code{t}，则包含minibuffer窗口。如果@var{minibuffer}为
+@code{nil}或被省略，则只有在minibuffer窗口处于活动状态时才会被包含。如果
+@var{minibuffer}既不是@code{nil}，也不是@code{t}，则永远不包含minibuffer窗口
+。
 
-The optional argument @var{window}, if non-@code{nil}, should be a live
-window on the specified frame; then @var{window} will be the first
-element in the returned list.  If @var{window} is omitted or @code{nil},
-the window selected within the frame is the first element.
+可选参数@var{window}，如果非@code{nil}，则应该是指定窗框上的一个实时窗口；那么
+@var{window}将是返回列表中的第一个元素。如果省略了@var{window}或者@code{nil}，
+则在窗框中选择的窗口为第一个元素。
 @end defun
 
 @cindex window tree
 @cindex root window
-  Windows in the same frame are organized into a @dfn{window tree},
-whose leaf nodes are the live windows.  The internal nodes of a window
-tree are not live; they exist for the purpose of organizing the
-relationships between live windows.  The root node of a window tree is
-called the @dfn{root window}.  It can be either a live window (if the
-frame has just one window), or an internal window.
+  同一窗框中的窗口被组织成一棵@dfn{window tree}，它的叶子节点是活窗口。窗口树的内
+部节点不是活的，它们的存在是为了组织活窗口之间的关系。窗口树的根节点称为
+@dfn{root window}。它可以是一个活窗口（如果框架只有一个窗口），也可以是一个内部窗
+口。
 
-  A minibuffer window (@pxref{Minibuffer Windows}) that is not alone
-on its frame does not have a parent window, so it strictly speaking is
-not part of its frame's window tree.  Nonetheless, it is a sibling
-window of the frame's root window, and thus can be reached via
-@code{window-next-sibling}.  Also, the function @code{window-tree}
-described at the end of this section lists the minibuffer window
-alongside the actual window tree.
+  一个迷你缓冲区窗口(@pxref{Minibuffer Windows})如果不是单独存在于其窗框上，那
+么它就没有父窗口，所以严格来说，它不是其窗框的窗口树的一部分。尽管如此，它还是窗框的
+根窗口的兄弟姐妹窗口，因此可以通过@code{window-next-sibling}到达。另外，本节末
+尾描述的函数@code{window-tree}在实际的窗口树旁边列出了minibuffer窗口。
 
 @defun frame-root-window &optional frame-or-window
-This function returns the root window for @var{frame-or-window}.  The
-argument @var{frame-or-window} should be either a window or a frame;
-if omitted or @code{nil}, it defaults to the selected frame.  If
-@var{frame-or-window} is a window, the return value is the root window
-of that window's frame.
+此函数返回@var{frame-or-window}的根窗口。参数@var{frame-or-window}应该是一个
+窗口或窗框；如果省略或@code{nil}，则默认为选定的窗框。如果@var{frame-or-window}
+是一个窗口，那么返回值就是该窗口的窗框的根窗口。
 @end defun
 
 @cindex parent window
 @cindex child window
 @cindex sibling window
-  When a window is split, there are two live windows where previously
-there was one.  One of these is represented by the same Lisp window
-object as the original window, and the other is represented by a
-newly-created Lisp window object.  Both of these live windows become
-leaf nodes of the window tree, as @dfn{child windows} of a single
-internal window.  If necessary, Emacs automatically creates this
-internal window, which is also called the @dfn{parent window}, and
-assigns it to the appropriate position in the window tree.  A set of
-windows that share the same parent are called @dfn{siblings}.
+当一个窗口被拆分时，会有两个活窗口，而之前只有一个。其中一个由与原窗口相同的Lisp窗口
+对象表示，另一个由新创建的Lisp窗口对象表示。这两个活窗口都会成为窗口树的叶子节点，作
+为单个内部窗口的@dfn{child windows}。如果有必要，Emacs会自动创建这个内部窗口，也
+就是@dfn{parent window}，并将其分配到窗口树的适当位置。一组共享同一个父窗口的窗口
+被称为@dfn{siblings}。
 
 @cindex parent window
 @defun window-parent &optional window
-This function returns the parent window of @var{window}.  If
-@var{window} is omitted or @code{nil}, it defaults to the selected
-window.  The return value is @code{nil} if @var{window} has no parent
-(i.e., it is a minibuffer window or the root window of its frame).
+此函数返回@var{window}的父窗口。如果省略了@var{window}或者@code{nil}，则默认为
+选定的窗口。如果@var{window}没有父窗口（即它是一个迷你缓冲窗口或其窗框的根窗口），
+则返回值为@code{nil}。
 @end defun
 
-  Each internal window always has at least two child windows.  If this
-number falls to one as a result of window deletion, Emacs
-automatically deletes the internal window, and its sole remaining
-child window takes its place in the window tree.
+  每个内部窗口总是至少有两个子窗口。如果因为删除窗口而使这一数字下降到1，Emacs就会
+自动删除内部窗口，其唯一剩下的子窗口就会在窗口树中占据一席之地。
 
-  Each child window can be either a live window, or an internal window
-(which in turn would have its own child windows).  Therefore, each
-internal window can be thought of as occupying a certain rectangular
-@dfn{screen area}---the union of the areas occupied by the live
-windows that are ultimately descended from it.
+  每个子窗口可以是一个活窗口，也可以是一个内部窗口（内部窗口又有自己的子窗口）。因此
+，每个内部窗口都可以被认为占据了一定的长方形@dfn{screen area}--最终是由它后代的
+活跃窗口所占区域的组合。
 
 @cindex window combination
 @cindex vertical combination
 @cindex horizontal combination
-  For each internal window, the screen areas of the immediate children
-are arranged either vertically or horizontally (never both).  If the
-child windows are arranged one above the other, they are said to form
-a @dfn{vertical combination}; if they are arranged side by side, they
-are said to form a @dfn{horizontal combination}.  Consider the
-following example:
+对于每一个内部窗口，紧邻的子窗口的屏幕区域都是垂直或水平排列的（绝不是两者兼有）。如
+果子窗口一个比一个高，则称其形成@dfn{vertical combination}；如果并排排列，则称
+其形成@dfn{horizontal combination}。请看下面的例子:
 
 @smallexample
 @group
@@ -276,167 +215,130 @@ following example:
 @end smallexample
 
 @noindent
-The root window of this frame is an internal window, @var{W1}.  Its
-child windows form a horizontal combination, consisting of the live
-window @var{W2} and the internal window @var{W3}.  The child windows
-of @var{W3} form a vertical combination, consisting of the live
-windows @var{W4} and @var{W5}.  Hence, the live windows in this
-window tree are @var{W2}, @var{W4}, and @var{W5}.
+这个窗框的根窗口是一个内部窗口，@var{W1}。它的子窗口形成一个水平组合，由实时窗口
+@var{W2}和内部窗口@var{W3}组成。@var{W3}的子窗口形成一个垂直组合，由实时窗口
+@var{W4}和@var{W5}组成。因此，这个窗口树中的活窗口是@var{W2}、@var{W4}和
+@var{W5}。
 
-  The following functions can be used to retrieve a child window of an
-internal window, and the siblings of a child window.
+以下函数可用于检索内部窗口的子窗口以及子窗口的兄弟姐妹。
 
 @defun window-top-child &optional window
-This function returns the topmost child window of @var{window}, if
-@var{window} is an internal window whose children form a vertical
-combination.  For any other type of window, the return value is
-@code{nil}.
+如果@var{window}是一个内部窗口，并且其子窗口形成了一个垂直组合，那么这个函数返回
+@var{window}的最上面的子窗口。对于其他类型的窗口，返回值为@code{nil}。
 @end defun
 
 @defun window-left-child &optional window
-This function returns the leftmost child window of @var{window}, if
-@var{window} is an internal window whose children form a horizontal
-combination.  For any other type of window, the return value is
-@code{nil}.
+如果 @var{window} 是一个内部窗口，其子窗口形成了一个水平组合，那么这个函数返回
+@var{window}最左边的子窗口。对于其他类型的窗口，返回值为@code{nil}。
 @end defun
 
 @defun window-child window
-This function returns the first child window of the internal window
-@var{window}---the topmost child window for a vertical combination, or
-the leftmost child window for a horizontal combination.  If
-@var{window} is a live window, the return value is @code{nil}.
+此函数返回内部窗口@var{window}的第一个子窗口--垂直组合的最上面的子窗口，或者水平组
+合的最左边的子窗口。如果@var{window}是一个实时窗口，则返回值为@code{nil}。
 @end defun
 
 @defun window-combined-p &optional window horizontal
-This function returns a non-@code{nil} value if and only if
-@var{window} is part of a vertical combination.  If @var{window} is
-omitted or @code{nil}, it defaults to the selected one.
+如果且仅当@var{window}是垂直组合的一部分时，此函数返回一个非@code{nil}值。如果
+@var{window}被省略或@code{nil}，则默认为所选的数值。
 
-If the optional argument @var{horizontal} is non-@code{nil}, this
-means to return non-@code{nil} if and only if @var{window} is part of
-a horizontal combination.
+如果可选参数 @var{horizontal}是非@code{nil}，这意味着如果且仅当@var{window}
+是水平组合的一部分时，才返回非@code{nil}。
 @end defun
 
 @defun window-next-sibling &optional window
-This function returns the next sibling of the window @var{window}.  If
-omitted or @code{nil}, @var{window} defaults to the selected window.
-The return value is @code{nil} if @var{window} is the last child of
-its parent.
+此函数返回@var{window}窗口的下一个同级窗口。如果省略或@code{nil}，则
+@var{window}默认为所选窗口。如果@var{window}是父窗口的最后一个子窗口，则返回值为
+@code{nil}。
 @end defun
 
 @defun window-prev-sibling &optional window
-This function returns the previous sibling of the window @var{window}.
-If omitted or @code{nil}, @var{window} defaults to the selected
-window.  The return value is @code{nil} if @var{window} is the first
-child of its parent.
+此函数返回@var{window}窗口的前一个同级窗口。如果省略或@code{nil}，则
+@var{window}默认为所选窗口。如果@var{window}是父窗口的第一个子窗口，则返回值为
+@code{nil}。
 @end defun
 
-The functions @code{window-next-sibling} and
-@code{window-prev-sibling} should not be confused with the functions
-@code{next-window} and @code{previous-window}, which return the next
-and previous window, respectively, in the cyclic ordering of windows
-(@pxref{Cyclic Window Ordering}).
+  函数@code{window-next-sibling}和@code{window-prev-sibling}不应与函数
+@code{next-window}和@code{previous-window}混淆，后者分别返回窗口循环排序中的
+下一个和上一个窗口(@pxref{Cyclic Window Ordering})。
 
-  The following functions can be useful to locate a window within its
-frame.
+  下面的函数可以用来定位窗口在其窗框内的位置。
 
 @defun frame-first-window &optional frame-or-window
-This function returns the live window at the upper left corner of the
-frame specified by @var{frame-or-window}.  The argument
-@var{frame-or-window} must denote a window or a live frame and defaults
-to the selected frame.  If @var{frame-or-window} specifies a window,
-this function returns the first window on that window's frame.  Under
-the assumption that the frame from our canonical example is selected
-@code{(frame-first-window)} returns @var{W2}.
+本函数返回位于@var{frame-or-window}指定的框架左上角的实时窗口。参数
+@var{frame-or-window}必须表示一个窗口或一个实时窗框，默认为所选窗框。如果
+@var{frame-or-window}指定了一个窗口，那么这个函数将返回该窗口窗框上的第一个窗口。
+在假设我们的规范示例中的窗框被选中的情况下，@code{(frame-first-window)}返回
+@var{W2}。
 @end defun
 
 @defun window-at-side-p &optional window side
-This function returns @code{t} if @var{window} is located at
-@var{side} of its containing frame.  The argument @var{window} must be
-a valid window and defaults to the selected one.  The argument
-@var{side} can be any of the symbols @code{left}, @code{top},
-@code{right} or @code{bottom}.  The default value @code{nil} is
-handled like @code{bottom}.
+如果@var{window}位于包含它的窗框的@var{side}处，此函数返回@code{t}。参数
+@var{window}必须是一个有效的窗口，并且默认为选定的窗口。参数@var{side}可以是
+@code{left}、@code{top}、@code{right}或@code{bottom}中的任何一个符号。默认
+值@code{nil}的处理方式与@code{bottom}相同。
 
-Note that this function disregards the minibuffer window
-(@pxref{Minibuffer Windows}).  Hence, with @var{side} equal to
-@code{bottom} it may return @code{t} also when the minibuffer window
-appears right below @var{window}.
+请注意，这个函数会忽略minibuffer窗口(@pxref{Minibuffer Windows})。因此，当
+@var{side}等于@code{bottom}时，当minibuffer窗口出现在@var{window}的正下方时
+，它也可能返回@code{t}。
 @end defun
 
 @cindex window in direction
 @defun window-in-direction direction &optional window ignore sign wrap mini
-This function returns the nearest live window in direction
-@var{direction} as seen from the position of @code{window-point} in
-window @var{window}.  The argument @var{direction} must be one of
-@code{above}, @code{below}, @code{left} or @code{right}.  The optional
-argument @var{window} must denote a live window and defaults to the
-selected one.
+此函数从@code{window-point}在@var{window}窗口中的位置，返回@var{direction}
+方向上最近的实时窗口。参数@var{direction}必须是@code{above},@code{below},
+@code{left}或@code{right}中的一个。参数@var{window}必须是一个实时窗口，默认为所选窗口。
 
-This function does not return a window whose @code{no-other-window}
-parameter is non-@code{nil} (@pxref{Window Parameters}).  If the nearest
-window's @code{no-other-window} parameter is non-@code{nil}, this
-function tries to find another window in the indicated direction whose
-@code{no-other-window} parameter is @code{nil}.  If the optional
-argument @var{ignore} is non-@code{nil}, a window may be returned even
-if its @code{no-other-window} parameter is non-@code{nil}.
+本函数不返回@code{no-other-window}参数为非@code{nil}的窗口。(
+@pxref{Window Parameters})。如果最近的窗口的@code{no-other-window}参数是非
+@code{nil}，则此函数会尝试在指定方向上找到另一个@code{no-other-window}参数为
+@code{nil}的窗口。如果可选参数@var{ignore}是非@code{nil}，那么即使
+@code{no-other-window}参数是非@code{nil}，也可能返回一个窗口。
 
-If the optional argument @var{sign} is a negative number, it means to
-use the right or bottom edge of @var{window} as reference position
-instead of @code{window-point}.  If @var{sign} is a positive number, it
-means to use the left or top edge of @var{window} as reference position.
+如果可选的参数@var{sign}是负数，则表示使用@var{window}的右侧或底部边缘作为参考位
+置，而不是@code{window-point}。如果@var{sign}是正数，则表示使用@var{window}
+的左边或顶部边缘作为参考位置。
 
-If the optional argument @var{wrap} is non-@code{nil}, this means to
-wrap @var{direction} around frame borders.  For example, if @var{window}
-is at the top of the frame and @var{direction} is @code{above}, then
-this function usually returns the frame's minibuffer window if it's
-active and a window at the bottom of the frame otherwise.
+如果可选的参数@var{wrap}是非@code{nil}，这意味着要将@var{direction}环绕在窗框
+的边框上。例如，如果@var{window}在窗框的顶部，而@var{direction}是@code{above}
+，那么这个函数通常会返回窗框的minibuffer窗口（如果它是活动的），否则返回窗框底部的
+窗口。
 
-If the optional argument @var{mini} is @code{nil}, this means to return
-the minibuffer window if and only if it is currently active.  If
-@var{mini} is non-@code{nil}, this function may return the minibuffer
-window even when it's not active.  However, if @var{wrap} is
-non-@code{nil}, it always acts as if @var{mini} were @code{nil}.
+如果可选参数@var{mini}为@code{nil}，这意味着返回当且仅当当前处于活动状态时的
+minibuffer窗口。如果@var{mini}是非@code{nil}，那么即使minibuffer窗口不是活动
+的，这个函数也会返回。但是，如果@var{wrap}是非@code{nil}，那么它的作用就如同
+@var{mini}是@code{nil}一样。
 
-If it doesn't find a suitable window, this function returns
-@code{nil}.
+如果没有找到合适的窗口，该函数返回@code{nil}。
 
-Don't use this function to check whether there is @emph{no} window in
-@var{direction}.  Calling @code{window-at-side-p} described above is a
-much more efficient way to do that.
+不要用这个函数来检查@var{direction}中是否有@emph{no}窗口。调用上述的
+@code{window-at-side-p}是一种更有效的方法。
 @end defun
 
-The following function allows the entire window tree of a frame to be
-retrieved:
+下面的功能可以检索一个框架的整个窗口树:
 
 @defun window-tree &optional frame
-This function returns a list representing the window tree for frame
-@var{frame}.  If @var{frame} is omitted or @code{nil}, it defaults to
-the selected frame.
+此函数返回代表@var{frame}窗框的窗口树的列表，如果省略@var{frame}或@code{nil}，
+则默认为选定的窗框。如果省略了@var{frame}或者@code{nil}，则默认为选中的窗框。
 
-The return value is a list of the form @code{(@var{root} @var{mini})},
-where @var{root} represents the window tree of the frame's root
-window, and @var{mini} is the frame's minibuffer window.
+返回值是一个形式为@code{(@var{root} @var{mini})}的列表，其中@var{root}代表
+窗框根窗口的窗口树，@var{mini}是窗框的minibuffer窗口。
 
-If the root window is live, @var{root} is that window itself.
-Otherwise, @var{root} is a list @code{(@var{dir} @var{edges} @var{w1}
-@var{w2} ...)} where @var{dir} is @code{nil} for a horizontal
-combination and @code{t} for a vertical combination, @var{edges} gives
-the size and position of the combination, and the remaining elements
-are the child windows.  Each child window may again be a window object
-(for a live window) or a list with the same format as above (for an
-internal window).  The @var{edges} element is a list @code{(@var{left}
-@var{top} @var{right} @var{bottom})}, similar to the value returned by
-@code{window-edges} (@pxref{Coordinates and Windows}).
+如果根窗口是实时的，那么@var{root}就是那个窗口本身。否则，@var{root}是一个列表
+@code{(@var{dir} @var{edges} @var{w1} @var{w2} ...)}，其中@var{dir}对于
+水平组合来说是@code{nil}，对于垂直组合来说是@code{t}，@var{edges}给出了组合的大
+和位置，其余元素是子窗口。每个子窗口也可以是一个窗口对象（对于实时窗口），或者是一个
+与上述格式相同的列表（对于内部窗口）。@var{edges}元素是一个列表
+@code{(@var{left} @var{top} @var{right} @var{bottom})}，类似于
+@code{window-edges}所返回的值。(@pxref{Coordinates and Windows})。
 @end defun
 
 
-@node Window Sizes
+@node 窗口大小
 @section Window Sizes
 @cindex window size
 @cindex size of window
 
-  The following schematic shows the structure of a live window:
+  下面的示意图显示了一个实时窗口的结构:
 
 @smallexample
 @group
@@ -761,7 +663,7 @@ minimum size of @var{window} counted in pixels.
 @end defun
 
 
-@node Resizing Windows
+@node 调整窗口大小
 @section Resizing Windows
 @cindex window resizing
 @cindex resize window
@@ -1019,7 +921,7 @@ window.
 @end deffn
 
 
-@node Preserving Window Sizes
+@node 保留窗口大小
 @section Preserving Window Sizes
 @cindex preserving window sizes
 
@@ -1111,7 +1013,7 @@ the size of @var{window} is not preserved.
 @end defun
 
 
-@node Splitting Windows
+@node 分割窗口
 @section Splitting Windows
 @cindex splitting windows
 @cindex window splitting
@@ -1275,7 +1177,7 @@ function.
 @end defopt
 
 
-@node Deleting Windows
+@node 删除窗口
 @section Deleting Windows
 @cindex deleting windows
 
@@ -1374,7 +1276,7 @@ are the opposite of what they are in those other functions.
 @end deffn
 
 
-@node Recombining Windows
+@node 重新组合窗口
 @section Recombining Windows
 @cindex recombining windows
 @cindex windows, recombining
@@ -1733,7 +1635,7 @@ distribute its space proportionally among the two remaining live
 windows.
 
 
-@node Selecting Windows
+@node 选择窗口
 @section Selecting Windows
 @cindex selecting a window
 
@@ -1872,7 +1774,7 @@ most recently used one (@pxref{Cyclic Window Ordering}).
 @end defun
 
 
-@node Cyclic Window Ordering
+@node 循环窗口排序
 @section Cyclic Ordering of Windows
 @cindex cyclic ordering of windows
 @cindex ordering of windows, cyclic
@@ -2053,7 +1955,7 @@ windows to search, and have the same meanings as in
 @end defun
 
 
-@node Buffers and Windows
+@node 缓冲区和窗口
 @section Buffers and Windows
 @cindex examining windows
 @cindex windows, controlling precisely
@@ -2171,7 +2073,7 @@ frame on its terminal, the buffer is replaced anyway.
 @end deffn
 
 
-@node Switching Buffers
+@node 切换缓冲区
 @section Switching to a Buffer in a Window
 @cindex switching to a buffer
 
@@ -2338,7 +2240,7 @@ unless @var{norecord} is non-@code{nil}.
 @end deffn
 
 
-@node Displaying Buffers
+@node 显示缓冲区
 @section Displaying a Buffer in a Suitable Window
 @cindex buffer display
 @cindex displaying a buffer
@@ -3848,7 +3750,7 @@ full-fledged frames as inflicted by @code{display-buffer-pop-up-frame}.
 @end table
 
 
-@node Window History
+@node 窗口历史记录
 @section Window History
 @cindex window history
 
@@ -4010,7 +3912,7 @@ these functions can switch to.
 @end defopt
 
 
-@node Dedicated Windows
+@node 专用窗口
 @section Dedicated Windows
 @cindex dedicated window
 
@@ -4070,7 +3972,7 @@ You can also tell @code{display-buffer} to mark a window it creates as
 dedicated to its buffer by providing a suitable @code{dedicated}
 action alist entry (@pxref{Buffer Display Action Alists}).
 
-@node Quitting Windows
+@node 退出窗口
 @section Quitting Windows
 
 When you want to get rid of a window used for displaying a buffer, you
@@ -4238,7 +4140,7 @@ Interaction Parameters}).
 @end defopt
 
 
-@node Side Windows
+@node 侧面窗口
 @section Side Windows
 @cindex side windows
 @cindex main window
@@ -4533,7 +4435,7 @@ and @kbd{M-x dired-default-directory-on-left} should now reproduce the
 frame layout sketched above.
 
 
-@node Atomic Windows
+@node 原子窗口
 @section Atomic Windows
 @cindex atomic windows
 
@@ -4670,7 +4572,7 @@ remove the new window only.  Typing @w{@kbd{C-x 0}} in any window of the
 atomic window will make that new window fill the frame.
 
 
-@node Window Point
+@node 窗口点
 @section Windows and Point
 @cindex window position
 @cindex window point
@@ -4735,7 +4637,7 @@ Insertion Types}) of @code{window-point}.  The default is @code{nil},
 so @code{window-point} will stay behind text inserted there.
 @end defvar
 
-@node Window Start and End
+@node 窗口开始和结束
 @section The Window Start and End Positions
 @cindex window start position
 @cindex display-start position
@@ -4989,7 +4891,7 @@ text line.  If there are off-window pixels at the top of the (first)
 text line, @var{ypos} is negative.
 @end defun
 
-@node Textual Scrolling
+@node 文本滚动
 @section Textual Scrolling
 @cindex textual scrolling
 @cindex scrolling textually
@@ -5271,7 +5173,7 @@ point at the middle, top, and bottom of the window.
 @end defopt
 
 
-@node Vertical Scrolling
+@node 垂直滚动
 @section Vertical Fractional Scrolling
 @cindex vertical fractional scrolling
 @cindex vertical scroll position
@@ -5343,7 +5245,7 @@ that are taller than the height of the window, for example in the
 presence of large images.
 @end defvar
 
-@node Horizontal Scrolling
+@node 水平滚动
 @section Horizontal Scrolling
 @cindex horizontal scrolling
 
@@ -5498,7 +5400,7 @@ is off the screen due to horizontal scrolling:
 @end example
 
 
-@node Coordinates and Windows
+@node 坐标和窗口
 @section Coordinates and Windows
 @cindex frame-relative coordinate
 @cindex coordinate, relative to frame
@@ -5794,7 +5696,7 @@ up-to-date.
 @end defun
 
 
-@node Mouse Window Auto-selection
+@node 鼠标自动选择窗口
 @section Mouse Window Auto-selection
 @cindex window auto-selection
 @cindex auto-selection of window
@@ -5843,7 +5745,7 @@ entering a child frame with the mouse will raise it automatically above
 all other child frames of that frame's parent frame.
 
 
-@node Window Configurations
+@node 窗口配置
 @section Window Configurations
 @cindex window configurations
 @cindex saving window information
@@ -6003,7 +5905,7 @@ and heights, if possible.  Frames are not resized by this function.
 @end deffn
 
 
-@node Window Parameters
+@node 窗口参数
 @section Window Parameters
 @cindex window parameters
 
@@ -6209,7 +6111,7 @@ versions of Emacs.
 @end table
 
 
-@node Window Hooks
+@node 窗口钩子
 @section Hooks for Window Scrolling and Changes
 @cindex hooks for window operations
 

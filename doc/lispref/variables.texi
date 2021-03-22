@@ -6,70 +6,57 @@
 @chapter Variables
 @cindex variable
 
-  A @dfn{variable} is a name used in a program to stand for a value.
-In Lisp, each variable is represented by a Lisp symbol
-(@pxref{Symbols}).  The variable name is simply the symbol's name, and
-the variable's value is stored in the symbol's value cell@footnote{To
-be precise, under the default @dfn{dynamic scoping} rule, the value
-cell always holds the variable's current value, but this is not the
-case under the @dfn{lexical scoping} rule.  @xref{Variable Scoping},
-for details.}.  @xref{Symbol Components}.  In Emacs Lisp, the use of a
-symbol as a variable is independent of its use as a function name.
+  @dfn{variable}是程序中用来表示值的名称。在Lisp中，每个变量都由Lisp符号表示（
+@pxref{Symbols}）。变量名称只是符号的名称，并且变量的值存储在符号的单元值中
+@footnote{确切地说，在默认的@dfn{dynamic scoping}规则下，该值单元格始终保存
+变量的当前值，但这不是@dfn{lexical scoping}规则下的情况。@xref{变量范围}，有
+关详细信息。}。@xref{符号组件}。在Emacs Lisp中，作为变量的符号与用作函数名称的
+符号无关。
 
-  As previously noted in this manual, a Lisp program is represented
-primarily by Lisp objects, and only secondarily as text.  The textual
-form of a Lisp program is given by the read syntax of the Lisp objects
-that constitute the program.  Hence, the textual form of a variable in
-a Lisp program is written using the read syntax for the symbol
-representing the variable.
+  如本手册先前所述，一个Lisp程序主要通过Lisp对象展现，唯一的其次是文本。文字形式的
+Lisp程序由Lisp对象的读取语法给出构成程序。因此，变量中的文本形式使用代表变量符号的
+读取语法编写Lisp程序。
 
 @menu
-* Global Variables::            Variable values that exist permanently, everywhere.
-* Constant Variables::          Variables that never change.
-* Local Variables::             Variable values that exist only temporarily.
-* Void Variables::              Symbols that lack values.
-* Defining Variables::          A definition says a symbol is used as a variable.
-* Tips for Defining::           Things you should think about when you
-                            define a variable.
-* Accessing Variables::         Examining values of variables whose names
-                            are known only at run time.
-* Setting Variables::           Storing new values in variables.
-* Watching Variables::          Running a function when a variable is changed.
-* Variable Scoping::            How Lisp chooses among local and global values.
-* Buffer-Local Variables::      Variable values in effect only in one buffer.
-* File Local Variables::        Handling local variable lists in files.
-* Directory Local Variables::   Local variables common to all files in a directory.
-* Connection Local Variables::  Local variables common for remote connections.
-* Variable Aliases::            Variables that are aliases for other variables.
-* Variables with Restricted Values::  Non-constant variables whose value can
-                                        @emph{not} be an arbitrary Lisp object.
-* Generalized Variables::       Extending the concept of variables.
+* 全局变量::            永久存在，到处有效的变量。
+* 常态变量::          不会改变的变量。
+* 局部变量::             仅仅暂时存在的变量。
+* 空变量::              没有值的符号。
+* 定义变量::          一个把符号作为变量使用的定义。
+* 定义变量的提示::           你定义变量时需要想到的事情。
+* 访问变量::         检查变量的只有运行的时候才有名字的变量的值。
+* 设置变量::           在变量里储存新值。
+* 观察变量::          当变量改变时运行函数。
+* 变量作用域::            Lisp如何在局部和全局变量里选择。
+* 缓冲区局部变量::      只在一个缓冲区内生效的变量值。
+* 文件局部变量::        处理作用于文件里的局部变量列表。
+* 文件夹局部变量::   作用于一个文件夹下所有文件的局部变量。
+* 连接局部变量::  作用于远程连接的局部变量。
+* 变量别名::            是别的变量别名的变量。
+* 限定值的变量::  值不能是任意Lisp对象的非常量变量。
+* 广义变量::       拓展变量的概念。
 @end menu
 
-@node Global Variables
-@section Global Variables
+@node 全局变量
+@section 全局变量
 @cindex global variable
 
-  The simplest way to use a variable is @dfn{globally}.  This means that
-the variable has just one value at a time, and this value is in effect
-(at least for the moment) throughout the Lisp system.  The value remains
-in effect until you specify a new one.  When a new value replaces the
-old one, no trace of the old value remains in the variable.
+  使用变量的最简单方法是@dfn{globally}。这意味着变量一次只有一个值，并且该值有效在
+整个Lisp系统中（至少目前）。直到您指定一个新的，它的值保持有效。当新值替换旧值，变量
+中不会保留任何旧值。
 
-  You specify a value for a symbol with @code{setq}.  For example,
+  您可以使用@code{setq}为符号指定一个值。 例如，
 
 @example
 (setq x '(a b))
 @end example
 
 @noindent
-gives the variable @code{x} the value @code{(a b)}.  Note that
-@code{setq} is a special form (@pxref{Special Forms}); it does not
-evaluate its first argument, the name of the variable, but it does
-evaluate the second argument, the new value.
+给变量@code{x}值@code{(a b)}。注意@code{setq}是一种特殊形式（
+@pxref{Special Forms}）；它不计算其第一个参数，变量的名称，但它会计算第二个参数，
+新值。
 
-  Once the variable has a value, you can refer to it by using the
-symbol itself as an expression.  Thus,
+  一旦变量具有值后，您可以使用符号本身作为一种表达式。从而，
 
 @example
 @group
@@ -78,10 +65,9 @@ x @result{} (a b)
 @end example
 
 @noindent
-assuming the @code{setq} form shown above has already been executed.
+假设上面显示的@code{setq}格式已经执行。
 
-  If you do set the same variable again, the new value replaces the old
-one:
+  如果您再次设置相同的变量，则新值将替换旧值：
 
 @example
 @group
@@ -98,8 +84,8 @@ x
 @end group
 @end example
 
-@node Constant Variables
-@section Variables that Never Change
+@node 常量
+@section 不会改变的变量
 @cindex @code{setting-constant} error
 @cindex keyword symbol
 @cindex variable with constant value
@@ -107,14 +93,11 @@ x
 @cindex symbol that evaluates to itself
 @cindex symbol with constant value
 
-  In Emacs Lisp, certain symbols normally evaluate to themselves.  These
-include @code{nil} and @code{t}, as well as any symbol whose name starts
-with @samp{:} (these are called @dfn{keywords}).  These symbols cannot
-be rebound, nor can their values be changed.  Any attempt to set or bind
-@code{nil} or @code{t} signals a @code{setting-constant} error.  The
-same is true for a keyword (a symbol whose name starts with @samp{:}),
-if it is interned in the standard obarray, except that setting such a
-symbol to itself is not an error.
+  在Emacs Lisp中，某些符号通常会计算到自身。这些包括@code{nil}和@code{t}，以及名
+称以@samp{:}开头的任何符号（称为@dfn{keywords}）。这些符号不能重新绑定，他们的值也
+不能改变。任何设置或绑定@code{nil}或@code{t}的尝试会报一个
+@code{setting-constant}错误。关键字（名称以@samp{:}开头的符号）也是如此，如果它
+被插入标准的obarray中，除非只有设置符号到它本身不是错误。
 
 @example
 @group
@@ -128,47 +111,36 @@ nil @equiv{} 'nil
 @end example
 
 @defun keywordp object
-function returns @code{t} if @var{object} is a symbol whose name
-starts with @samp{:}, interned in the standard obarray, and returns
-@code{nil} otherwise.
+如果@var{object}是名称以以@samp{:}开头的符号，则函数返回@code{t}，否则插入
+标准对象数组，然后返回@code{nil}。
 @end defun
 
-These constants are fundamentally different from the constants
-defined using the @code{defconst} special form (@pxref{Defining
-Variables}).  A @code{defconst} form serves to inform human readers
-that you do not intend to change the value of a variable, but Emacs
-does not raise an error if you actually change it.
+这些常数从根本上不同于使用@code{defconst}特殊形式（@pxref{定义变量}）的常数。
+一个@code{defconst}表单用于告知读者您不打算更改变量的值，而是如果您实际更改它
+，Emacs不会报错。
 
 @cindex read-only variables
-A small number of additional symbols are made read-only for various
-practical reasons.  These include @code{enable-multibyte-characters},
-@code{most-positive-fixnum}, @code{most-negative-fixnum}, and a few
-others.  Any attempt to set or bind these also signals a
-@code{setting-constant} error.
+少量的其他符号由于一些原因被设置为只读。其中包括
+@code{enable-multibyte-characters}，@code{most-positive-fixnum}，
+@code{most-negative-fixnum}和其他一些。尝试设置或绑定这些变量也会报
+@code{setting-constant}错误。
 
-@node Local Variables
-@section Local Variables
+@node 局部变量
+@section 局部变量
 @cindex binding local variables
 @cindex local variables
 @cindex local binding
 @cindex global binding
 
-  Global variables have values that last until explicitly superseded
-with new values.  Sometimes it is useful to give a variable a
-@dfn{local value}---a value that takes effect only within a certain
-part of a Lisp program.  When a variable has a local value, we say
-that it is @dfn{locally bound} to that value, and that it is a
-@dfn{local variable}.
+  全局变量的值一直持续到被新值显式取代为止。有时给变量一个@dfn{局部值}---仅在特定
+Lisp程序的一部分范围内有效的值。当变量具有局部值时，我们说它是
+@dfn{locally bound}到该值，并且它是一个@dfn{局部变量}。
 
-  For example, when a function is called, its argument variables
-receive local values, which are the actual arguments supplied to the
-function call; these local bindings take effect within the body of the
-function.  To take another example, the @code{let} special form
-explicitly establishes local bindings for specific variables, which
-take effect only within the body of the @code{let} form.
+  例如，当一个函数被调用时，它的参数变量接收局部值，这是提供给函数调用的实际参数。 这
+些局部绑定在函数体内生效。 再举一个例子，@code{let}特殊形式为特定变量显式建立本地
+绑定，这些绑定仅在@code{let}形式的主体内生效。
 
-  We also speak of the @dfn{global binding}, which is where
-(conceptually) the global value is kept.
+   我们也说在@dfn{global binding}这里是（从概念上）全局值保留的地方。
 
 @cindex shadowing of variables
   Establishing a local binding saves away the variable's previous

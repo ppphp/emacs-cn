@@ -3,100 +3,77 @@
 @c Copyright (C) 1990--1995, 1998--1999, 2001--2020 Free Software
 @c Foundation, Inc.
 @c See the file elisp.texi for copying conditions.
-@node Buffers
+@node 缓冲区
 @chapter Buffers
 @cindex buffer
 
-  A @dfn{buffer} is a Lisp object containing text to be edited.  Buffers
-are used to hold the contents of files that are being visited; there may
-also be buffers that are not visiting files.  While several buffers may
-exist at one time, only one buffer is designated the @dfn{current
-buffer} at any time.  Most editing commands act on the contents of the
-current buffer.  Each buffer, including the current buffer, may or may
-not be displayed in any windows.
+  一个@dfn{buffer}是一个包含要编辑的文本的Lisp对象。缓冲区用来保存正在访问
+的文件的内容，也可能存在不访问文件的缓冲区。虽然在同一时间可能存在多个缓冲区
+，但在任何时候只有一个缓冲区被指定为@dfn{current buffer}。大多数编辑命令都
+会对当前缓冲区的内容进行操作。每一个缓冲区，包括当前缓冲区，可以在任何窗口中
+显示，也可以不显示。
 
 @menu
-* Buffer Basics::       What is a buffer?
-* Current Buffer::      Designating a buffer as current
-                          so that primitives will access its contents.
-* Buffer Names::        Accessing and changing buffer names.
-* Buffer File Name::    The buffer file name indicates which file is visited.
-* Buffer Modification:: A buffer is @dfn{modified} if it needs to be saved.
-* Modification Time::   Determining whether the visited file was changed
-                         behind Emacs's back.
-* Read Only Buffers::   Modifying text is not allowed in a read-only buffer.
-* Buffer List::         How to look at all the existing buffers.
-* Creating Buffers::    Functions that create buffers.
-* Killing Buffers::     Buffers exist until explicitly killed.
-* Indirect Buffers::    An indirect buffer shares text with some other buffer.
-* Swapping Text::       Swapping text between two buffers.
-* Buffer Gap::          The gap in the buffer.
+* 缓冲区基础::   什么是缓冲区？
+* 当前缓冲区::   指定缓冲区为当前缓冲区以便原语能够访问其内容。
+* 缓冲区名称::   访问和更改缓冲区名称。
+* 缓冲区文件名:: 指示被缓冲区访问的文件的文件名。
+* 缓冲区修改::   如果需要保存缓冲区，则是@dfn{modified}的。
+* 修改时间::    判断被访问的文件是否在Emacs之外被修改。
+* 只读缓冲区::  只读缓冲区中不允许修改文本。
+* 缓冲区列表::  如何查看所有现有的缓冲区。
+* 创建缓冲区::  创建缓冲区的函数。
+* 杀死缓冲区::  缓冲区一直存在，直到被明确杀死。
+* 间接缓冲区::  间接缓冲区与其他缓冲区共享文本。
+* 交换文本::    在两个缓冲区之间交换文本。
+* 缓冲区间隙::  缓冲区的间隙。
 @end menu
 
-@node Buffer Basics
+@node 缓冲区基础
 @section Buffer Basics
 
 @ifnottex
-  A @dfn{buffer} is a Lisp object containing text to be edited.  Buffers
-are used to hold the contents of files that are being visited; there may
-also be buffers that are not visiting files.  Although several buffers
-normally exist, only one buffer is designated the @dfn{current
-buffer} at any time.  Most editing commands act on the contents of the
-current buffer.  Each buffer, including the current buffer, may or may
-not be displayed in any windows.
+  一个@dfn{buffer}是一个包含要编辑的文本的Lisp对象。缓冲区用来保存正在访问
+的文件的内容，也可能存在不访问文件的缓冲区。虽然通常存在多个缓冲区，但无论何
+时只有一个缓冲区会指定为@dfn{current buffer}。大多数编辑命令都是在当前缓冲
+区的内容上执行。每一个缓冲区，包括当前缓冲区，可以也可以不显示在任意一个窗口
+中。
 @end ifnottex
 
-  Buffers in Emacs editing are objects that have distinct names and hold
-text that can be edited.  Buffers appear to Lisp programs as a special
-data type.  You can think of the contents of a buffer as a string that
-you can extend; insertions and deletions may occur in any part of the
-buffer.  @xref{Text}.
+  Emacs编辑中的缓冲区是指具有独一无二名称的对象，存放着可以编辑的文本。在
+Lisp程序中，缓冲区是作为一种特殊的数据类型出现的。你可以把缓冲区的内容看作是一个可以扩展的字符串；在缓冲区的任何部分都可以进行插入和删除。@xref{Text}。
 
-  A Lisp buffer object contains numerous pieces of information.  Some of
-this information is directly accessible to the programmer through
-variables, while other information is accessible only through
-special-purpose functions.  For example, the visited file name is
-directly accessible through a variable, while the value of point is
-accessible only through a primitive function.
+  一个Lisp缓冲区对象包含了许多信息。其中一些信息可以通过变量被程序员直接访
+问，而另一些信息只能通过特殊用途的函数来访问。例如，被访问的文件名可以通过变
+量直接访问，而点的值只能通过一个原语函数访问。
 
-  Buffer-specific information that is directly accessible is stored in
-@dfn{buffer-local} variable bindings, which are variable values that are
-effective only in a particular buffer.  This feature allows each buffer
-to override the values of certain variables.  Most major modes override
-variables such as @code{fill-column} or @code{comment-column} in this
-way.  For more information about buffer-local variables and functions
-related to them, see @ref{Buffer-Local Variables}.
+  可以直接访问的特定缓冲区信息存储在@dfn{buffer-local}变量绑定中，这些变量
+值只在特定缓冲区中有效。这个功能允许每个缓冲区覆盖某些变量的值。大多数主要模式都以这种方式覆盖了@code{fill-column}或@code{comment-column}等变量。关于缓冲区局部变量和相关函数的更多信息，参见@ref{缓冲区局部变量}。
 
-  For functions and variables related to visiting files in buffers, see
-@ref{Visiting Files} and @ref{Saving Buffers}.  For functions and
-variables related to the display of buffers in windows, see
-@ref{Buffers and Windows}.
+  有关访问缓冲区中文件的函数和变量，参见@ref{Visiting Files}和
+@ref{Saving Buffers}。有关在窗口中显示缓冲区的函数和变量，请参见
+@ref{缓冲区和窗口}。
 
 @defun bufferp object
-This function returns @code{t} if @var{object} is a buffer,
-@code{nil} otherwise.
+如果@var{object}是缓冲区返回@code{t}，否则返回@code{nil}。
 @end defun
 
-@node Current Buffer
+@node 当前缓冲区
 @section The Current Buffer
 @cindex selecting a buffer
 @cindex changing to another buffer
 @cindex current buffer
 
-  There are, in general, many buffers in an Emacs session.  At any
-time, one of them is designated the @dfn{current buffer}---the buffer
-in which most editing takes place.  Most of the primitives for
-examining or changing text operate implicitly on the current buffer
-(@pxref{Text}).
+  一般来说，Emacs 会话中有很多缓冲区。在任何时候，其中的一个缓冲区被指定为
+@dfn{current buffer}--也就是进行大部分编辑的缓冲区。大多数用于检查或更改
+文本的原语都是在当前缓冲区(@pxref{Text})上隐式操作的。
 
-  Normally, the buffer displayed in the selected window is the current
-buffer, but this is not always so: a Lisp program can temporarily
-designate any buffer as current in order to operate on its contents,
-without changing what is displayed on the screen.  The most basic
-function for designating a current buffer is @code{set-buffer}.
+  通常情况下，所选窗口中显示的缓冲区是当前缓冲区，但并非总是如此：Lisp程序
+可以临时指定任何缓冲区为当前缓冲区，以便对其内容进行操作，而不改变屏幕上显示
+的内容。指定当前缓冲区的最基本功能是@code{set-buffer}。
 
 @defun current-buffer
-This function returns the current buffer.
+这个函数返回当前缓冲区。
 
 @example
 @group
@@ -107,34 +84,27 @@ This function returns the current buffer.
 @end defun
 
 @defun set-buffer buffer-or-name
-This function makes @var{buffer-or-name} the current buffer.
-@var{buffer-or-name} must be an existing buffer or the name of an
-existing buffer.  The return value is the buffer made current.
+这个函数使@var{buffer-or-name}成为当前缓冲区。@var{buffer-or-name}必须是
+一个现有的缓冲区，或者是一个现有缓冲区的名称。返回值是当前缓冲区的值。
 
-This function does not display the buffer in any window, so the user
-cannot necessarily see the buffer.  But Lisp programs will now operate
-on it.
+这个函数不会在任何窗口中显示缓冲区，所以用户不一定能看到缓冲区。
+但现在Lisp程序将对它进行操作。
 @end defun
 
-  When an editing command returns to the editor command loop, Emacs
-automatically calls @code{set-buffer} on the buffer shown in the
-selected window.  This is to prevent confusion: it ensures that the
-buffer that the cursor is in, when Emacs reads a command, is the
-buffer to which that command applies (@pxref{Command Loop}).  Thus,
-you should not use @code{set-buffer} to switch visibly to a different
-buffer; for that, use the functions described in @ref{Switching
-Buffers}.
+  当一个编辑命令返回到编辑器命令循环时，Emacs会自动调用@code{set-buffer}在所
+选窗口中显示的缓冲区上。这是为了防止迷惑：它确保当Emacs读取一条命令时，光标
+所在的缓冲区就是该命令适用的缓冲区（@pxref{Command Loop}）。因此，您不应该
+使用@code{set-buffer}来明显地切换到不同的缓冲区；为此，请使用
+@ref{切换缓冲区}中描述的函数。
 
-  When writing a Lisp function, do @emph{not} rely on this behavior of
-the command loop to restore the current buffer after an operation.
-Editing commands can also be called as Lisp functions by other
-programs, not just from the command loop; it is convenient for the
-caller if the subroutine does not change which buffer is current
-(unless, of course, that is the subroutine's purpose).
+  在编写Lisp函数时，请@emph{not}依赖命令循环的这种行为以便操作后恢复当前缓冲
+区。编辑命令也可以被其他程序作为Lisp函数调用，而不仅仅是从命令循环中调用；如
+果子程序不改变当前是哪个缓冲区，对调用者来说是很方便的（当然，除非这就是子程
+序的目的）。
 
-  To operate temporarily on another buffer, put the @code{set-buffer}
-within a @code{save-current-buffer} form.  Here, as an example, is a
-simplified version of the command @code{append-to-buffer}:
+  如果要临时对另一个缓冲区进行操作，可以把@code{set-buffer}放在
+@code{save-current-buffer}形式中。这里有一个例子，是命令
+@code{append-to-buffer}的简化版本。
 
 @example
 @group
@@ -149,13 +119,13 @@ simplified version of the command @code{append-to-buffer}:
 @end example
 
 @noindent
-Here, we bind a local variable to record the current buffer, and then
-@code{save-current-buffer} arranges to make it current again later.
-Next, @code{set-buffer} makes the specified buffer current, and
-@code{insert-buffer-substring} copies the string from the original
-buffer to the specified (and now current) buffer.
+这里，我们绑定了一个本地变量来记录当前的缓冲区，然后
+@code{save-current-buffer}安排它在以后再次成为当前的缓冲区。接下来，
+@code{set-buffer}使指定的缓冲区成为当前缓冲区，
+@code{insert-buffer-substring}将字符串从原始缓冲区复制到指定的（现在是当前
+）缓冲区。
 
-  Alternatively, we can use the @code{with-current-buffer} macro:
+  另一种方法是，我们也可以使用@code{with-current-buffer}宏。
 
 @example
 @group
@@ -168,22 +138,16 @@ buffer to the specified (and now current) buffer.
 @end group
 @end example
 
-  In either case, if the buffer appended to happens to be displayed in
-some window, the next redisplay will show how its text has changed.
-If it is not displayed in any window, you will not see the change
-immediately on the screen.  The command causes the buffer to become
-current temporarily, but does not cause it to be displayed.
+  在这两种情况下，如果附加到的缓冲区恰好显示在某个窗口中，下一次重新显示将显
+示其文本的变化情况。如果它没有在任何窗口中显示，你不会立即在屏幕上看到变化。
+该命令会使缓冲区暂时成为当前状态，但不会使其显示。
 
-  If you make local bindings (with @code{let} or function arguments)
-for a variable that may also have buffer-local bindings, make sure
-that the same buffer is current at the beginning and at the end of the
-local binding's scope.  Otherwise you might bind it in one buffer and
-unbind it in another!
+  如果您为一个变量做了本地绑定（使用@code{let}或函数参数），而这个变量可能
+也有缓冲区本地绑定，请确保在本地绑定的作用域的开始和结束时，当前缓冲区是同一个。 否则你可能在一个缓冲区中绑定了它，而在另一个缓冲区中取消了绑定。
 
-  Do not rely on using @code{set-buffer} to change the current buffer
-back, because that won't do the job if a quit happens while the wrong
-buffer is current.  For instance, in the previous example, it would
-have been wrong to do this:
+  不要依赖使用@code{set-buffer}将当前的缓冲区改回来，因为如果在错误的缓冲区
+处于当前状态时发生了退出，那将无法完成任务。例如，在前面的例子中，这样做是错
+误的：
 
 @example
 @group
@@ -195,81 +159,69 @@ have been wrong to do this:
 @end example
 
 @noindent
-Using @code{save-current-buffer} or @code{with-current-buffer}, as we
-did, correctly handles quitting, errors, and @code{throw}, as well as
-ordinary evaluation.
+使用@code{save-current-buffer}或@code{with-current-buffer}，就像我们所做
+的那样，正确地处理了退出、错误和 @code{throw}，以及普通的求值。
 
 @defspec save-current-buffer body@dots{}
-The @code{save-current-buffer} special form saves the identity of the
-current buffer, evaluates the @var{body} forms, and finally restores
-that buffer as current.  The return value is the value of the last
-form in @var{body}.  The current buffer is restored even in case of an
-abnormal exit via @code{throw} or error (@pxref{Nonlocal Exits}).
+@code{save-current-buffer}特殊表单保存当前缓冲区的标识，求值@var{body}表单
+，最后将该缓冲区恢复为当前状态。返回值是@var{body}中最后一个表单的值。即使
+在通过@code{throw}或错误(@pxref{Nonlocal Exits})异常退出的情况下，也会恢
+复当前缓冲区。
 
-If the buffer that used to be current has been killed by the time of
-exit from @code{save-current-buffer}, then it is not made current again,
-of course.  Instead, whichever buffer was current just before exit
-remains current.
+如果在@code{save-current-buffer}退出时，曾经是当前的缓冲区已经被杀死了，那
+么它当然不会再次成为当前缓冲区。相反，在退出前处于当前状态的缓冲区将保持当前
+状态。
 @end defspec
 
 @defmac with-current-buffer buffer-or-name body@dots{}
-The @code{with-current-buffer} macro saves the identity of the current
-buffer, makes @var{buffer-or-name} current, evaluates the @var{body}
-forms, and finally restores the current buffer.  @var{buffer-or-name}
-must specify an existing buffer or the name of an existing buffer.
+@code{with-current-buffer}宏保存当前缓冲区的标识，使@var{buffer-or-name}
+成为当前缓冲区，评估@var{body}形式，最后恢复当前缓冲区。
+@var{buffer-or-name}必须指定一个现有的缓冲区或一个现有缓冲区的名称。
 
-The return value is the value of the last form in @var{body}.  The
-current buffer is restored even in case of an abnormal exit via
-@code{throw} or error (@pxref{Nonlocal Exits}).
+返回值是@var{body}中最后一个表单的值。即使在通过@code{throw}异常退出或出错
+（@pxref{Nonlocal Exits}）的情况下，也会恢复当前缓冲区。
+
 @end defmac
 
 @defmac with-temp-buffer body@dots{}
 @anchor{Definition of with-temp-buffer}
-The @code{with-temp-buffer} macro evaluates the @var{body} forms
-with a temporary buffer as the current buffer.  It saves the identity of
-the current buffer, creates a temporary buffer and makes it current,
-evaluates the @var{body} forms, and finally restores the previous
-current buffer while killing the temporary buffer.  By default, undo
-information (@pxref{Undo}) is not recorded in the buffer created by
-this macro (but @var{body} can enable that, if needed).
+@code{with-temp-buffer}宏以临时缓冲区作为当前缓冲区求值@var{body}表单。
+它保存当前缓冲区的标识，创建一个临时缓冲区并使其成为当前缓冲区，求值
+@var{body}表单，最后恢复之前的当前缓冲区，同时杀死临时缓冲区。默认情况下，
+撤消信息（@pxref{Undo}）不会记录在这个宏创建的缓冲区中（但如果需要，
+@var{body}可以启用）。
 
-The return value is the value of the last form in @var{body}.  You can
-return the contents of the temporary buffer by using
-@code{(buffer-string)} as the last form.
+返回值是@var{body}中最后一个表格的值。您可以使用@code{(buffer-string)}作为
+最后的表单来返回临时缓冲区的内容。
 
-The current buffer is restored even in case of an abnormal exit via
-@code{throw} or error (@pxref{Nonlocal Exits}).
+即使在通过@code{throw}异常退出或出错（
+@pxref{Nonlocal Exits}）的情况下，当前缓冲区也会被恢复。
 
-See also @code{with-temp-file} in @ref{Definition of with-temp-file,,
-Writing to Files}.
+也请参见@ref{Definition of with-temp-file,,Writeing to Files}中的
+@code{with-temp-file}。
 @end defmac
 
-@node Buffer Names
+@node 缓冲区名称
 @section Buffer Names
 @cindex buffer names
 
-  Each buffer has a unique name, which is a string.  Many of the
-functions that work on buffers accept either a buffer or a buffer name
-as an argument.  Any argument called @var{buffer-or-name} is of this
-sort, and an error is signaled if it is neither a string nor a buffer.
-Any argument called @var{buffer} must be an actual buffer
-object, not a name.
+  每个缓冲区都有一个独特的名称，是一个字符串。许多在缓冲区上工作的函数都接受一个缓冲
+区或缓冲区名作为参数。任何调用@var{buffer-or-name}的参数都是这种类型，如果它既不
+是字符串也不是缓冲区，则会发出错误信号。任何调用@var{buffer}的参数必须是一个实际的
+缓冲区对象，而不是一个名称。
 
 @cindex hidden buffers
 @cindex buffers without undo information
-  Buffers that are ephemeral and generally uninteresting to the user
-have names starting with a space, so that the @code{list-buffers} and
-@code{buffer-menu} commands don't mention them (but if such a buffer
-visits a file, it @strong{is} mentioned).  A name starting with
-space also initially disables recording undo information; see
-@ref{Undo}.
+  短暂的，通常用户对它不感兴趣的缓冲区，其名称以空格开头，因此@code{list-buffers}
+和@code{buffer-menu}命令不会提及它们（但如果这样的缓冲区访问一个文件，它就会
+@strong{is}提及）。以空格开头的名字也会在一开始就禁止记录撤销信息；参见@ref{Undo}
+。
 
 @defun buffer-name &optional buffer
-This function returns the name of @var{buffer} as a string.
-@var{buffer} defaults to the current buffer.
+本函数以字符串形式返回@var{buffer}的名称。@var{buffer}默认为当前的缓冲区。
 
-If @code{buffer-name} returns @code{nil}, it means that @var{buffer}
-has been killed.  @xref{Killing Buffers}.
+如果@code{buffer-name}返回@code{nil}，表示@var{buffer}已经被杀死。
+@xref{Killing Buffers}。
 
 @example
 @group
@@ -297,25 +249,23 @@ foo
 @end defun
 
 @deffn Command rename-buffer newname &optional unique
-This function renames the current buffer to @var{newname}.  An error
-is signaled if @var{newname} is not a string.
+此函数将当前缓冲区重命名为@var{newname}。如果@var{newname}不是一个字符串，则会发
+出错误信号。
 
 @c Emacs 19 feature
-Ordinarily, @code{rename-buffer} signals an error if @var{newname} is
-already in use.  However, if @var{unique} is non-@code{nil}, it modifies
-@var{newname} to make a name that is not in use.  Interactively, you can
-make @var{unique} non-@code{nil} with a numeric prefix argument.
-(This is how the command @code{rename-uniquely} is implemented.)
+通常，如果@var{newname}已经被使用，@code{rename-buffer}会发出错误信号。但是，
+如果@var{unique}是非@code{nil}，它就会修改@var{newname}，使其成为一个未使用的
+名字。您可以通过一个数字前缀参数使 @var{unique}非@code{nil}。这就是
+@code{rename-unique}命令的实现方式）。
 
-This function returns the name actually given to the buffer.
+这个函数返回实际赋予缓冲区的名称。
 @end deffn
 
 @defun get-buffer buffer-or-name
-This function returns the buffer specified by @var{buffer-or-name}.
-If @var{buffer-or-name} is a string and there is no buffer with that
-name, the value is @code{nil}.  If @var{buffer-or-name} is a buffer, it
-is returned as given; that is not very useful, so the argument is usually
-a name.  For example:
+本函数返回由@var{buffer-or-name}指定的缓冲区。如果@var{buffer-or-name}是一个
+字符串，并且没有同名的缓冲区，那么返回的值是@code{nil}。如果
+@var{buffer-or-name}是一个缓冲区，则返回输入；这不是很有用，所以参数通常是一个名
+称。例如：
 
 @example
 @group
@@ -332,23 +282,18 @@ a name.  For example:
 @end group
 @end example
 
-See also the function @code{get-buffer-create} in @ref{Creating Buffers}.
+也请参见@ref{创建缓冲区}中的函数@code{get-buffer-create}。
 @end defun
 
 @c Emacs 19 feature
 @defun generate-new-buffer-name starting-name &optional ignore
-This function returns a name that would be unique for a new buffer---but
-does not create the buffer.  It starts with @var{starting-name}, and
-produces a name not currently in use for any buffer by appending a
-number inside of @samp{<@dots{}>}.  It starts at 2 and keeps
-incrementing the number until it is not the name of an existing buffer.
+这个函数返回一个新的缓冲区的唯一名称--但并不创建缓冲区。它从@var{starting-name}开
+始，通过在@samp{<@dots{}>}内添加一个数字来产生一个当前没有使用的缓冲区名称。它从2
+开始，并不断递增数字，直到它不是现有缓冲区的名称。
 
-If the optional second argument @var{ignore} is non-@code{nil}, it
-should be a string, a potential buffer name.  It means to consider
-that potential buffer acceptable, if it is tried, even it is the name
-of an existing buffer (which would normally be rejected).  Thus, if
-buffers named @samp{foo}, @samp{foo<2>}, @samp{foo<3>} and
-@samp{foo<4>} exist,
+如果可选的第二个参数@var{ignore}是非@code{nil}，它应该是一个字符串，一个潜在的缓
+冲区名称。它的意思是，如果尝试了这个潜在的缓冲区，即使它是一个现有缓冲区的名称（通常会
+被拒绝），也会认为它是可以接受的。因此，如果存在名为@samp{foo}、@samp{foo<2>}、@samp{foo<3>}和@samp{foo<4>}的缓冲区。
 
 @example
 (generate-new-buffer-name "foo")
@@ -359,28 +304,24 @@ buffers named @samp{foo}, @samp{foo<2>}, @samp{foo<3>} and
      @result{} "foo<5>"
 @end example
 
-See the related function @code{generate-new-buffer} in @ref{Creating
-Buffers}.
+参见@ref{创建缓冲区}中的相关函数@code{generate-new-buffer}。
 @end defun
 
-@node Buffer File Name
+@node 缓冲区文件名
 @section Buffer File Name
 @cindex visited file
 @cindex buffer file name
 @cindex file name of buffer
 
-  The @dfn{buffer file name} is the name of the file that is visited in
-that buffer.  When a buffer is not visiting a file, its buffer file name
-is @code{nil}.  Most of the time, the buffer name is the same as the
-nondirectory part of the buffer file name, but the buffer file name and
-the buffer name are distinct and can be set independently.
+  @dfn{buffer file name}是该缓冲区中被访问的文件名。当一个缓冲区不访问某个文件
+时，它的缓冲区文件名是@code{nil}。大多数情况下，缓冲区文件名与缓冲区文件名的非目录
+部分是一样的，但缓冲区文件名和缓冲区名称是不同的，可以独立设置。
 @xref{Visiting Files}.
 
 @defun buffer-file-name &optional buffer
-This function returns the absolute file name of the file that
-@var{buffer} is visiting.  If @var{buffer} is not visiting any file,
-@code{buffer-file-name} returns @code{nil}.  If @var{buffer} is not
-supplied, it defaults to the current buffer.
+这个函数返回@var{buffer}正在访问的文件的绝对文件名。如果@var{buffer}没有访问任何
+文件，那么@code{buffer-file-name}返回@code{nil}。如果没有提供@var{buffer}，
+则默认为当前的缓冲区。
 
 @example
 @group
@@ -391,10 +332,9 @@ supplied, it defaults to the current buffer.
 @end defun
 
 @defvar buffer-file-name
-This buffer-local variable contains the name of the file being visited
-in the current buffer, or @code{nil} if it is not visiting a file.  It
-is a permanent local variable, unaffected by
-@code{kill-all-local-variables}.
+这个缓冲区本地变量包含了当前缓冲区中被访问的文件名，如果没有访问文件的话，则包含
+@code{nil}。它是一个永久的局部变量，不受@code{kill-all-local-variables}影响
+。
 
 @example
 @group
@@ -403,45 +343,35 @@ buffer-file-name
 @end group
 @end example
 
-It is risky to change this variable's value without doing various other
-things.  Normally it is better to use @code{set-visited-file-name} (see
-below); some of the things done there, such as changing the buffer name,
-are not strictly necessary, but others are essential to avoid confusing
-Emacs.
+在不做其他各种事情的情况下改变这个变量的值是有风险的。通常最好使用
+@code{set-visited-file-name}(见下文)；在那里做的一些事情，比如改变缓冲区的名称
+，严格来说并不是必须的，但其他的事情对于避免Emacs的混乱是必不可少的。
 @end defvar
 
 @defvar buffer-file-truename
-This buffer-local variable holds the abbreviated truename of the file
-visited in the current buffer, or @code{nil} if no file is visited.
-It is a permanent local, unaffected by
-@code{kill-all-local-variables}.  @xref{Truenames}, and
-@ref{abbreviate-file-name}.
+这个缓冲区本地变量保存了当前缓冲区中被访问的缩写文件名，如果没有文件被访问，则保存
+@code{nil}。它是一个永久的局部变量，不受@code{kill-all-local-variables}
+的影响。 @xref{Truenames}, 和 @ref{abbreviate-file-name}.
 @end defvar
 
 @defvar buffer-file-number
-This buffer-local variable holds the file number and directory device
-number of the file visited in the current buffer, or @code{nil} if no
-file or a nonexistent file is visited.  It is a permanent local,
-unaffected by @code{kill-all-local-variables}.
+这个缓冲区本地变量保存了当前缓冲区中被访问的文件的文件号和目录设备号，如果没有文件或者
+访问了不存在的文件，则保存@code{nil}，它是一个永久的局部变量，不受
+@code{kill-all-local-variables}影响。
 
-The value is normally a list of the form @code{(@var{filenum}
-@var{devnum})}.  This pair of numbers uniquely identifies the file among
-all files accessible on the system.  See the function
-@code{file-attributes}, in @ref{File Attributes}, for more information
-about them.
+这个值通常是一个形式为@code{(@var{filenum} @var{devnum})}的列表。这对数字在系
+统上所有可访问的文件中唯一地标识该文件。参见，在 @ref{File Attributes}中的函数
+@code{file-attributes}，了解更多关于它们的信息。
 
-If @code{buffer-file-name} is the name of a symbolic link, then both
-numbers refer to the recursive target.
+如果@code{buffer-file-name}是一个符号链接的名称，那么这两个数字都指的是递归目标。
 @end defvar
 
 @defun get-file-buffer filename
-This function returns the buffer visiting file @var{filename}.  If
-there is no such buffer, it returns @code{nil}.  The argument
-@var{filename}, which must be a string, is expanded (@pxref{File Name
-Expansion}), then compared against the visited file names of all live
-buffers.  Note that the buffer's @code{buffer-file-name} must match
-the expansion of @var{filename} exactly.  This function will not
-recognize other names for the same file.
+该函数返回访问文件@var{filename}的缓冲区，如果没有缓冲区，则返回@code{nil}。如果
+没有这样的缓冲区，则返回@code{nil}。参数@var{filename}必须是一个字符串，它会被展
+开（@pxref{File Name Expansion}），然后与所有实时缓冲区的访问文件名进行比较。注
+意，缓冲区的@code{buffer-file-name}必须与@var{filename}的扩展名完全匹配。这个
+函数不会识别同一文件的其他名称。
 
 @example
 @group
@@ -450,102 +380,80 @@ recognize other names for the same file.
 @end group
 @end example
 
-In unusual circumstances, there can be more than one buffer visiting
-the same file name.  In such cases, this function returns the first
-such buffer in the buffer list.
+在不寻常的情况下，可能会有多个缓冲区访问同一个文件名，在这种情况下，本函数返回缓冲区列
+表中的第一个缓冲区。
 @end defun
 
 @defun find-buffer-visiting filename &optional predicate
-This is like @code{get-file-buffer}, except that it can return any
-buffer visiting the file @emph{possibly under a different name}.  That
-is, the buffer's @code{buffer-file-name} does not need to match the
-expansion of @var{filename} exactly, it only needs to refer to the
-same file.  If @var{predicate} is non-@code{nil}, it should be a
-function of one argument, a buffer visiting @var{filename}.  The
-buffer is only considered a suitable return value if @var{predicate}
-returns non-@code{nil}.  If it can not find a suitable buffer to
-return, @code{find-buffer-visiting} returns @code{nil}.
+这和@code{get-file-buffer}类似，只是它可以返回访问文件@emph{可能用不同的名字}的
+任何缓冲区。也就是说，缓冲区的@code{buffer-file-name}不需要与@var{filename}的
+扩展名完全匹配，它只需要引用同一个文件。如果@var{predicate}是非@code{nil}，它应该是函数，其中只有一个参数，是访问@var{filename}的缓冲区。只有当@var{predicate}
+返回非@code{nil}时，缓冲区才被认为是一个合适的返回值。如果找不到合适的缓冲区来返回
+，@code{find-buffer-visiting}返回@code{nil}。
 @end defun
 
 @deffn Command set-visited-file-name filename &optional no-query along-with-file
-If @var{filename} is a non-empty string, this function changes the
-name of the file visited in the current buffer to @var{filename}.  (If the
-buffer had no visited file, this gives it one.)  The @emph{next time}
-the buffer is saved it will go in the newly-specified file.
+如果@var{filename}是一个非空字符串，这个函数将当前缓冲区中被访问的文件名改为
+@var{filename}。(如果缓冲区没有被访问过的文件，则给它一个。)
+@emph{next time}保存缓冲区时，它将被放在新指定的文件中。
 
-This command marks the buffer as modified, since it does not (as far
-as Emacs knows) match the contents of @var{filename}, even if it
-matched the former visited file.  It also renames the buffer to
-correspond to the new file name, unless the new name is already in
-use.
+这条命令将缓冲区标记为已修改，因为它与@var{filename}的内容不匹配(据Emacs所知)，即
+使它与以前访问过的文件符合。它也会重新命名缓冲区以对应新的文件名，除非新的文件名已经被
+使用。
 
-If @var{filename} is @code{nil} or the empty string, that stands for
-``no visited file''.  In this case, @code{set-visited-file-name} marks
-the buffer as having no visited file, without changing the buffer's
-modified flag.
+如果@var{filename}是@code{nil}或空字符串，则代表"no visited file"。在这种情
+况下，@code{set-visited-file-name}将缓冲区标记为没有访问过的文件，而不会改变缓
+冲区的修改标志。
 
-Normally, this function asks the user for confirmation if there
-already is a buffer visiting @var{filename}.  If @var{no-query} is
-non-@code{nil}, that prevents asking this question.  If there already
-is a buffer visiting @var{filename}, and the user confirms or
-@var{no-query} is non-@code{nil}, this function makes the new
-buffer name unique by appending a number inside of @samp{<@dots{}>} to
-@var{filename}.
+通常情况下，这个函数会要求用户确认是否已经有一个缓冲区在访问@var{filename}。如果
+@var{no-query}是非@code{nil}，则无法询问这个问题。如果已经有一个缓冲区访问
+@var{filename}，并且用户进行了确认，或者@var{no-query}是非@code{nil}，那么这
+个函数通过在@samp{<@dots{}>}里面添加一个数字到@var{filename}中，使新的缓冲区名
+称变得独一无二。
 
-If @var{along-with-file} is non-@code{nil}, that means to assume that
-the former visited file has been renamed to @var{filename}.  In this
-case, the command does not change the buffer's modified flag, nor the
-buffer's recorded last file modification time as reported by
-@code{visited-file-modtime} (@pxref{Modification Time}).  If
-@var{along-with-file} is @code{nil}, this function clears the recorded
-last file modification time, after which @code{visited-file-modtime}
-returns zero.
+如果@var{along-with-file}是非@code{nil}，则意味着假设以前访问过的文件已经重命名
+为@var{filename}。在这种情况下，命令不会改变缓冲区的修改标志，也不会改变由
+@code{visited-file-modtime}报告的缓冲区最后一次修改文件的时间。(
+@pxref{Modification Time})。如果@var{along-with-file}为@code{nil}，则该
+函数将清除记录的最后一次文件修改时间，之后@code{visited-file-modtime}返回0。
 
-When the function @code{set-visited-file-name} is called
-interactively, it prompts for @var{filename} in the minibuffer.
+当交互式调用函数@code{set-visited-file-name}时，它在minibuffer中会提示
+@var{filename}。
+
 @end deffn
 
 @defvar list-buffers-directory
-This buffer-local variable specifies a string to display in a buffer
-listing where the visited file name would go, for buffers that don't
-have a visited file name.  Dired buffers use this variable.
+这个缓冲区本地变量对于没有被访问的文件名的缓冲区指定了一个字符串，用于在缓冲区列表中显
+示被访问的文件名。Dired缓冲区使用这个变量。
 @end defvar
 
-@node Buffer Modification
+@node 缓冲区修改
 @section Buffer Modification
 @cindex buffer modification
 @cindex modification flag (of buffer)
 
-  Emacs keeps a flag called the @dfn{modified flag} for each buffer, to
-record whether you have changed the text of the buffer.  This flag is
-set to @code{t} whenever you alter the contents of the buffer, and
-cleared to @code{nil} when you save it.  Thus, the flag shows whether
-there are unsaved changes.  The flag value is normally shown in the mode
-line (@pxref{Mode Line Variables}), and controls saving (@pxref{Saving
-Buffers}) and auto-saving (@pxref{Auto-Saving}).
+  Emacs 为每个缓冲区保留了一个名为@dfn{modified flag}的标志，以记录你是否修改了
+缓冲区的文本。每当你修改缓冲区的内容时，这个标志就会被设置为@code{t}，而当你保存缓冲
+区时，这个标志就会被清空为@code{nil}。因此，该标志显示是否有未保存的修改。该标志值
+通常显示在模式行中（@pxref{Mode Line Variables}），并控制保存（
+@pxref{Saving Buffers}）和自动保存（@pxref{Auto-Saving}）。
 
-  Some Lisp programs set the flag explicitly.  For example, the function
-@code{set-visited-file-name} sets the flag to @code{t}, because the text
-does not match the newly-visited file, even if it is unchanged from the
-file formerly visited.
+  有些Lisp程序会显式地设置标志。例如，函数@code{set-visited-file-name}将标志设
+置为@code{t}，因为文本与新访问的文件不匹配，即使它与以前访问的文件没有变化。
 
-  The functions that modify the contents of buffers are described in
-@ref{Text}.
+  修改缓冲区内容的函数在@ref{Text}中描述。
 
 @defun buffer-modified-p &optional buffer
-This function returns @code{t} if the buffer @var{buffer} has been modified
-since it was last read in from a file or saved, or @code{nil}
-otherwise.  If @var{buffer} is not supplied, the current buffer
-is tested.
+如果@var{buffer}在最后一次从文件读入或保存后被修改，则该函数返回@code{t}，否则返
+回@code{nil}。如果@var{buffer}没有提供，则测试当前的缓冲区。
 @end defun
 
 @defun set-buffer-modified-p flag
-This function marks the current buffer as modified if @var{flag} is
-non-@code{nil}, or as unmodified if the flag is @code{nil}.
+如果@var{flag}是非@code{nil}，则该函数将当前缓冲区标记为已修改，如果flag为
+@code{nil}，则标记为未修改。
 
-Another effect of calling this function is to cause unconditional
-redisplay of the mode line for the current buffer.  In fact, the
-function @code{force-mode-line-update} works by doing this:
+调用这个函数的另一个效果是使当前缓冲区的模式行无条件的重新显示。事实上，函数
+@code{force-mode-line-update}的工作原理就是这样:
 
 @example
 @group
@@ -555,265 +463,207 @@ function @code{force-mode-line-update} works by doing this:
 @end defun
 
 @defun restore-buffer-modified-p flag
-Like @code{set-buffer-modified-p}, but does not force redisplay
-of mode lines.
+如同@code{set-buffer-modified-p}但是强制重新显示模式行。
 @end defun
 
 @deffn Command not-modified &optional arg
-This command marks the current buffer as unmodified, and not needing
-to be saved.  If @var{arg} is non-@code{nil}, it marks the buffer as
-modified, so that it will be saved at the next suitable occasion.
-Interactively, @var{arg} is the prefix argument.
+该命令将当前缓冲区标记为未修改，不需要保存。如果@var{arg}是非@code{nil}，则将缓冲
+区标记为已修改，以便在下一个合适的场合保存。在交互式中，@var{arg}是前缀参数。
 
-Don't use this function in programs, since it prints a message in the
-echo area; use @code{set-buffer-modified-p} (above) instead.
+不要在程序中使用这个函数，因为它会在回声区中打印一条信息；请使用
+@code{set-buffer-modified-p}(上面)代替。
+
 @end deffn
 
 @defun buffer-modified-tick &optional buffer
-This function returns @var{buffer}'s modification-count.  This is a
-counter that increments every time the buffer is modified.  If
-@var{buffer} is @code{nil} (or omitted), the current buffer is used.
+这个函数返回@var{buffer}的修改次数。这是一个每次修改缓冲区时都会递增的计数器。如果
+@var{buffer}是@code{nil}，则使用当前的缓冲区。
 @end defun
 
 @defun buffer-chars-modified-tick &optional buffer
-This function returns @var{buffer}'s character-change modification-count.
-Changes to text properties leave this counter unchanged; however, each
-time text is inserted or removed from the buffer, the counter is reset
-to the value that would be returned by @code{buffer-modified-tick}.
-By comparing the values returned by two @code{buffer-chars-modified-tick}
-calls, you can tell whether a character change occurred in that buffer
-in between the calls.  If @var{buffer} is @code{nil} (or omitted), the
-current buffer is used.
+这个函数返回@var{buffer}的字符修改计数。对文本属性的修改会使这个计数器保持不变；但
+是，每次从缓冲区中插入或删除文本时，计数器都会被重置为由
+@code{buffer-modified-tick}返回的值。通过比较两次
+@code{buffer-chars-modified-tick}调用返回的值，您可以判断在两次调用之间该缓冲
+区是否发生了字符变化。如果@var{buffer}是@code{nil}(或省略)，使用当前的缓冲区。
 @end defun
 
-Sometimes there's a need for modifying buffer in a way that doesn't
-really change its text, like if only its text properties are changed.
-If your program needs to modify a buffer without triggering any hooks
-and features that react to buffer modifications, use the
-@code{with-silent-modifications} macro.
+有时需要以一种不真正改变其文本的方式来修改缓冲区，比如只改变其文本属性。如果您的程序需
+要在不触发任何对缓冲区修改有反应的钩子和功能的情况下修改缓冲区，请使用
+@code{with-silent-modifications}宏。
 
 @defmac with-silent-modifications body@dots{}
-Execute @var{body} pretending it does not modify the buffer.  This
-includes checking whether the buffer's file is locked (@pxref{File
-Locks}), running buffer modification hooks (@pxref{Change Hooks}),
-etc.  Note that if @var{body} actually modifies the buffer text, its
-undo data may become corrupted.
+执行@var{body}，假装不修改缓冲区。这包括检查缓冲区的文件是否被锁定（
+@pxref{File Locks}），运行缓冲区修改钩子（@pxref{Change Hooks}）等。需要注意
+的是，如果@var{body}真的修改了缓冲区文本，其undo数据可能会被破坏。
 @end defmac
 
-@node Modification Time
+@node 修改时间
 @section Buffer Modification Time
 @cindex comparing file modification time
 @cindex modification time of buffer
 
-  Suppose that you visit a file and make changes in its buffer, and
-meanwhile the file itself is changed on disk.  At this point, saving the
-buffer would overwrite the changes in the file.  Occasionally this may
-be what you want, but usually it would lose valuable information.  Emacs
-therefore checks the file's modification time using the functions
-described below before saving the file.  (@xref{File Attributes},
-for how to examine a file's modification time.)
+  假设你访问了一个文件，并在它的缓冲区中做了修改，同时文件本身在磁盘上也做了修改，这
+时，保存缓冲区会覆盖文件中的修改。此时，保存缓冲区会覆盖文件中的变化。偶尔这可能是你想
+要的，但通常会丢失有价值的信息。因此，Emacs在保存文件之前，会使用下面描述的函数检查文
+件的修改时间。(@xref{File Attributes}，了解如何检查文件的修改时间。)
 
 @defun verify-visited-file-modtime &optional buffer
-This function compares what @var{buffer} (by default, the
-current-buffer) has recorded for the modification time of its visited
-file against the actual modification time of the file as recorded by the
-operating system.  The two should be the same unless some other process
-has written the file since Emacs visited or saved it.
+这个函数比较了@var{buffer}(默认情况下，是当前缓冲区)记录的被访问文件的修改时间与操
+作系统记录的文件实际修改时间。两者应该是一致的，除非Emacs访问或保存文件后，有其他进程
+写过文件。
 
-The function returns @code{t} if the last actual modification time and
-Emacs's recorded modification time are the same, @code{nil} otherwise.
-It also returns @code{t} if the buffer has no recorded last
-modification time, that is if @code{visited-file-modtime} would return
-zero.
+如果最后的实际修改时间和Emacs记录的修改时间相同，函数返回@code{t}，否则返回
+@code{nil}。如果缓冲区没有记录的最后修改时间，也就是
+@code{visited-file-modtime}将返回0，那么它也返回@code{t}。
 
-It always returns @code{t} for buffers that are not visiting a file,
-even if @code{visited-file-modtime} returns a non-zero value.  For
-instance, it always returns @code{t} for dired buffers.  It returns
-@code{t} for buffers that are visiting a file that does not exist and
-never existed, but @code{nil} for file-visiting buffers whose file has
-been deleted.
+对于没有访问文件的缓冲区，它总是返回@code{t}，即使@code{visited-file-modtime}
+返回一个非零值。例如，对于dired缓冲区，它总是返回@code{t}。对于访问不存在的文件的缓
+冲区，它返回@code{t}；对于被删除的访问文件的缓冲区，它返回@code{nil}。
 @end defun
 
 @defun clear-visited-file-modtime
-This function clears out the record of the last modification time of
-the file being visited by the current buffer.  As a result, the next
-attempt to save this buffer will not complain of a discrepancy in
-file modification times.
+这个功能清除了当前缓冲区所访问的文件的最后修改时间的记录。因此，下一次尝试保存这个缓冲
+区时，不会抱怨文件修改时间不一致。
 
-This function is called in @code{set-visited-file-name} and other
-exceptional places where the usual test to avoid overwriting a changed
-file should not be done.
+这个函数在@code{set-visited-file-name}和其他特殊的地方被调用，在这些地方不应该
+做通常的测试，以避免覆盖被修改的文件。
 @end defun
 
 @defun visited-file-modtime
-This function returns the current buffer's recorded last file
-modification time, as a Lisp timestamp (@pxref{Time of Day}).
+这个函数以Lisp时间戳（@pxref{Time of Day}）的形式返回当前缓冲区记录的最后一次文
+件修改时间。
 
-If the buffer has no recorded last modification time, this function
-returns zero.  This case occurs, for instance, if the buffer is not
-visiting a file or if the time has been explicitly cleared by
-@code{clear-visited-file-modtime}.  Note, however, that
-@code{visited-file-modtime} returns a timestamp for some non-file buffers
-too.  For instance, in a Dired buffer listing a directory, it returns
-the last modification time of that directory, as recorded by Dired.
+如果缓冲区没有记录的最后一次修改时间，这个函数返回0。这种情况会发生，例如，如果缓冲区
+没有访问文件，或者时间已经被@code{clear-visited-file-modtime}显式地清除了。然
+而，请注意，@code{visited-file-modtime}也会为一些非文件缓冲区返回一个时间戳。 例如，在Dired缓冲区中列出一个目录，它返回Dired记录的该目录的最后修改时间。
 
-If the buffer is visiting a file that doesn't exist, this function
-returns @minus{}1.
+如果缓冲区访问的是一个不存在的文件，这个函数会返回@minus{}1。
+
 @end defun
 
 @defun set-visited-file-modtime &optional time
-This function updates the buffer's record of the last modification time
-of the visited file, to the value specified by @var{time} if @var{time}
-is not @code{nil}, and otherwise to the last modification time of the
-visited file.
+如果@var{time}不是@code{nil}，则更新缓冲区中被访问文件的最后一次修改时间为
+@var{time}指定的值，否则更新为被访问文件的最后一次修改时间。
 
-If @var{time} is neither @code{nil} nor an integer flag returned
-by @code{visited-file-modtime}, it should be a Lisp time value
-(@pxref{Time of Day}).
+如果@var{time}既不是@code{nil}，也不是@code{visited-file-modtime}返回的整数
+标志，那么它应该是一个Lisp时间值（@pxref{Time of Day}）。
 
-This function is useful if the buffer was not read from the file
-normally, or if the file itself has been changed for some known benign
-reason.
+如果缓冲区不是正常地从文件中读取的，或者文件本身因为某些已知的良性原因被改变，那么这个
+函数就很有用。
 @end defun
 
 @defun ask-user-about-supersession-threat filename
-This function is used to ask a user how to proceed after an attempt to
-modify a buffer visiting file @var{filename} when the file is newer
-than the buffer text.  Emacs detects this because the modification
-time of the file on disk is newer than the last save-time and its contents
-have changed.
-This means some other program has probably altered the file.
+这个函数用于询问用户在尝试修改缓冲区访问文件@var{filename}后，当文件比缓冲区文本新
+时，如何继续。Emacs检测到这一点是因为磁盘上的文件的修改时间比上次保存时间要新，而且它
+的内容发生了变化。这意味着可能有其他程序修改了文件。
 
 @kindex file-supersession
-Depending on the user's answer, the function may return normally, in
-which case the modification of the buffer proceeds, or it may signal a
-@code{file-supersession} error with data @code{(@var{filename})}, in which
-case the proposed buffer modification is not allowed.
+根据用户的回答，函数可能会正常返回，在这种情况下，缓冲区的修改将继续进行，或者它可能会
+发出@code{file-supersession}错误信号，数据为@code{(@var{filename})}，在这种
+情况下，发起的缓冲区修改是不允许的。
 
-This function is called automatically by Emacs on the proper
-occasions.  It exists so you can customize Emacs by redefining it.
-See the file @file{userlock.el} for the standard definition.
+这个函数会在适当的场合被Emacs自动调用。它的存在是为了你可以通过重新定义它来定制
+Emacs。标准定义参见文件@file{userlock.el}。
 
-See also the file locking mechanism in @ref{File Locks}.
+也可以参考@ref{File Locks}中的文件锁定机制。
 @end defun
 
-@node Read Only Buffers
+@node 只读缓冲区
 @section Read-Only Buffers
 @cindex read-only buffer
 @cindex buffer, read-only
 
-  If a buffer is @dfn{read-only}, then you cannot change its contents,
-although you may change your view of the contents by scrolling and
-narrowing.
+  如果一个缓冲区是@dfn{read-only}，那么你就不能改变它的内容，尽管你可以通过滚动和
+缩小来改变内容的视图。
 
-  Read-only buffers are used in two kinds of situations:
+  只读缓冲区在两种情况下使用：
 
 @itemize @bullet
 @item
-A buffer visiting a write-protected file is normally read-only.
+访问写保护文件的缓冲区通常是只读的。
 
-Here, the purpose is to inform the user that editing the buffer with the
-aim of saving it in the file may be futile or undesirable.  The user who
-wants to change the buffer text despite this can do so after clearing
-the read-only flag with @kbd{C-x C-q}.
+这里的目的是告诉用户，编辑缓冲区并将其保存在文件中可能是徒劳的或不可取的。如果用户想修
+改缓冲区的文本，可以在用@kbd{C-x C-q}清除只读标志后进行修改。
 
 @item
-Modes such as Dired and Rmail make buffers read-only when altering the
-contents with the usual editing commands would probably be a mistake.
+Dired和Rmail等模式将缓冲区设为只读，如果用一般的编辑命令来改变缓冲区的内容，很可能
+是个错误。
 
-The special commands of these modes bind @code{buffer-read-only} to
-@code{nil} (with @code{let}) or bind @code{inhibit-read-only} to
-@code{t} around the places where they themselves change the text.
+这些模式的特殊命令在他们修改文本的地方周围将@code{buffer-read-only}绑定到
+@code{nil}(用@code{let})，或者将@code{inhibit-read-only}绑定到@code{t}。
 @end itemize
 
 @defvar buffer-read-only
-This buffer-local variable specifies whether the buffer is read-only.
-The buffer is read-only if this variable is non-@code{nil}.  However,
-characters that have the @code{inhibit-read-only} text property can
-still be modified.  @xref{Special Properties, inhibit-read-only}.
+这个缓冲区本地变量指定缓冲区是否为只读。如果这个变量是非@code{nil}，则缓冲区是只读
+的。但是，具有@code{inhibit-read-only}文本属性的字符仍然可以被修改。
+@xref{Special Properties，inhibit-read-only}。
 @end defvar
 
 @defvar inhibit-read-only
-If this variable is non-@code{nil}, then read-only buffers and,
-depending on the actual value, some or all read-only characters may be
-modified.  Read-only characters in a buffer are those that have a
-non-@code{nil} @code{read-only} text property.  @xref{Special
-Properties}, for more information about text properties.
+如果这个变量是非@code{nil}，那么只读缓冲区和，根据实际值，部分或全部只读字符可以被
+修改。缓冲区中的只读字符是指那些具有@code{read-only}文本属性非@code{nil}的字符。
+关于文本属性的更多信息，请参见@xref{Special Properties}。
 
-If @code{inhibit-read-only} is @code{t}, all @code{read-only} character
-properties have no effect.  If @code{inhibit-read-only} is a list, then
-@code{read-only} character properties have no effect if they are members
-of the list (comparison is done with @code{eq}).
+如果@code{inhibit-read-only}是@code{t}，那么所有@code{read-only}字符属性都
+没有效果。如果@code{inhibit-read-only}是一个列表，那么@code{read-only}字符属
+性如果是列表中的成员，那么这些属性就没有任何作用 (使用@code{eq} 进行比较)。
+
 @end defvar
 
 @deffn Command read-only-mode &optional arg
-This is the mode command for Read Only minor mode, a buffer-local
-minor mode.  When the mode is enabled, @code{buffer-read-only} is
-non-@code{nil} in the buffer; when disabled, @code{buffer-read-only}
-is @code{nil} in the buffer.  The calling convention is the same as
-for other minor mode commands (@pxref{Minor Mode Conventions}).
+这是Read Only次要模式的模式命令，是缓冲区本地的次要模式。当启用该模式时，
+@code{buffer-read-only}在缓冲区中为非@code{nil}；当禁用该模式时，
+@code{buffer-read-only}在缓冲区中为@code{nil}。调用惯例与其他小模式命令相同（
+@pxref{Minor Mode Conventions}）。
 
-This minor mode mainly serves as a wrapper for
-@code{buffer-read-only}; unlike most minor modes, there is no separate
-@code{read-only-mode} variable.  Even when Read Only mode is disabled,
-characters with non-@code{nil} @code{read-only} text properties remain
-read-only.  To temporarily ignore all read-only states, bind
-@code{inhibit-read-only}, as described above.
+这个次要模式主要是作为@code{buffer-read-only}的封装；与大多数次要模式不同，没有
+单独的@code{read-only-mode}变量。即使禁用了Read Only模式，带有非@code{nil}的
+@code{read-only}文本属性的字符也会保持只读状态。要暂时忽略所有的只读状态，请如上所
+述，绑定@code{inhibit-read-only}。
 
-When enabling Read Only mode, this mode command also enables View mode
-if the option @code{view-read-only} is non-@code{nil}.  @xref{Misc
-Buffer,,Miscellaneous Buffer Operations, emacs, The GNU Emacs Manual}.
-When disabling Read Only mode, it disables View mode if View mode was
-enabled.
+当启用Read Only模式时，如果@code{view-read-only}选项是非@code{nil}，则该模式
+命令也会启用视图模式。
+@xref{Misc Buffer,,Miscellaneous Buffer Operations, emacs, The GNU
+Emacs Manual}。当禁用只读模式时，如果启用了View模式，则禁用View模式。
 @end deffn
 
-@defun barf-if-buffer-read-only &optional position
-This function signals a @code{buffer-read-only} error if the current
-buffer is read-only.  If the text at @var{position} (which defaults to
-point) has the @code{inhibit-read-only} text property set, the error
-will not be raised.
+@defun barf-if-buffer-read-only &optional position。
+如果当前的缓冲区是只读的，这个函数会发出@code{buffer-read-only}错误信号。如果在
+@var{position}处的文本(默为point)设置了@code{inhibit-read-only}文本属性，则
+不会引发错误。
 
-@xref{Using Interactive}, for another way to signal an error if the
-current buffer is read-only.
+如果当前的缓冲区是只读的，那么@xref{Using Interactive}将以另一种方式发出错误信号
+。
 @end defun
 
-@node Buffer List
+@node 缓冲区列表
 @section The Buffer List
 @cindex buffer list
 @cindex listing all buffers
 
-  The @dfn{buffer list} is a list of all live buffers.  The order of the
-buffers in this list is based primarily on how recently each buffer has
-been displayed in a window.  Several functions, notably
-@code{other-buffer}, use this ordering.  A buffer list displayed for the
-user also follows this order.
+  @dfn{buffer list}是实时所有缓冲区的列表。列表中缓冲区的顺序主要是基于每个缓冲区
+最近在窗口中显示的时间。有几个函数，特别是@code{other-buffer}，使用了这个顺序。为
+用户显示的缓冲区列表也遵循这个顺序。
 
-  Creating a buffer adds it to the end of the buffer list, and killing
-a buffer removes it from that list.  A buffer moves to the front of
-this list whenever it is chosen for display in a window
-(@pxref{Switching Buffers}) or a window displaying it is selected
-(@pxref{Selecting Windows}).  A buffer moves to the end of the list
-when it is buried (see @code{bury-buffer}, below).  There are no
-functions available to the Lisp programmer which directly manipulate
-the buffer list.
+  创建一个缓冲区会将其添加到缓冲区列表的最后，而杀死一个缓冲区则会将其从列表中移除。
+每当一个缓冲区被选择在窗口中显示（@pxref{Switching Buffers}）或选择了显示它的窗
+口（@pxref{Selecting Windows}）时，它就会移动到这个列表的前面。埋藏缓冲区时，缓
+冲区会移动到列表的末尾（参见下面的@code{bury-buffer}）。对于Lisp程序员来说，没有
+直接操作缓冲区列表的函数。
 
-  In addition to the fundamental buffer list just described, Emacs
-maintains a local buffer list for each frame, in which the buffers that
-have been displayed (or had their windows selected) in that frame come
-first.  (This order is recorded in the frame's @code{buffer-list} frame
-parameter; see @ref{Buffer Parameters}.)  Buffers never displayed in
-that frame come afterward, ordered according to the fundamental buffer
-list.
+  除了刚才描述的基本缓冲区列表之外，Emacs还为每一窗帧维护一个本地缓冲区列表，在这个
+列表中，在该帧中已经显示（或者已经选择了它们的窗口）的缓冲区排在前面。(这个顺序记录在
+帧的@code{buffer-list}帧参数中；参见@ref{缓冲区参数}。)从未在该帧中显示的缓冲区
+则按照基本缓冲区列表的顺序排在后面。
 
 @defun buffer-list &optional frame
-This function returns the buffer list, including all buffers, even those
-whose names begin with a space.  The elements are actual buffers, not
-their names.
+该函数返回缓冲区列表，包括所有缓冲区，即使是那些名字以空格开头的缓冲区。这些元素是实际
+的缓冲区，而不是它们的名字。
 
-If @var{frame} is a frame, this returns @var{frame}'s local buffer list.
-If @var{frame} is @code{nil} or omitted, the fundamental buffer list is
-used: the buffers appear in order of most recent display or selection,
-regardless of which frames they were displayed on.
+如果@var{frame}是一个frame，则返回@var{frame}的本地缓冲区列表。如果
+@var{frame}是@code{nil}或被省略，则使用基本的缓冲区列表：缓冲区按照最近显示或选择
+的顺序显示，而不管它们是显示在哪个帧上。
 
 @example
 @group
@@ -833,10 +683,8 @@ regardless of which frames they were displayed on.
 @end example
 @end defun
 
-  The list returned by @code{buffer-list} is constructed specifically;
-it is not an internal Emacs data structure, and modifying it has no
-effect on the order of buffers.  If you want to change the order of
-buffers in the fundamental buffer list, here is an easy way:
+  @code{buffer-list}返回的列表是专门构造的，它不是Emacs内部的数据结构，修改它对
+缓冲区的顺序没有影响。如果你想改变基本缓冲区列表中缓冲区的顺序，这里有一个简单的方法：
 
 @example
 (defun reorder-buffer-list (new-list)
@@ -845,127 +693,104 @@ buffers in the fundamental buffer list, here is an easy way:
     (setq new-list (cdr new-list))))
 @end example
 
-  With this method, you can specify any order for the list, but there is
-no danger of losing a buffer or adding something that is not a valid
-live buffer.
+  使用这种方法，您可以为列表指定任何顺序，但不会有丢失缓冲区或添加非有效实时缓冲区的
+危险。
 
-  To change the order or value of a specific frame's buffer list, set
-that frame's @code{buffer-list} parameter with
-@code{modify-frame-parameters} (@pxref{Parameter Access}).
+  要改变特定帧的缓冲区列表的顺序或值，请用@code{modify-frame-parameters}（
+@pxref{Parameter Access}）设置该帧的@code{buffer-list}参数。
 
 @defun other-buffer &optional buffer visible-ok frame
-This function returns the first buffer in the buffer list other than
-@var{buffer}.  Usually, this is the buffer appearing in the most
-recently selected window (in frame @var{frame} or else the selected
-frame, @pxref{Input Focus}), aside from @var{buffer}.  Buffers whose
-names start with a space are not considered at all.
+这个函数返回缓冲区列表中除@var{buffer}以外的第一个缓冲区。通常，这是出现在最近选定
+的窗口中的缓冲区（在@var{frame}帧中，或者选定的帧中，@pxref{Input Focus}），而
+不是@var{buffer}。名称以空格开头的缓冲区不被包含在这个列表里。
 
-If @var{buffer} is not supplied (or if it is not a live buffer), then
-@code{other-buffer} returns the first buffer in the selected frame's
-local buffer list.  (If @var{frame} is non-@code{nil}, it returns the
-first buffer in @var{frame}'s local buffer list instead.)
+如果没有提供 @var{buffer}（或者如果它不是一个实时缓冲区），那么
+@code{other-buffer}将返回所选帧的本地缓冲区列表中的第一个缓冲区。如果
+@var{frame}是非@code{nil}，则返回@var{frame}的本地缓冲区列表中的第一个缓冲区。
 
-If @var{frame} has a non-@code{nil} @code{buffer-predicate} parameter,
-then @code{other-buffer} uses that predicate to decide which buffers to
-consider.  It calls the predicate once for each buffer, and if the value
-is @code{nil}, that buffer is ignored.  @xref{Buffer Parameters}.
+如果@var{frame}有一个非@code{nil}的@code{buffer-predicate}参数，
+@code{other-buffer}使用这个谓词来决定要考虑哪些缓冲区。它为每个缓冲区调用一次谓词
+，如果值是@code{nil}，则忽略该缓冲区。 @xref{Buffer Parameters}。
 
 @c Emacs 19 feature
-If @var{visible-ok} is @code{nil}, @code{other-buffer} avoids returning
-a buffer visible in any window on any visible frame, except as a last
-resort.  If @var{visible-ok} is non-@code{nil}, then it does not matter
-whether a buffer is displayed somewhere or not.
+如果@var{visible-ok}是@code{nil}，那么@code{other-buffer}就会避免返回一个在
+任何可见窗帧的任何窗口中可见的缓冲区，除非作为最后的手段。如果@var{visible-ok}是非
+@code{nil}，那么缓冲区是否在某个地方显示就不重要了。
 
-If no suitable buffer exists, the buffer @file{*scratch*} is returned
-(and created, if necessary).
+如果没有合适的缓冲区存在，则返回缓冲区@file{*scratch*}（如果需要的话，也会创建）。
 @end defun
 
 @defun last-buffer &optional buffer visible-ok frame
-This function returns the last buffer in @var{frame}'s buffer list other
-than @var{buffer}.  If @var{frame} is omitted or @code{nil}, it uses the
-selected frame's buffer list.
+本函数返回@var{frame}缓冲区列表中除@var{buffer}以外的最后一个缓冲区。如果省略了
+@var{frame}或者@code{nil}，则使用所选窗帧的缓冲区列表。
 
-The argument @var{visible-ok} is handled as with @code{other-buffer},
-see above.  If no suitable buffer can be found, the buffer
-@file{*scratch*} is returned.
+参数@var{visible-ok}与@code{other-buffer}的处理方式相同，见上文。如果找不到合
+适的缓冲区，则返回缓冲区@file{*scratch*}。
 @end defun
 
 @deffn Command bury-buffer &optional buffer-or-name
-This command puts @var{buffer-or-name} at the end of the buffer list,
-without changing the order of any of the other buffers on the list.
-This buffer therefore becomes the least desirable candidate for
-@code{other-buffer} to return.  The argument can be either a buffer
-itself or the name of one.
+这条命令将@var{buffer-or-name}放在缓冲区列表的最后，而不改变列表中其他缓冲区的顺
+序。因此，这个缓冲区成为@code{other-buffer}返回的最不想要的候选区。参数可以是一个
+缓冲区本身，也可以是一个缓冲区的名称。
 
-This function operates on each frame's @code{buffer-list} parameter as
-well as the fundamental buffer list; therefore, the buffer that you bury
-will come last in the value of @code{(buffer-list @var{frame})} and in
-the value of @code{(buffer-list)}.  In addition, it also puts the buffer
-at the end of the list of buffers of the selected window (@pxref{Window
-History}) provided it is shown in that window.
+这个函数对每一帧的@code{buffer-list}参数以及基本缓冲区列表进行操作，因此，在
+@code{(buffer-list @var{frame})}的值和@code{(buffer-list)}的值中，你埋葬
+的缓冲区将排在最后。此外，它还会将缓冲区放在所选窗口的缓冲区列表（
+@pxref{Window History}）的最后，前提是它在该窗口中显示。
 
-If @var{buffer-or-name} is @code{nil} or omitted, this means to bury the
-current buffer.  In addition, if the current buffer is displayed in the
-selected window, this makes sure that the window is either deleted or
-another buffer is shown in it.  More precisely, if the selected window
-is dedicated (@pxref{Dedicated Windows}) and there are other windows on
-its frame, the window is deleted.  If it is the only window on its frame
-and that frame is not the only frame on its terminal, the frame is
-dismissed by calling the function specified by
-@code{frame-auto-hide-function} (@pxref{Quitting Windows}).  Otherwise,
-it calls @code{switch-to-prev-buffer} (@pxref{Window History}) to show
-another buffer in that window.  If @var{buffer-or-name} is displayed in
-some other window, it remains displayed there.
+如果@var{buffer-or-name}为@code{nil}或省略，则意味着要埋没当前缓冲区。此外，如
+果当前的缓冲区显示在选定的窗口中，这将确保该窗口被删除或在其中显示另一个缓冲区。更准确
+地说，如果所选窗口是专用的（@pxref{Dedicated Windows}），而它的窗帧上还有其他窗
+口，则该窗口被删除。如果它是其窗帧上唯一的窗口，并且该窗帧不是其终端上唯一的窗帧，则通
+过调用@code{frame-auto-hide-function}指定的函数来删除该窗帧。(
+@pxref{Quitting Windows})。否则，它会调用@code{switch-to-prev-buffer}。(
+@pxref{Window History})来显示该窗口中的另一个缓冲区。如果
+@var{buffer-or-name}被显示在其他窗口中，它将继续显示在那里。
 
-To replace a buffer in all the windows that display it, use
-@code{replace-buffer-in-windows}, @xref{Buffers and Windows}.
+要在所有显示缓冲区的窗口中替换一个缓冲区，请使用
+@code{replace-buffer-in-windows}，@xref{Buffers and Windows}。
 @end deffn
 
 @deffn Command unbury-buffer
-This command switches to the last buffer in the local buffer list of
-the selected frame.  More precisely, it calls the function
-@code{switch-to-buffer} (@pxref{Switching Buffers}), to display the
-buffer returned by @code{last-buffer} (see above), in the selected
-window.
+该命令切换到所选帧的本地缓冲区列表中的最后一个缓冲区。更准确地说，它调用函数
+@code{switch-to-buffer}。(@pxref{Switching Buffers})，显示
+@code{last-buffer}返回的缓冲区(见上文)，在选定的窗口中。
 @end deffn
 
 @defvar buffer-list-update-hook
-This is a normal hook run whenever the buffer list changes.  Functions
-(implicitly) running this hook are @code{get-buffer-create}
-(@pxref{Creating Buffers}), @code{rename-buffer} (@pxref{Buffer Names}),
-@code{kill-buffer} (@pxref{Killing Buffers}), @code{bury-buffer} (see
-above) and @code{select-window} (@pxref{Selecting Windows}).
+这是一个正常的钩子，每当缓冲区列表发生变化时就会运行。运行这个钩子的函数（隐式）是
+@code{get-buffer-create}。(@pxref{Creating Buffers}),
+@code{rename-buffer}。(@pxref{Buffer Names}),@code{kill-buffer}。(
+@pxref{Killing Buffers}),@code{bury-buffer}。(见上文)和
+@code{select-window}。(@pxref{Selecting Windows})。
 
-Functions run by this hook should avoid calling @code{select-window}
-with a nil @var{norecord} argument or @code{with-temp-buffer} since
-either may lead to infinite recursion.
+由这个钩子运行的函数应该避免在@var{norecord}参数为零的情况下调用
+@code{select-window}，或者调用@code{with-temp-buffer}，因为这两者都可能导致
+无限递归。
 @end defvar
 
-@node Creating Buffers
+@node 创建缓冲区
 @section Creating Buffers
 @cindex creating buffers
 @cindex buffers, creating
 
-  This section describes the two primitives for creating buffers.
-@code{get-buffer-create} creates a buffer if it finds no existing buffer
-with the specified name; @code{generate-new-buffer} always creates a new
-buffer and gives it a unique name.
+  本节介绍了创建缓冲区的两个基元。@code{get-buffer-create}如果没有发现存在的具有
+指定名称的缓冲区，则创建一个缓冲区；@code{generate-new-buffer}总是创建一个新的缓
+冲区，并给它一个唯一的名称。
 
-  Other functions you can use to create buffers include
-@code{with-output-to-temp-buffer} (@pxref{Temporary Displays}) and
-@code{create-file-buffer} (@pxref{Visiting Files}).  Starting a
-subprocess can also create a buffer (@pxref{Processes}).
+  其他可以用来创建缓冲区的函数包括@code{with-output-to-temp-buffer}。(
+@pxref{Temporary Displays})和@code{create-file-buffer}。(
+@pxref{Visiting Files})。启动一个子进程也可以创建一个缓冲区(
+@pxref{Processes})。
 
 @defun get-buffer-create buffer-or-name
-This function returns a buffer named @var{buffer-or-name}.  The buffer
-returned does not become the current buffer---this function does not
-change which buffer is current.
+这个函数返回一个名为@var{buffer-or-name}的缓冲区。返回的缓冲区不会成为当前的缓冲
+区--这个函数不会改变哪个缓冲区是当前的。
 
-@var{buffer-or-name} must be either a string or an existing buffer.  If
-it is a string and a live buffer with that name already exists,
-@code{get-buffer-create} returns that buffer.  If no such buffer exists,
-it creates a new buffer.  If @var{buffer-or-name} is a buffer instead of
-a string, it is returned as given, even if it is dead.
+@var{buffer-or-name}必须是一个字符串或一个现有的缓冲区。如果是一个字符串，并且已
+经存在一个使用该名称的缓冲区，@code{get-buffer-create}返回该缓冲区。如果没有这样
+的缓冲区存在，它就创建一个新的缓冲区。如果@var{buffer-or-name}是一个缓冲区，而不
+是一个字符串，那么即使它是死的，也会被返回。
 
 @example
 @group
@@ -974,22 +799,19 @@ a string, it is returned as given, even if it is dead.
 @end group
 @end example
 
-The major mode for a newly created buffer is set to Fundamental mode.
-(The default value of the variable @code{major-mode} is handled at a higher
-level; see @ref{Auto Major Mode}.)  If the name begins with a space, the
-buffer initially disables undo information recording (@pxref{Undo}).
+新创建的缓冲区的主模式被设置为Fundamental模式。(变量@code{major-mode}的默认值在
+更高的层次上处理，参见@ref{Auto Major Mode}。)如果名称以空格开头，则缓冲区最初会
+禁用撤销信息记录(@pxref{Undo})。
 @end defun
 
 @defun generate-new-buffer name
-This function returns a newly created, empty buffer, but does not make
-it current.  The name of the buffer is generated by passing @var{name}
-to the function @code{generate-new-buffer-name} (@pxref{Buffer
-Names}).  Thus, if there is no buffer named @var{name}, then that is
-the name of the new buffer; if that name is in use, a suffix of the
-form @samp{<@var{n}>}, where @var{n} is an integer, is appended to
-@var{name}.
+这个函数返回一个新创建的空缓冲区，但不使其成为当前缓冲区。缓冲区的名称是通过将
+@var{name}传递给函数@code{generate-new-buffer-name} (
+@pxref{Buffer Names})而产生的。因此，如果没有名为@var{name}的缓冲区，那么这就是
+新缓冲区的名称；如果使用该名称，则会在@var{name}后加上@samp{<@var{n}>}形式的后缀
+，其中 @var{n} 是一个整数。
 
-An error is signaled if @var{name} is not a string.
+如果@var{name}不是字符串，则会发出错误信号。
 
 @example
 @group
@@ -1006,71 +828,55 @@ An error is signaled if @var{name} is not a string.
 @end group
 @end example
 
-The major mode for the new buffer is set to Fundamental mode.  The default
-value of the variable @code{major-mode} is handled at a higher level.
-@xref{Auto Major Mode}.
+新缓冲区的主要模式被设置为Fundamental模式。变量@code{major-mode}的默认值由上一
+级处理。@xref{Auto Major Mode}。
 @end defun
 
-@node Killing Buffers
+@node 杀死缓冲区
 @section Killing Buffers
 @cindex killing buffers
 @cindex buffers, killing
 
-  @dfn{Killing a buffer} makes its name unknown to Emacs and makes the
-memory space it occupied available for other use.
+  @dfn{Killing a buffer}会让Emacs忘记它的名字，并使它所占用的内存空间可用于其他
+用途。
+  只要有任何东西指向它，被杀死的缓冲区对象就会一直存在，但它会被特别标记，因此你不能让它成为当前的缓冲区或显示它。然而，被杀死的缓冲区保留了它们的标识；如果你杀死了两个不同的
+缓冲区，根据@code{eq}，它们仍然是不同的，尽管两个缓冲区都是死的。
 
-  The buffer object for the buffer that has been killed remains in
-existence as long as anything refers to it, but it is specially marked
-so that you cannot make it current or display it.  Killed buffers retain
-their identity, however; if you kill two distinct buffers, they remain
-distinct according to @code{eq} although both are dead.
+  如果您杀死了一个当前或显示在窗口中的缓冲区，Emacs会自动选择或显示其他缓冲区。这意
+味着杀死一个缓冲区可以改变当前的缓冲区。因此，当你杀死一个缓冲区时，你也应该采取与改变
+当前缓冲区相关的预防措施（除非你知道被杀死的缓冲区不是当前的）。@xref{当前缓冲区}。
 
-  If you kill a buffer that is current or displayed in a window, Emacs
-automatically selects or displays some other buffer instead.  This
-means that killing a buffer can change the current buffer.  Therefore,
-when you kill a buffer, you should also take the precautions
-associated with changing the current buffer (unless you happen to know
-that the buffer being killed isn't current).  @xref{Current Buffer}.
-
-  If you kill a buffer that is the base buffer of one or more indirect
+  如果你杀死了一个缓冲区，而这个缓冲区是一个或多个间接的
 @iftex
-buffers,
+缓冲区，
 @end iftex
 @ifnottex
-buffers (@pxref{Indirect Buffers}),
+缓冲区（@pxref{间接缓冲区}）。
 @end ifnottex
-the indirect buffers are automatically killed as well.
+间接缓冲区也会被自动删除。
 
 @cindex live buffer
-  The @code{buffer-name} of a buffer is @code{nil} if, and only if,
-the buffer is killed.  A buffer that has not been killed is called a
-@dfn{live} buffer.  To test whether a buffer is live or killed, use
-the function @code{buffer-live-p} (see below).
+  当且仅当缓冲区被杀死的时候，缓冲区的@code{buffer-name}是@code{nil}。未被杀死
+的缓冲区被称为@dfn{live}缓冲区。要测试一个缓冲区是被激活还是被杀死，请使用函数
+@code{buffer-live-p}。(见下方)。
 
-@deffn Command kill-buffer &optional buffer-or-name
-This function kills the buffer @var{buffer-or-name}, freeing all its
-memory for other uses or to be returned to the operating system.  If
-@var{buffer-or-name} is @code{nil} or omitted, it kills the current
-buffer.
+@deffn Command kill-buffer &optional buffer-or-name。
+这个函数杀死缓冲区@var{buffer-or-name}，释放它的所有内存用于其他用途或返回给操作系统。如果@var{buffer-or-name}是@code{nil}或被省略，那么它将杀死当前的缓冲区。
 
-Any processes that have this buffer as the @code{process-buffer} are
-sent the @code{SIGHUP} (hangup) signal, which normally causes them
-to terminate.  @xref{Signals to Processes}.
+任何将这个缓冲区作为@code{process-buffer}的进程都会被发送@code{SIGHUP}。(
+hangup)信号，通常会导致它们终止。@xref{Signals to Processes}。
 
-If the buffer is visiting a file and contains unsaved changes,
-@code{kill-buffer} asks the user to confirm before the buffer is killed.
-It does this even if not called interactively.  To prevent the request
-for confirmation, clear the modified flag before calling
-@code{kill-buffer}.  @xref{Buffer Modification}.
+如果缓冲区正在访问一个文件，并且包含未保存的更改，@code{kill-buffer}会在缓冲区被杀
+死之前要求用户确认。即使不是被交互调用，它也会这样做。为了防止要求用户确认，请在调用
+@code{kill-buffer}之前清除修改标志。@xref{缓冲区修改}。
 
-This function calls @code{replace-buffer-in-windows} for cleaning up
-all windows currently displaying the buffer to be killed.
+该函数调用@code{replace-buffer-in-windows}，用于清理当前显示要杀死的缓冲区的所
+有窗口。
 
-Killing a buffer that is already dead has no effect.
+杀死一个已经死亡的缓冲区没有任何效果。
 
-This function returns @code{t} if it actually killed the buffer.  It
-returns @code{nil} if the user refuses to confirm or if
-@var{buffer-or-name} was already dead.
+如果真的杀死了缓冲区，该函数返回@code{t}。如果用户拒绝确认或者
+@var{buffer-or-name}已经死亡，则返回@code{nil}。
 
 @smallexample
 (kill-buffer "foo.unchanged")
@@ -1086,186 +892,143 @@ Buffer foo.changed modified; kill anyway? (yes or no) @kbd{yes}
 @end deffn
 
 @defvar kill-buffer-query-functions
-Before confirming unsaved changes, @code{kill-buffer} calls the functions
-in the list @code{kill-buffer-query-functions}, in order of appearance,
-with no arguments.  The buffer being killed is the current buffer when
-they are called.  The idea of this feature is that these functions will
-ask for confirmation from the user.  If any of them returns @code{nil},
-@code{kill-buffer} spares the buffer's life.
+在确认未保存的更改之前，@code{kill-buffer}按照出现的顺序调用
+@code{kill-buffer-query-functions}列表中的函数，没有参数。当它们被调用时，被杀
+死的缓冲区就是当前缓冲区。这个特性的想法是，这些函数会要求用户确认。如果其中任何一个函
+数返回@code{nil}，@code{kill-buffer}就会宽恕缓冲区的生命。
 @end defvar
 
 @defvar kill-buffer-hook
-This is a normal hook run by @code{kill-buffer} after asking all the
-questions it is going to ask, just before actually killing the buffer.
-The buffer to be killed is current when the hook functions run.
-@xref{Hooks}.  This variable is a permanent local, so its local binding
-is not cleared by changing major modes.
+这是一个正常的钩子，由@code{kill-buffer}在问完所有要问的问题后运行，只是在真正杀死
+缓冲区之前。当钩子函数运行时，要杀死的缓冲区是当前的。@xref{Hooks}。这个变量是一个
+永久的局部变量，所以它的局部绑定不会因为改变主要模式而被清除。
 @end defvar
 
 @defopt buffer-offer-save
-This variable, if non-@code{nil} in a particular buffer, tells
-@code{save-buffers-kill-emacs} to offer to save that buffer, just as
-it offers to save file-visiting buffers.  If @code{save-some-buffers}
-is called with the second optional argument set to @code{t}, it will
-also offer to save the buffer.  Lastly, if this variable is set to the
-symbol @code{always}, both @code{save-buffers-kill-emacs} and
-@code{save-some-buffers} will always offer to save.  @xref{Definition
-of save-some-buffers}.  The variable @code{buffer-offer-save}
-automatically becomes buffer-local when set for any reason.
-@xref{Buffer-Local Variables}.
+这个变量，如果在某个特定的缓冲区中是非@code{nil}，则告诉
+@code{save-buffers-kill-emacs}提供保存这个缓冲区，就像它提供保存文件访问缓冲区
+一样。如果调用@code{save-some-buffers}时，第二个可选参数设置为@code{t}，它也会
+提供保存缓冲区。最后，如果这个变量被设置为@code{always}，那么
+@code{save-buffers-kill-emacs}和@code{save-some-buffers}都将总是提供保存
+。@xref{Definition of save-some-buffers}。变量@code{buffer-offer-save}
+在任何情况下都会自动变成缓冲区本地变量。@xref{Buffer-Local Variables}.
 @end defopt
 
 @defvar buffer-save-without-query
-This variable, if non-@code{nil} in a particular buffer, tells
-@code{save-buffers-kill-emacs} and @code{save-some-buffers} to save
-this buffer (if it's modified) without asking the user.  The variable
-automatically becomes buffer-local when set for any reason.
+这个变量，如果在某个特定的缓冲区中是非@code{nil}，则告诉
+@code{save-buffers-kill-emacs}和@code{save-some-buffers}保存这个缓冲区（
+如果它被修改了），而不需要询问用户。当这个变量因任何原因被设置时，它将自动成为缓冲区的
+本地变量。
 @end defvar
 
 @defun buffer-live-p object
-This function returns @code{t} if @var{object} is a live buffer (a
-buffer which has not been killed), @code{nil} otherwise.
+如果@var{object}是一个实时缓冲区（一个没有被杀死的缓冲区），该函数返回@code{t}，
+否则返回@code{nil}。
 @end defun
 
-@node Indirect Buffers
+@node 间接缓冲区
 @section Indirect Buffers
 @cindex indirect buffers
 @cindex base buffer
 
-  An @dfn{indirect buffer} shares the text of some other buffer, which
-is called the @dfn{base buffer} of the indirect buffer.  In some ways it
-is the analogue, for buffers, of a symbolic link among files.  The base
-buffer may not itself be an indirect buffer.
+  一个@dfn{indirect buffer}共享其他缓冲区的文本，而其他缓冲区被称为间接缓冲区的
+@dfn{base buffer}。在某种程度上，对于缓冲区来说，它类似于文件之间的符号链接。基缓
+冲区本身不一定是间接缓冲区。
 
-  The text of the indirect buffer is always identical to the text of its
-base buffer; changes made by editing either one are visible immediately
-in the other.  This includes the text properties as well as the characters
-themselves.
+  间接缓冲区的文本总是与基缓冲区的文本相同；编辑其中一个缓冲区所做的更改在另一个缓冲
+区中立即可见。这包括文本属性和字符本身。
 
-  In all other respects, the indirect buffer and its base buffer are
-completely separate.  They have different names, independent values of
-point, independent narrowing, independent markers and overlays (though
-inserting or deleting text in either buffer relocates the markers and
-overlays for both), independent major modes, and independent
-buffer-local variable bindings.
+  在所有其他方面，间接缓冲区和它的基缓冲区是完全分开的。它们有不同的名称、独立的点值
+、独立的缩小、独立的标记和覆盖（尽管在任何一个缓冲区中插入或删除文本都会重新定位两个缓
+冲区的标记和覆盖）、独立的主要模式和独立的缓冲区局部变量绑定。
 
-  An indirect buffer cannot visit a file, but its base buffer can.  If
-you try to save the indirect buffer, that actually saves the base
-buffer.
+  间接缓冲区不能访问文件，但它的基缓冲区可以。如果你试图保存间接缓冲区，那实际上是在
+保存基缓冲区。
 
-  Killing an indirect buffer has no effect on its base buffer.  Killing
-the base buffer effectively kills the indirect buffer in that it cannot
-ever again be the current buffer.
+  杀死一个间接缓冲区对它的基缓冲区没有影响。杀死基缓冲区实际上是杀死了间接缓冲区，因
+为它不能再成为当前缓冲区。
 
 @deffn Command make-indirect-buffer base-buffer name &optional clone
-This creates and returns an indirect buffer named @var{name} whose
-base buffer is @var{base-buffer}.  The argument @var{base-buffer} may
-be a live buffer or the name (a string) of an existing buffer.  If
-@var{name} is the name of an existing buffer, an error is signaled.
+创建并返回一个名为@var{name}的间接缓冲区，其基缓冲区为@var{base-buffer}。参数
+@var{base-buffer}可以是一个实时缓冲区，也可以是一个现有缓冲区的名称（一个字符串）。如果@var{name}是一个现有缓冲区的名称，则会发出错误信号。
 
-If @var{clone} is non-@code{nil}, then the indirect buffer originally
-shares the state of @var{base-buffer} such as major mode, minor
-modes, buffer local variables and so on.  If @var{clone} is omitted
-or @code{nil} the indirect buffer's state is set to the default state
-for new buffers.
+如果@var{clone}是非@code{nil}，那么间接缓冲区原来共享@var{base-buffer}的状态
+，如主要模式、次要模式、缓冲区局部变量等。如果省略@var{clone}或者@code{nil}，则间
+接缓冲区的状态被设置为新缓冲区的默认状态。
 
-If @var{base-buffer} is an indirect buffer, its base buffer is used as
-the base for the new buffer.  If, in addition, @var{clone} is
-non-@code{nil}, the initial state is copied from the actual base
-buffer, not from @var{base-buffer}.
+如果@var{base-buffer}是一个间接缓冲区，那么它的基缓冲区将被用作新缓冲区的基数。此
+外，如果@var{clone}是非@code{nil}，那么初始状态将从实际的基缓冲区中复制，而不是从
+@var{base-buffer}中复制。
 @end deffn
 
 @deffn Command clone-indirect-buffer newname display-flag &optional norecord
-This function creates and returns a new indirect buffer that shares
-the current buffer's base buffer and copies the rest of the current
-buffer's attributes.  (If the current buffer is not indirect, it is
-used as the base buffer.)
+这个函数创建并返回一个新的间接缓冲区，它共享当前缓冲区的基缓冲区，并复制当前缓冲区的其
+余属性。如果当前缓冲区不是间接缓冲区，则将其作为基缓冲区使用。
 
-If @var{display-flag} is non-@code{nil}, as it always is in
-interactive calls, that means to display the new buffer by calling
-@code{pop-to-buffer}.  If @var{norecord} is non-@code{nil}, that means
-not to put the new buffer to the front of the buffer list.
+如果@var{display-flag}是非@code{nil}，就像在交互式调用中一样，这意味着通过调用
+@code{pop-to-buffer}来显示新缓冲区。如果@var{norecord}是非@code{nil}，则意味
+着不将新的缓冲区放在缓冲区列表的前面。
 @end deffn
 
 @defun buffer-base-buffer &optional buffer
-This function returns the base buffer of @var{buffer}, which defaults
-to the current buffer.  If @var{buffer} is not indirect, the value is
-@code{nil}.  Otherwise, the value is another buffer, which is never an
-indirect buffer.
+该函数返回@var{buffer}的基缓冲区，默认为当前缓冲区。如果@var{buffer}不是间接缓冲
+区，那么返回的值是@code{nil}。否则，返回的值是另一个缓冲区，而这个缓冲区绝不是间接
+缓冲区。
 @end defun
 
-@node Swapping Text
+@node 交换文本
 @section Swapping Text Between Two Buffers
 @cindex swap text between buffers
 @cindex virtual buffers
 
-  Specialized modes sometimes need to let the user access from the
-same buffer several vastly different types of text.  For example, you
-may need to display a summary of the buffer text, in addition to
-letting the user access the text itself.
+  特殊的模式有时需要让用户从同一个缓冲区访问几种不同类型的文本，例如，你可能需要显示
+缓冲区文本的摘要，还要让用户访问文本本身。
 
-  This could be implemented with multiple buffers (kept in sync when
-the user edits the text), or with narrowing (@pxref{Narrowing}).  But
-these alternatives might sometimes become tedious or prohibitively
-expensive, especially if each type of text requires expensive
-buffer-global operations in order to provide correct display and
-editing commands.
+  这可以通过多个缓冲区（当用户编辑文本时保持同步），或者通过缩小（
+@pxref{Narrowing}）来实现。但是这些替代方案有时可能会变得乏味或过于昂贵，尤其是当
+每种类型的文本都需要昂贵的缓冲区全局操作以提供正确的显示和编辑命令时。
 
-  Emacs provides another facility for such modes: you can quickly swap
-buffer text between two buffers with @code{buffer-swap-text}.  This
-function is very fast because it doesn't move any text, it only
-changes the internal data structures of the buffer object to point to
-a different chunk of text.  Using it, you can pretend that a group of
-two or more buffers are actually a single virtual buffer that holds
-the contents of all the individual buffers together.
+  Emacs为这类模式提供了另一个设施：你可以用@code{buffer-swap-text}在两个缓冲区
+之间快速交换缓冲区文本。这个函数的速度非常快，因为它不会移动任何文本，它只是改变缓冲区
+对象的内部数据结构，使其指向不同的文本块。使用它，你可以假装由两个或多个缓冲区组成的一
+组缓冲区实际上是一个单一的虚拟缓冲区，它将所有单个缓冲区的内容保存在一起。
 
 @defun buffer-swap-text buffer
-This function swaps the text of the current buffer and that of its
-argument @var{buffer}.  It signals an error if one of the two buffers
-is an indirect buffer (@pxref{Indirect Buffers}) or is a base buffer
-of an indirect buffer.
+这个函数交换当前缓冲区和参数@var{buffer}的文本。如果两个缓冲区中的一个是间接缓冲区(
+@pxref{间接缓冲区})或者是间接缓冲区的基缓冲区，它就会发出错误信号。
 
-All the buffer properties that are related to the buffer text are
-swapped as well: the positions of point and mark, all the markers, the
-overlays, the text properties, the undo list, the value of the
-@code{enable-multibyte-characters} flag (@pxref{Text Representations,
-enable-multibyte-characters}), etc.
+所有与缓冲区文本相关的缓冲区属性也会被交换：点和标记的位置、所有标记、覆盖、文本属性、
+撤消列表、@code{enable-multibyte-characters}标志的值（
+@pxref{Text Representations, enable-multibyte-characters}）等。
 
-@strong{Warning:} If this function is called from within a
-@code{save-excursion} form, the current buffer will be set to
-@var{buffer} upon leaving the form, since the marker used by
-@code{save-excursion} to save the position and buffer will be swapped
-as well.
+@strong{Warning:} 如果在@code{save-excursion}表单中调用这个函数，那么在离开表
+单时，当前的缓冲区将被设置为@var{buffer}，因为@code{save-excursion}用于保存位
+置和缓冲区的标记也将被交换。
 @end defun
 
-  If you use @code{buffer-swap-text} on a file-visiting buffer, you
-should set up a hook to save the buffer's original text rather than
-what it was swapped with.  @code{write-region-annotate-functions}
-works for this purpose.  You should probably set
-@code{buffer-saved-size} to @minus{}2 in the buffer, so that changes
-in the text it is swapped with will not interfere with auto-saving.
+  如果你在访问文件的缓冲区上使用@code{buffer-swap-text}，你应该设置一个钩子来保
+存缓冲区的原始文本，而不是与之交换的文本。
+@code{write-region-annotate-functions}可以用于这个目的。您可能应该在缓冲区中
+把@code{buffer-saved-size}设置为@minus{}2，这样一来，与它交换的文本的变化就不
+会影响自动保存。
 
-@node Buffer Gap
+@node 缓冲区间隙
 @section The Buffer Gap
 @cindex buffer gap
 
-  Emacs buffers are implemented using an invisible @dfn{gap} to make
-insertion and deletion faster.  Insertion works by filling in part of
-the gap, and deletion adds to the gap.  Of course, this means that the
-gap must first be moved to the locus of the insertion or deletion.
-Emacs moves the gap only when you try to insert or delete.  This is why
-your first editing command in one part of a large buffer, after
-previously editing in another far-away part, sometimes involves a
-noticeable delay.
+  Emacs的缓冲区是用一个不可见的@dfn{gap}来实现的，这样可以使插入和删除速度更快。插
+入的工作原理是填入部分空隙，而删除则是在空隙上添加内容。当然，这意味着必须先将间隙移动
+到插入或删除的位置。Emacs只有在你尝试插入或删除时才会移动空隙。这就是为什么你在一个大
+缓冲区的某一部分中的第一条编辑命令，在之前编辑了另一个很远的部分之后，有时会有一个明显
+的延迟。
 
-  This mechanism works invisibly, and Lisp code should never be affected
-by the gap's current location, but these functions are available for
-getting information about the gap status.
+  这种机制的工作是无形的，Lisp代码应该永远不会受到gap当前位置的影响，但是这些函数可
+以用来获取gap状态的信息。
 
 @defun gap-position
-This function returns the current gap position in the current buffer.
+该函数返回当前缓冲区的间隙位置。
 @end defun
 
 @defun gap-size
-This function returns the current gap size of the current buffer.
+该函数返回当前缓冲区的间隙大小。
 @end defun

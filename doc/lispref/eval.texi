@@ -22,8 +22,8 @@ function @code{eval}.
 @menu
 * Intro Eval::     Evaluation in the scheme of things.
 * Forms::          How various sorts of objects are evaluated.
-* Quoting::        Avoiding evaluation (to put constants in the program).
-* Backquote::      Easier construction of list structure.
+* 引用::        阻止运算（为了在程序中加入常量）。
+* 反引用::      更容易构建列表结构。
 * Eval::           How to invoke the Lisp interpreter explicitly.
 * Deferred Eval::  Deferred and lazy evaluation of forms.
 @end menu
@@ -504,7 +504,7 @@ Emacs Lisp with a reference to where each is described.
 @pxref{Sequencing}
 
 @item quote
-@pxref{Quoting}
+@pxref{引用}
 
 @item save-current-buffer
 @pxref{Current Buffer}
@@ -552,8 +552,8 @@ real definition loaded from that file.  The way to arrange for an
 autoload object to appear as a symbol's function definition is
 described in @ref{Autoload}.
 
-@node Quoting
-@section Quoting
+@node 引用
+@section 引用
 @cindex forms, quote
 
   The special form @code{quote} returns its single argument, as written,
@@ -571,13 +571,12 @@ The returned value is a constant, and should not be modified.
 @cindex @samp{'} for quoting
 @cindex quoting using apostrophe
 @cindex apostrophe for quoting
-Because @code{quote} is used so often in programs, Lisp provides a
-convenient read syntax for it.  An apostrophe character (@samp{'})
-followed by a Lisp object (in read syntax) expands to a list whose first
-element is @code{quote}, and whose second element is the object.  Thus,
-the read syntax @code{'x} is an abbreviation for @code{(quote x)}.
 
-Here are some examples of expressions that use @code{quote}:
+由于@code{quote}在程序中使用频率很高，Lisp提供了一个名为方便的读取语法。撇号字符
+(@samp{'})后面跟着一个Lisp对象（在读取语法中），扩展为一个列表，其第一个元素是
+@code{quote}，其第二个元素是对象。 因此读语法 @code{'x} 是 @code{(quote x)} 的缩写。
+
+下面是一些使用@code{quote}的表达式的例子：
 
 @example
 @group
@@ -606,35 +605,32 @@ Here are some examples of expressions that use @code{quote}:
 @end group
 @end example
 
-  Although the expressions @code{(list '+ 1 2)} and @code{'(+ 1 2)}
-both yield lists equal to @code{(+ 1 2)}, the former yields a
-freshly-minted mutable list whereas the latter yields a constant list
-built from conses that may be shared with other constants.
-@xref{Constants and Mutability}.
+  虽然表达式@code{(list '+ 1 2)}和@code{'(+ 1 2)}都产生了等于@code{(+ 1 2)}的列表，但前者产
+生了一个新构建的可变列表而后者产生的是一个由很多cons建立的常量列表，这个常量可以与其他常量共享。
+@xref{常量和可变性}。
 
-  Other quoting constructs include @code{function} (@pxref{Anonymous
-Functions}), which causes an anonymous lambda expression written in Lisp
-to be compiled, and @samp{`} (@pxref{Backquote}), which is used to quote
-only part of a list, while computing and substituting other parts.
+  其他的引用结构包括 @code{function} (@pxref{匿名函数})，它导致一个用Lisp写的匿名
+lambda表达式编译，以及@samp{`} (@pxref{反引号})，用于引用一部分列表，而计算和替换剩下的部分。
 
-@node Backquote
-@section Backquote
+
+@node 反引号
+@section 反引号
 @cindex backquote (list substitution)
 @cindex ` (list substitution)
 @findex `
 @cindex forms, backquote
 
-  @dfn{Backquote constructs} allow you to quote a list, but
-selectively evaluate elements of that list.  In the simplest case, it
-is identical to the special form
+  @dfn{后引号结构}允许您引用一个列表，但是选择性地运算该列表的元素。在最简单的情况下，它
+与特殊形式相同
+
 @iftex
 @code{quote}.
 @end iftex
 @ifnottex
 @code{quote}
-(described in the previous section; @pxref{Quoting}).
+(在上一节中描述的；@pxref{引用})。
 @end ifnottex
-For example, these two forms yield identical results:
+例如，这两种形式会产生相同的结果：
 
 @example
 @group
@@ -648,10 +644,8 @@ For example, these two forms yield identical results:
 @end example
 
 @findex , @r{(with backquote)}
-  The special marker @samp{,} inside of the argument to backquote
-indicates a value that isn't constant.  The Emacs Lisp evaluator
-evaluates the argument of @samp{,}, and puts the value in the list
-structure:
+  在参数内的特殊标记@samp{,}，用于反引号。表示一个不固定的值。 Emacs Lisp运算器运算
+@samp{,}的参数，并将其值放在列表结构中：
 
 @example
 @group
@@ -661,8 +655,7 @@ structure:
 @end example
 
 @noindent
-Substitution with @samp{,} is allowed at deeper levels of the list
-structure also.  For example:
+在列表结构的更深层次上，也允许用@samp{,}进行替换。 例如：
 
 @example
 @group
@@ -673,11 +666,9 @@ structure also.  For example:
 
 @findex ,@@ @r{(with backquote)}
 @cindex splicing (with backquote)
-  You can also @dfn{splice} an evaluated value into the resulting list,
-using the special marker @samp{,@@}.  The elements of the spliced list
-become elements at the same level as the other elements of the resulting
-list.  The equivalent code without using @samp{`} is often unreadable.
-Here are some examples:
+  你也可以使用特殊的标记@samp{,@@}将一个计算过的值@dfn{splice}到结果列表中。拼接列表中的元素
+成为与结果列表中其他元素处于同一级别的元素。不使用@samp{`}的等价代码通常是不可读的。
+下面是一些例子。
 
 @example
 @group
@@ -709,9 +700,8 @@ Here are some examples:
 @end group
 @end example
 
-If a subexpression of a backquote construct has no substitutions or
-splices, it acts like @code{quote} in that it yields constant conses,
-vectors and strings that should not be modified.
+如果 backquote 构造的子表达式没有替换或拼接，那么它的作用就像@code{quote}一样，它产生的是
+不应该被修改的常量cons、向量和字符串。
 
 @node Eval
 @section Eval

@@ -645,7 +645,7 @@ or before @samp{)}, @samp{:} or @samp{?}); and
 even if preceded by a non-whitespace character).
 
   Emacs can display an indicator in the @code{fill-column} position
-using the Display fill column indicator mode 
+using the Display fill column indicator mode
 (@pxref{Displaying Boundaries, display-fill-column-indicator}).
 
 @node Fill Prefix

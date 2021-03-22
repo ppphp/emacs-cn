@@ -7,7 +7,8 @@
 @chapter Debugging Lisp Programs
 @cindex debugging lisp programs
 
-  有几种方法可以找到和调查Emacs的问题。
+  There are several ways to find and investigate problems in an Emacs
+Lisp program.
 
 @itemize @bullet
 @item
@@ -977,64 +978,80 @@ Testing}).  These features partly duplicate each other, and it would
 be cleaner to combine them.
 
 
-@node 性能剖析
-@section 性能剖析
+@node Profiling
+@section Profiling
+@cindex profiling
 @cindex profile
-@cindex 性能剖析
-@cindex 性能分析
-@cindex 测量资源使用状况
-@cindex 内存使用状况
+@cindex performance analysis
+@cindex measuring resource usage
+@cindex memory usage
 
-如果您的程序正常运行，但运行速度不够快，并且您想使其运行得更快或更有效，那么第一件事
-就是@dfn{性能分析}您的代码，以便您知道它在哪里花费最多的执行时间。 如果您发现某个特定
-功能在执行时间中占很大比例，则可以开始寻找优化该功能的方法。
+If your program is working correctly, but not fast enough, and you
+want to make it run more quickly or efficiently, the first thing to do
+is @dfn{profile} your code so that you know where it spends most of
+the execution time.  If you find that one particular function is
+responsible for a significant portion of the execution time, you can
+start looking for ways to optimize that piece.
 
 @findex profiler-start
 @findex profiler-report
 @findex profiler-stop
+Emacs has built-in support for this.  To begin profiling, type
+@kbd{M-x profiler-start}.  You can choose to profile by processor
+usage, memory usage, or both.  Then run the code you'd like to speed
+up.  After that, type @kbd{M-x profiler-report} to display a summary
+buffer for each resource (cpu and memory) that you chose to profile.
+The names of the report buffers include the times at which the reports
+were generated, so you can generate another report later on without
+erasing previous results.  When you have finished profiling, type
+@kbd{M-x profiler-stop} (there is a small overhead associated with
+profiling, so we don't recommend leaving it active except when you are
+actually running the code you want to examine).
 
-Emacs对此具有内置支持。要开始分析，请键入@kbd{M-x profiler-start}。 您可以
-选择按处理器使用情况，内存使用情况或两者同时进行性能剖析。 然后运行您想加快速度的
-代码。之后，键入@kbd{M-x profiler-report}以显示您选择要分析的每个资源（cpu
-和内存）的摘要缓冲区。 报告缓冲区的名称包括生成报告的时间，因此您以后可以生成另一
-个报告而不会删除以前的结果。完成分析后，键入@kbd{M-x profiler-stop}（分析有
-很小的开销，因此，除非您要运行实际上检查的代码，否则我们不建议您将其保持活动状态）。
+The profiler report buffer shows, on each line, a function that was
+called, followed by how much resources (cpu or memory) it used in
+absolute and percentage terms since profiling started.  If a given
+line has a @samp{+} symbol at the left-hand side, you can expand that
+line by typing @kbd{@key{RET}}, in order to see the function(s) called
+by the higher-level function.  Use a prefix argument (@kbd{C-u
+@key{RET}}) to see the whole call tree below a function.  Pressing
+@kbd{@key{RET}} again will collapse back to the original state.
 
-剖析器报告缓冲区在每一行上显示了被调用的函数，以及自分析开始以来，以绝对和百分比形
-式使用了多少资源（cpu或内存）。如果给定的行在左侧有@samp{+}符号，则可以通过键入
-@kbd{@key{RET}}来扩展该行，以查看更高层级代码调用的函数。使用前缀参数
-@kbd{C-u @key{RET}}）可以查看这个函数之下的整个调用树。 再按一次
-@kbd{@key{RET}}将折叠回到原始状态。
-
-按@kbd{j}或@kbd{mouse-2}跳至该点的函数定义。按@kbd{d}查看函数的文档。您可以
-使用@kbd{C-x C-w}将配置文件保存到文件中。 您可以使用@kbd{=}比较两个配置文件。
+Press @kbd{j} or @kbd{mouse-2} to jump to the definition of a function
+at point.  Press @kbd{d} to view a function's documentation.  You can
+save a profile to a file using @kbd{C-x C-w}.  You can compare two
+profiles using @kbd{=}.
 
 @c FIXME reversed calltree?
 
 @cindex @file{elp.el}
-@cindex 程序计时
-
-@file{elp}库提供了另一种方法，当您事先知道要分析哪些Lisp函数时，该方法很有用。
-使用该库，首先需要将@code{elp-function-list}设置为函数符号列表-这些是您要剖
-析的函数。 然后键入
-@w{@kbd{M-x elp-instrument-list @key{RET} nil @key{RET}}}，以对这些
-函数进行性能分析。 运行要分析的代码后，调用@w{@kbd{M-x elp-results}}以显示
-当前结果。有关更多详细说明，请参见文件@file{elp.el}。 这种方法仅限于用Lisp编
-写的性能分析功能，它无法分析Emacs原语。
+@cindex timing programs
+The @file{elp} library offers an alternative approach, which is useful
+when you know in advance which Lisp function(s) you want to profile.
+Using that library, you begin by setting @code{elp-function-list} to
+the list of function symbols---those are the functions you want to
+profile.  Then type @w{@kbd{M-x elp-instrument-list @key{RET} nil
+@key{RET}}} to arrange for profiling those functions.  After running
+the code you want to profile, invoke @w{@kbd{M-x elp-results}} to
+display the current results.  See the file @file{elp.el} for more
+detailed instructions.  This approach is limited to profiling
+functions written in Lisp, it cannot profile Emacs primitives.
 
 @cindex @file{benchmark.el}
-@cindex 性能测试
-您可以使用@file{benchmark}库来评估评估各个Emacs Lisp表单所花费的时间。 请参见
-@file{benchmark.el}，@code{benchmark-run}，
-@code{benchmark-run-compiled}和@code {benchmark-progn}中的宏。 您也可以
-使用@code{benchmark}命令交互地计时表单。
+@cindex benchmarking
+You can measure the time it takes to evaluate individual Emacs Lisp
+forms using the @file{benchmark} library.  See the macros
+@code{benchmark-run}, @code{benchmark-run-compiled} and
+@code{benchmark-progn} in @file{benchmark.el}.  You can also use the
+@code{benchmark} command for timing forms interactively.
 
 @c Not worth putting in the printed manual.
 @ifnottex
-@cindex configure的--enable-profiling选项
-要在Emacs的C代码级别上分析Emacs，可以使用@command{configure}的
-@option{--enable-profiling}选项对其进行构建。 当Emacs退出时，它将生成一个文件
-@file{gmon.out}，您可以使用@command{gprof}实用程序进行检查。 此功能主要用于调
-试Emacs。 实际上，它停止了上述Lisp级别的@kbd{M-x profiler- @ dots {}}命令的
-工作。
+@cindex --enable-profiling option of configure
+To profile Emacs at the level of its C code, you can build it using the
+@option{--enable-profiling} option of @command{configure}.  When Emacs
+exits, it generates a file @file{gmon.out} that you can examine using
+the @command{gprof} utility.  This feature is mainly useful for
+debugging Emacs.  It actually stops the Lisp-level @kbd{M-x
+profiler-@dots{}} commands described above from working.
 @end ifnottex
