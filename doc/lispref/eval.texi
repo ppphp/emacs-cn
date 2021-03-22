@@ -22,8 +22,8 @@ function @code{eval}.
 @menu
 * Intro Eval::     Evaluation in the scheme of things.
 * Forms::          How various sorts of objects are evaluated.
-* 引用::        阻止运算（为了在程序中加入常量）。
-* 反引用::      更容易构建列表结构。
+* 引号::        阻止运算（为了在程序中加入常量）。
+* 反引号::      更容易构建列表结构。
 * Eval::           How to invoke the Lisp interpreter explicitly.
 * Deferred Eval::  Deferred and lazy evaluation of forms.
 @end menu
@@ -552,8 +552,8 @@ real definition loaded from that file.  The way to arrange for an
 autoload object to appear as a symbol's function definition is
 described in @ref{Autoload}.
 
-@node 引用
-@section 引用
+@node 引号
+@section 引号
 @cindex forms, quote
 
   The special form @code{quote} returns its single argument, as written,
@@ -628,7 +628,7 @@ lambda表达式编译，以及@samp{`} (@pxref{反引号})，用于引用一部�
 @end iftex
 @ifnottex
 @code{quote}
-(在上一节中描述的；@pxref{引用})。
+(在上一节中描述的；@pxref{引号})。
 @end ifnottex
 例如，这两种形式会产生相同的结果：
 

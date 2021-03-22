@@ -174,7 +174,7 @@ To view this manual in other formats, click
 @end ifnottex
 
 @menu
-* Introduction::            Introduction and conventions used.
+* 介绍::            Introduction and conventions used.
 
 * Lisp Data Types::         Data types of objects in Emacs Lisp.
 * Numbers::                 Numbers and arithmetic functions.
@@ -189,7 +189,7 @@ To view this manual in other formats, click
 
 * Evaluation::              How Lisp expressions are evaluated.
 * Control Structures::      Conditionals, loops, nonlocal exits.
-* Variables::               Using symbols in programs to stand for values.
+* 变量::               Using symbols in programs to stand for values.
 * Functions::               A function is a Lisp program
                               that can be invoked from other functions.
 * Macros::                  Macros are a way to extend the Lisp language.
@@ -208,9 +208,9 @@ To view this manual in other formats, click
 * Documentation::           Writing and using documentation strings.
 
 * Files::                   Accessing files.
-* Backups and Auto-Saving:: Controlling how backups and auto-save
+* 备份和自动保存:: Controlling how backups and auto-save
                               files are made.
-* Buffers::                 Creating and using buffer objects.
+* 缓冲区::                 Creating and using buffer objects.
 * Windows::                 Manipulating windows and displaying buffers.
 * Frames::                  Making multiple system-level windows.
 * Positions::               Buffer positions and motion functions.
@@ -221,11 +221,11 @@ To view this manual in other formats, click
 * Non-ASCII Characters::    Non-ASCII text in buffers and strings.
 * Searching and Matching::  Searching buffers for strings or regexps.
 * Syntax Tables::           The syntax table controls word and list parsing.
-* Abbrevs::                 How Abbrev mode works, and its data structures.
+* 缩写::                 How Abbrev mode works, and its data structures.
 
 * Threads::                 Concurrency in Emacs Lisp.
 * Processes::               Running and communicating with subprocesses.
-* Display::                 Features for controlling the screen display.
+* 显示::                 Features for controlling the screen display.
 * System Interface::        Getting the user id, system type, environment
                               variables, and other such things.
 
@@ -241,7 +241,7 @@ Appendices
                               internal data structures.
 * Standard Errors::         List of some standard error symbols.
 * Standard Keymaps::        List of some standard keymaps.
-* Standard Hooks::          List of some standard hook variables.
+* 标准钩子::          List of some standard hook variables.
 
 * Index::                   Index including concepts, functions, variables,
                               and other terms.
@@ -262,30 +262,28 @@ Appendices
 Here are other nodes that are subnodes of those already listed,
 mentioned here so you can get to them in one step:
 
-Introduction
+介绍
 
-* Caveats::                 Flaws and a request for help.
-* Lisp History::            Emacs Lisp is descended from Maclisp.
-* Conventions::             How the manual is formatted.
-* Version Info::            Which Emacs version is running?
-* Acknowledgments::         The authors, editors, and sponsors of this manual.
+* 注意事项::            缺陷和求助。
+* Lisp的历史::         Emacs Lisp是Maclisp的后代。
+* 惯例::               本手册的格式。
+* 版本信息::           正在运行的Emacs版本是什么？
+* 鸣谢::               本手册的作者、编辑和赞助商。
 
-Conventions
+惯例
 
-* Some Terms::              Explanation of terms we use in this manual.
-* nil and t::               How the symbols @code{nil} and @code{t} are used.
-* Evaluation Notation::     The format we use for examples of evaluation.
-* Printing Notation::       The format we use when examples print text.
-* Error Messages::          The format we use for examples of errors.
-* Buffer Text Notation::    The format we use for buffer contents in examples.
-* Format of Descriptions::  Notation for describing functions, variables, etc.
+* 一些术语::       解释我们在本手册中使用的术语。
+* nil和t::         符号@code{nil}和@code{t}的使用方法。
+* 运行记号::       我们运行例子时使用的格式。
+* 打印记号::       我们在例子打印文本时使用的格式。
+* 错误信息::       我们用于错误示例的格式。
+* 缓冲区文本记号:: 我们用于例子中缓冲区内容的格式。
+* 描述的格式::     描述函数、变量等的符号。
 
-Format of Descriptions
+描述的格式
 
-* A Sample Function Description::  A description of an imaginary
-                                     function, @code{foo}.
-* A Sample Variable Description::  A description of an imaginary
-                                     variable, @code{electric-future-map}.
+* 一个样例函数的描述::  一个虚构的函数@code{foo}的描述。
+* 一个样例变量的描述::  一个虚构的变量@code{electric-future-map}的描述。
 
 Lisp Data Types
 
@@ -456,9 +454,8 @@ Evaluation
 
 * Intro Eval::              Evaluation in the scheme of things.
 * Forms::                   How various sorts of objects are evaluated.
-* Quoting::                 Avoiding evaluation (to put constants in
-                              the program).
-* Backquote::               Easier construction of list structure.
+* 引号::        阻止运算（为了在程序中加入常量）。
+* 反引号::      更容易构建列表结构。
 * Eval::                    How to invoke the Lisp interpreter explicitly.
 * Deferred Eval::           Deferred and lazy evaluation of forms.
 
@@ -501,29 +498,25 @@ Errors
 * Handling Errors::         How you can trap errors and continue execution.
 * Error Symbols::           How errors are classified for trapping them.
 
-Variables
+变量
 
-* Global Variables::        Variable values that exist permanently, everywhere.
-* Constant Variables::      Variables that never change.
-* Local Variables::         Variable values that exist only temporarily.
-* Void Variables::          Symbols that lack values.
-* Defining Variables::      A definition says a symbol is used as a variable.
-* Tips for Defining::       Things you should think about when you
-                              define a variable.
-* Accessing Variables::     Examining values of variables whose names
-                              are known only at run time.
-* Setting Variables::       Storing new values in variables.
-* Watching Variables::      Running a function when a variable is changed.
-* Variable Scoping::        How Lisp chooses among local and global values.
-* Buffer-Local Variables::  Variable values in effect only in one buffer.
-* File Local Variables::    Handling local variable lists in files.
-* Directory Local Variables:: Local variables common to all files in a
-                                directory.
-* Connection Local Variables::  Local variables common for remote connections.
-* Variable Aliases::        Variables that are aliases for other variables.
-* Variables with Restricted Values::  Non-constant variables whose value can
-                                        @emph{not} be an arbitrary Lisp object.
-* Generalized Variables::   Extending the concept of variables.
+* 全局变量::            永久存在，到处有效的变量。
+* 常态变量::          不会改变的变量。
+* 局部变量::             仅仅暂时存在的变量。
+* 空变量::              没有值的符号。
+* 定义变量::          一个把符号作为变量使用的定义。
+* 定义变量的提示::           你定义变量时需要想到的事情。
+* 访问变量::         检查变量的只有运行的时候才有名字的变量的值。
+* 设置变量::           在变量里储存新值。
+* 观察变量::          当变量改变时运行函数。
+* 变量作用域::            Lisp如何在局部和全局变量里选择。
+* 缓冲区局部变量::      只在一个缓冲区内生效的变量值。
+* 文件局部变量::        处理作用于文件里的局部变量列表。
+* 文件夹局部变量::   作用于一个文件夹下所有文件的局部变量。
+* 连接局部变量::  作用于远程连接的局部变量。
+* 变量别名::            是别的变量别名的变量。
+* 限定值的变量::  值不能是任意Lisp对象的非常量变量。
+* 广义变量::       拓展变量的概念。
 
 Scoping Rules for Variable Bindings
 
@@ -651,7 +644,7 @@ Debugging Lisp Programs
 * Edebug::                  A source-level Emacs Lisp debugger.
 * Syntax Errors::           How to find syntax errors.
 * Test Coverage::           Ensuring you have tested all branches in your code.
-* Profiling::               Measuring the resources that your code uses.
+* 性能剖析::               Measuring the resources that your code uses.
 
 The Lisp Debugger
 
@@ -754,33 +747,31 @@ Completion
 * Programmed Completion::   Writing your own completion function.
 * Completion in Buffers::   Completing text in ordinary buffers.
 
-Command Loop
+命令循环
 
-* Command Overview::    How the command loop reads commands.
-* Defining Commands::   Specifying how a function should read arguments.
-* Interactive Call::    Calling a command, so that it will read arguments.
-* Distinguish Interactive::     Making a command distinguish interactive calls.
-* Command Loop Info::   Variables set by the command loop for you to examine.
-* Adjusting Point::     Adjustment of point after a command.
-* Input Events::        What input looks like when you read it.
-* Reading Input::       How to read input events from the keyboard or mouse.
-* Special Events::      Events processed immediately and individually.
-* Waiting::             Waiting for user input or elapsed time.
-* Quitting::            How @kbd{C-g} works.  How to catch or defer quitting.
-* Prefix Command Arguments::    How the commands to set prefix args work.
-* Recursive Editing::   Entering a recursive edit,
-                          and why you usually shouldn't.
-* Disabling Commands::  How the command loop handles disabled commands.
-* Command History::     How the command history is set up, and how accessed.
-* Keyboard Macros::     How keyboard macros are implemented.
+* 命令概述::   命令循环如何读取命令。
+* 定义命令::   指定一个函数应该如何读取参数。
+* 交互式调用:: 调用一个命令，使其读取参数。
+* 区分交互式:: 使一个命令与交互式调用不同。
+* 命令循环信息::令循环设置的变量，供你检查。
+* 调整点::    命令后调整光标点。
+* 输入事件::  读取输入时的样子。
+* 读取输入::  从键盘或鼠标读取输入事件的方法。
+* 特殊事件::  立即和单独处理的事件。
+* 等待::     等待用户的输入或过期的时间。
+* 退出::     @kbd{C-g}的工作方式。 如何捕捉或推迟退出。
+* 前缀命令参数:: 设置前缀参数的命令如何工作。
+* 递归编辑::  进入递归编辑,以及为什么你通常不应该这样做。
+* 禁用命令::  命令循环如何处理被禁用的命令。
+* 命令历史::  如何设置命令历史，以及如何访问。
+* 键盘宏::    键盘宏的实现方式。
 
-Defining Commands
+定义命令
 
-* Using Interactive::       General rules for @code{interactive}.
-* Interactive Codes::       The standard letter-codes for reading arguments
-                              in various ways.
-* Interactive Examples::    Examples of how to read interactive arguments.
-* Generic Commands::        Select among command alternatives.
+* 使用交互式::  @code{interactive}的一般规则。
+* 交互式代码::  各种方式读取参数的标准字母代码。
+* 交互式例子::  如何读取交互式参数的例子。
+* 通用命令::    在命令替代品中进行选择。
 
 
 Input Events
@@ -999,78 +990,63 @@ File Format Conversion
 
 Backups and Auto-Saving
 
-* Backup Files::            How backup files are made; how their names
-                              are chosen.
-* Auto-Saving::             How auto-save files are made; how their
-                              names are chosen.
-* Reverting::               @code{revert-buffer}, and how to customize
-                              what it does.
+* 备份文件::   备份文件如何制作；文件名称如何选择。
+* 自动保存::    自动保存文件如何制作;文件名称如何选择。
+* 恢复::      @code{revert-buffer}，如何定制行为。
 
 Backup Files
 
-* Making Backups::          How Emacs makes backup files, and when.
-* Rename or Copy::          Two alternatives: renaming the old file
-                              or copying it.
-* Numbered Backups::        Keeping multiple backups for each source file.
-* Backup Names::            How backup file names are computed; customization.
+* 制作备份::    Emacs如何制作备份文件，以及何时制作。
+* 重命名或复制::     两个选择：重命名旧文件或复制它。
+* 编号备份:: 为每个源文件保留多个备份。  为每个源文件保留多个备份。
+* 备份名称::      备份文件名的计算方式；自定义。
 
 Buffers
 
-* Buffer Basics::           What is a buffer?
-* Current Buffer::          Designating a buffer as current
-                              so that primitives will access its contents.
-* Buffer Names::            Accessing and changing buffer names.
-* Buffer File Name::        The buffer file name indicates which file
-                              is visited.
-* Buffer Modification::     A buffer is @dfn{modified} if it needs to be saved.
-* Modification Time::       Determining whether the visited file was changed
-                              behind Emacs's back.
-* Read Only Buffers::       Modifying text is not allowed in a
-                              read-only buffer.
-* Buffer List::             How to look at all the existing buffers.
-* Creating Buffers::        Functions that create buffers.
-* Killing Buffers::         Buffers exist until explicitly killed.
-* Indirect Buffers::        An indirect buffer shares text with some
-                              other buffer.
-* Swapping Text::           Swapping text between two buffers.
-* Buffer Gap::              The gap in the buffer.
+* 缓冲区基础::   什么是缓冲区？
+* 当前缓冲区::   指定缓冲区为当前缓冲区以便原语能够访问其内容。
+* 缓冲区名称::   访问和更改缓冲区名称。
+* 缓冲区文件名:: 指示被缓冲区访问的文件的文件名。
+* 缓冲区修改::   如果需要保存缓冲区，则是@dfn{modified}的。
+* 修改时间::    判断被访问的文件是否在Emacs之外被修改。
+* 只读缓冲区::  只读缓冲区中不允许修改文本。
+* 缓冲区列表::  如何查看所有现有的缓冲区。
+* 创建缓冲区::  创建缓冲区的函数。
+* 杀死缓冲区::  缓冲区一直存在，直到被明确杀死。
+* 间接缓冲区::  间接缓冲区与其他缓冲区共享文本。
+* 交换文本::    在两个缓冲区之间交换文本。
+* 缓冲区间隙::  缓冲区的间隙。
 
 Windows
 
-* Basic Windows::           Basic information on using windows.
-* Windows and Frames::      Relating windows to the frame they appear on.
-* Window Sizes::            Accessing a window's size.
-* Resizing Windows::        Changing the sizes of windows.
-* Preserving Window Sizes:: Preserving the size of windows.
-* Splitting Windows::       Splitting one window into two windows.
-* Deleting Windows::        Deleting a window gives its space to other windows.
-* Recombining Windows::     Preserving the frame layout when splitting and
-                              deleting windows.
-* Selecting Windows::       The selected window is the one that you edit in.
-* Cyclic Window Ordering::  Moving around the existing windows.
-* Buffers and Windows::     Each window displays the contents of a buffer.
-* Switching Buffers::       Higher-level functions for switching to a buffer.
-* Displaying Buffers::      Displaying a buffer in a suitable window.
-* Window History::          Each window remembers the buffers displayed in it.
-* Dedicated Windows::       How to avoid displaying another buffer in
-                              a specific window.
-* Quitting Windows::        How to restore the state prior to displaying a
-                              buffer.
-* Side Windows::            Special windows on a frame's sides.
-* Atomic Windows::          Preserving parts of the window layout.
-* Window Point::            Each window has its own location of point.
-* Window Start and End::    Buffer positions indicating which text is
-                              on-screen in a window.
-* Textual Scrolling::       Moving text up and down through the window.
-* Vertical Scrolling::      Moving the contents up and down on the window.
-* Horizontal Scrolling::    Moving the contents sideways on the window.
-* Coordinates and Windows:: Converting coordinates to windows.
-* Mouse Window Auto-selection:: Automatically selecting windows with the mouse.
-* Window Configurations::   Saving and restoring the state of the screen.
-* Window Parameters::       Associating additional information with windows.
-* Window Hooks::            Hooks for scrolling, window size changes,
-                              redisplay going past a certain point,
-                              or window configuration changes.
+* 基本窗口::         关于使用窗口的基本信息。
+* 窗口和窗框::       将窗口与它们所处的窗框联系起来。
+* 窗口大小::         访问窗口的大小。
+* 调整窗口大小::      改变窗口的大小。
+* 保留窗口大小::      保留窗口的大小。
+* 分割窗口::         创建新窗口。
+* 删除窗口::         从窗框中删除窗口。
+* 重新组合窗口::      在分割和删除窗口时保留框架布局。
+* 选择窗口::         被选中的窗口就是你编辑的窗口。
+* 循环窗口排序::      在现有窗口中移动。
+* 缓冲区和窗口::      每个窗口都会显示一个缓冲区的内容。
+* 切换缓冲区::        切换缓冲区的高级功能。
+* 显示缓冲区::        在合适的窗口中显示缓冲区。
+* 窗口历史记录::      每个窗口都会记住显示在窗口中的缓冲区。
+* 专用窗口::         如何避免在特定窗口中显示另一个缓冲区。
+* 退出窗口::         如何恢复显示缓冲区前的状态。
+* 侧面窗口::         在窗框侧面的特殊窗口。
+* 原子窗口::        保留窗口布局的一部分。
+* 窗口点::          每个窗口都有自己的点的位置。
+* 窗口开始和结束::    缓冲区位置，表示窗口中哪些文字在屏幕上。
+* 文本滚动::        在窗口中上下移动文字。
+* 垂直滚动::         在窗口中上下移动文本。
+* 水平滚动::        在窗口中横向移动内容。
+* 坐标和窗口::       將座標轉換為視窗。
+* 鼠标自动选择窗口:: 用鼠标自动选择窗口。
+* 窗口配置::        保存和恢复屏幕状态。
+* 窗口参数::        将附加信息与窗口关联。
+* 窗口钩子::        钩子用于滚动、改变窗口大小、重新显示到某一点或改变窗口配置。
 
 Displaying Buffers
 
@@ -1347,17 +1323,17 @@ Parsing Expressions
 * Low-Level Parsing::       Parsing across a specified region.
 * Control Parsing::         Parameters that affect parsing.
 
-Abbrevs and Abbrev Expansion
+缩写和缩写展开
 
-* Abbrev Tables::           Creating and working with abbrev tables.
-* Defining Abbrevs::        Specifying abbreviations and their expansions.
-* Abbrev Files::            Saving abbrevs in files.
-* Abbrev Expansion::        Controlling expansion; expansion subroutines.
-* Standard Abbrev Tables::  Abbrev tables used by various major modes.
-* Abbrev Properties::       How to read and set abbrev properties.
-                            Which properties have which effect.
-* Abbrev Table Properties:: How to read and set abbrev table properties.
-                            Which properties have which effect.
+* 表格: 缩写表.        创建并使用缩写表.
+* 定义缩写::            定义缩写和展开.
+* 文件: 缩写文件.          文件中保存缩写.
+* 展开: 缩写展开.  控制展开; 展开子路线.
+* 标准缩写表::      在多种主要模式中使用的缩写表.
+* 缩写属性::           如何阅读和设置缩写属性.
+                                什么属性有什么效果.
+* 缩写表属性::     如何阅读和设置缩写表属性.
+                                什么属性有什么效果.
 
 Threads
 
@@ -1410,129 +1386,123 @@ Packing and Unpacking Byte Arrays
 * Bindat Spec::             Describing data layout.
 * Bindat Functions::        Doing the unpacking and packing.
 
-Emacs Display
+Emacs显示
 
-* Refresh Screen::          Clearing the screen and redrawing everything on it.
-* Forcing Redisplay::       Forcing redisplay.
-* Truncation::              Folding or wrapping long text lines.
-* The Echo Area::           Displaying messages at the bottom of the screen.
-* Warnings::                Displaying warning messages for the user.
-* Invisible Text::          Hiding part of the buffer text.
-* Selective Display::       Hiding part of the buffer text (the old way).
-* Temporary Displays::      Displays that go away automatically.
-* Overlays::                Use overlays to highlight parts of the buffer.
-* Size of Displayed Text::  How large displayed text is.
-* Line Height::             Controlling the height of lines.
-* Faces::                   A face defines a graphics style
-                              for text characters: font, colors, etc.
-* Fringes::                 Controlling window fringes.
-* Scroll Bars::             Controlling scroll bars.
-* Window Dividers::         Separating windows visually.
-* Display Property::        Enabling special display features.
-* Images::                  Displaying images in Emacs buffers.
-* Buttons::                 Adding clickable buttons to Emacs buffers.
-* Abstract Display::        Emacs's Widget for Object Collections.
-* Blinking::                How Emacs shows the matching open parenthesis.
-* Character Display::       How Emacs displays individual characters.
-* Beeping::                 Audible signal to the user.
-* Window Systems::          Which window system is being used.
-* Tooltips::                Tooltip display in Emacs.
-* Bidirectional Display::   Display of bidirectional scripts, such as
-                              Arabic and Farsi.
+* 刷新屏幕::     清理屏幕并重新绘制屏幕上的所有内容。
+* 强制重显::     强制重显
+* 截断::         折叠或包裹长文本行。
+* 回音区::       在屏幕底部显示信息。
+* 警告::         显示用户的警告信息。
+* 隐形文本::     隐藏部分缓冲区文本。
+* 选择性显示::   隐藏部分缓冲区文字（老方法）。
+* 临时显示::     自动消失的显示。
+* 叠加::         使用叠加来突出显示缓冲区的部分内容。
+* 显示文字的大小::显示的文字的大小。 显示文字的大小。
+* 行高::        控制行的高度。
+* 字形::        一个字型定义了文本字符的图形样式，包括字体、颜色等。
+* 边缘::        控制窗口边缘。
+* 滚动条::      控制滚动条。
+* 窗口分割器::  控制窗口的分割。
+* 显示属性::    控制图像、边距、文字大小等。
+* 图像::        在Emacs缓冲区中显示图像。
+* Xwidgets::    在Emacs缓冲区中显示本地部件。
+* 按钮::        在Emacs缓冲区中添加可点击的按钮。
+* 抽象显示::    Emacs的对象集合小部件。
+* 闪烁::        Emacs如何显示匹配的开放括号。
+* 字符显示::    Emacs显示单个字符的方式。
+* 哔哔声::     给用户的声音信号。
+* 窗口系统::   正在使用的窗口系统。
+* 工具提示::   Emacs中的工具提示显示。
+* 双向显示::   显示双向文本，如阿拉伯语和波斯语。
 
-The Echo Area
+回音区
 
-* Displaying Messages::     Explicitly displaying text in the echo area.
-* Progress::                Informing user about progress of a long operation.
-* Logging Messages::        Echo area messages are logged for the user.
-* Echo Area Customization:: Controlling the echo area.
+* 显示信息::    在回音区明确显示文字。
+* 进度::        告知用户长时间操作的进度。
+* 记录信息::    回音区信息为用户记录。
+* 回音区自定义:: 控制回音区。
 
-Reporting Warnings
+警告
 
-* Warning Basics::          Warnings concepts and functions to report them.
-* Warning Variables::       Variables programs bind to customize
-                              their warnings.
-* Warning Options::         Variables users set to control display of warnings.
-* Delayed Warnings::        Deferring a warning until the end of a command.
+* 警告基础::     警告的概念和报告它们的功能。
+* 警告变量::     程序绑定的变量，用于自定义警告。
+* 警告选项::     用户设置变量来控制警告的显示。
+* 延迟警告::     将警告延迟到命令结束。
 
-Overlays
+叠加
 
-* Managing Overlays::       Creating and moving overlays.
-* Overlay Properties::      How to read and set properties.
-                              What properties do to the screen display.
-* Finding Overlays::        Searching for overlays.
+* 管理叠加::   创建和移动叠加。
+* 叠加属性::   如何读取和设置属性。属性对屏幕显示的作用。
+* 寻找叠加::   搜索叠加。
 
-Faces
+字形
 
-* Face Attributes::         What is in a face?
-* Defining Faces::          How to define a face.
-* Attribute Functions::     Functions to examine and set face attributes.
-* Displaying Faces::        How Emacs combines the faces specified for
-                              a character.
-* Face Remapping::          Remapping faces to alternative definitions.
-* Face Functions::          How to define and examine faces.
-* Auto Faces::              Hook for automatic face assignment.
-* Basic Faces::             Faces that are defined by default.
-* Font Selection::          Finding the best available font for a face.
-* Font Lookup::             Looking up the names of available fonts
-                              and information about them.
-* Fontsets::                A fontset is a collection of fonts
-                              that handle a range of character sets.
-* Low-Level Font::          Lisp representation for character display fonts.
+* 字形属性::     什么是字形？
+* 定义字形::     如何定义一个字形。
+* 属性函数::     检查和设置字形属性的函数。
+* 显示字形::     Emacs如何组合字符指定的字形。
+* 字形重映射::   将字形重映射到其他定义。
+* 字形函数::     如何定义和检查字形。
+* 自动字形::     自动字形分配的钩子。
+* 基本字形::     默认定义的字形。
+* 字体选择::     为字形寻找最佳可用字体。
+* 字体查询::     查询可用字体的名称和相关信息。
+* 字体集::       字体集是指处理一系列字符集的字体的集合。
+* 低级字体::     字符显示字体的Lisp表示。
 
-Fringes
+边缘
 
-* Fringe Size/Pos::         Specifying where to put the window fringes.
-* Fringe Indicators::       Displaying indicator icons in the window fringes.
-* Fringe Cursors::          Displaying cursors in the right fringe.
-* Fringe Bitmaps::          Specifying bitmaps for fringe indicators.
-* Customizing Bitmaps::     Specifying your own bitmaps to use in the fringes.
-* Overlay Arrow::           Display of an arrow to indicate position.
+* 边缘尺寸/位置::  指定窗口边缘的位置。
+* 边缘指示器::     在窗口边缘显示指示图标。
+* 边缘光标::       在右侧边缘显示光标。
+* 边缘位图::       为边缘指示器指定位图。
+* 自定义位图::     在边缘指定自己的位图。
+* 叠加箭头::       显示箭头以指示位置。
 
-The @code{display} Property
+@code{display}显示属性
 
-* Replacing Specs::         Display specs that replace the text.
-* Specified Space::         Displaying one space with a specified width.
-* Pixel Specification::     Specifying space width or height in pixels.
-* Other Display Specs::     Displaying an image; adjusting the height,
-                              spacing, and other properties of text.
-* Display Margins::         Displaying text or images to the side of
-                              the main text.
+* 替换规范::     显示取代文字的规范。
+* 指定空白::     显示指定宽度的空白。
+* 像素规格::     以像素为单位指定空间的宽度或高度。
+* 其他显示规格:: 显示图像；调整文字的高度、间距等属性。
+* 显示边距::     在正文的一侧显示文字或图像。
 
-Images
+图像
 
-* Image Formats::           Supported image formats.
-* Image Descriptors::       How to specify an image for use in @code{:display}.
-* XBM Images::              Special features for XBM format.
-* XPM Images::              Special features for XPM format.
-* ImageMagick Images::      Special features available through ImageMagick.
-* Other Image Types::       Various other formats are supported.
-* Defining Images::         Convenient ways to define an image for later use.
-* Showing Images::          Convenient ways to display an image once
-                              it is defined.
-* Multi-Frame Images::      Some images contain more than one frame.
-* Image Cache::             Internal mechanisms of image display.
+* 图像格式::           支持的图像格式。
+* 图像描述符::         如何在@code{:display}中指定一个图像。
+* XBM图像::            XBM格式的特殊功能。
+* XPM图像::            XPM格式的特殊功能。
+* ImageMagick图像::   针对XBM格式的特殊功能。通过ImageMagick提供的特殊
+功能。
+* SVG图像::           创建和操作SVG图像。
+* 其他图像类型::       支持各种其他格式的图像。
+* 定义图像::          方便地定义图像，以便以后使用。
+* 显示图像::          定义图像后，可方便地显示图像。
+* 多帧图像::          方便定义图像后的显示方式。有些图像包含一个以上的画面
+。
+* 图像缓存::          图像显示的内部机制。
 
-Buttons
+按钮
 
-* Button Properties::       Button properties with special meanings.
-* Button Types::            Defining common properties for classes of buttons.
-* Making Buttons::          Adding buttons to Emacs buffers.
-* Manipulating Buttons::    Getting and setting properties of buttons.
-* Button Buffer Commands::  Buffer-wide commands and bindings for buttons.
+* 按钮属性::       具有特殊含义的按钮属性。
+* 按钮类型::       定义按钮类的通用属性。
+* 制作按钮::       为Emacs缓冲区添加按钮。
+* 操作按钮::       获取和设置按钮的属性。
+* 按钮缓冲区命令::  缓冲区内的命令和绑定。
 
-Abstract Display
+抽象显示
 
-* Abstract Display Functions::  Functions in the Ewoc package.
-* Abstract Display Example::    Example of using Ewoc.
+* 抽象显示功能:: Ewoc包中的功能。
+* 抽象显示实例:: Ewoc的使用实例。
 
-Character Display
+字符显示
 
-* Usual Display::       The usual conventions for displaying characters.
-* Display Tables::      What a display table consists of.
-* Active Display Table::  How Emacs selects a display table to use.
-* Glyphs::              How to define a glyph, and what glyphs mean.
-* Glyphless Chars::     How glyphless characters are drawn.
+* 通常的显示::   显示字符的通常惯例。
+* 显示表::      显示表由什么组成。
+* 活动的显示表:: Emacs如何选择要使用的显示表。
+* 字形::        如何定义字形，以及字形的含义。
+* 无字形字符::   如何绘制无字形字符。
 
 Operating System Interface
 

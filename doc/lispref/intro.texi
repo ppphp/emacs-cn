@@ -78,7 +78,7 @@ Lisp变量。
 @cindex Maclisp
 @cindex Common Lisp
   多年来已经建立了几十个Lisp实现，每个都有自己的特质。其中许多是受Maclisp的
-启发，Maclisp是在20世纪60年代由MIT的MAC@项目编写的。最终，Maclisp的后裔的
+启发，Maclisp是在20世纪60年代由MIT的MAC@ 项目编写的。最终，Maclisp的后裔的
 实现者们走到了一起，开发了一个Lisp系统的标准，称为Common Lisp。与此同时，麻
 省理工学院的Gerry Sussman和Guy Steele开发了一种简化但非常强大的Lisp方言，
 称为Scheme。
@@ -155,7 +155,7 @@ Guile。 我们在所有需要扩展的GNU软件中都使用了它。
 
   在Emacs Lisp中，@code{nil}和@code{t}是特殊的符号，它们总是求值到自身。
 这样你就不需要引用它们来作为程序中的常量使用。试图改变它们的值会导致
-@code{setting-constant}错误。@xref{常量变量}。
+@code{setting-constant}错误。@xref{常态变量}。
 
 @defun booleanp object
 如果@var{object}是两个规范的布尔值：@code{t}或@code{nil}之一，则返回非
@@ -169,7 +169,7 @@ Guile。 我们在所有需要扩展的GNU软件中都使用了它。
 @cindex notation
 
   一个可以评估的Lisp表达式被称为@dfn{form}。评估一个表单总是会产生一个结果
-，这个结果是一个Lisp对象，在本手册的例子中，用@samp{@result{}来表示。
+，这个结果是一个Lisp对象，在本手册的例子中，用@samp{@result{}}来表示。
 
 @example
 (car '(1 2))
@@ -223,7 +223,7 @@ Guile。 我们在所有需要扩展的GNU软件中都使用了它。
 @cindex error message notation
 
   一些例子会显示错误信号。这通常会在回声区显示一个错误信息，我们在
-@samp{@error{}开头的一行显示错误信息。请注意，@samp{@error{}}本身不会出现
+@samp{@error{}}开头的一行显示错误信息。请注意，@samp{@error{}}本身不会出现
 在回声区。
 
 @example

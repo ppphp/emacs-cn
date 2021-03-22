@@ -2,7 +2,7 @@
 @c This is part of the GNU Emacs Lisp Reference Manual.
 @c Copyright (C) 1990--1995, 1998--2020 Free Software Foundation, Inc.
 @c See the file elisp.texi for copying conditions.
-@node Display
+@node 显示
 @chapter Emacs Display
 
   本章介绍了一些与Emacs呈现给用户的显示相关的功能。
@@ -124,9 +124,8 @@ Lisp代码中间请求立即尝试重新显示屏幕，而不需要等待输入�
 。@xref{Filling}。
 
   在图形显示器上，窗口边缘的微小箭头图像表示截断和延续的行数(
-@pxref{Fringes})。在文本终端上，窗口最右边一列的@samp{$}表示截断；最右边
-一列的@samp{\}表示绕行。(显示表可以指定替代字符来使用；
-@pxref{Display Tables})。
+@pxref{边缘})。在文本终端上，窗口最右边一列的@samp{$}表示截断；最右边
+一列的@samp{\}表示绕行。(显示表可以指定替代字符来使用；@pxref{显示表})。
 
 @defopt truncate-lines
 如果这个缓冲区本地变量是非@code{nil}，那么超出窗口右边缘的行将被截断；否则
@@ -137,7 +136,7 @@ Lisp代码中间请求立即尝试重新显示屏幕，而不需要等待输入�
 @defopt truncate-partial-width-windows
 @cindex partial-width windows
 这个变量控制@dfn{partial-width}窗口的截行。局部宽度窗口是指不占用整个窗帧
-宽度的窗口(@pxref{Splitting Windows})。如果值是@code{nil}，则截断行数由
+宽度的窗口(@pxref{分割窗口})。如果值是@code{nil}，则截断行数由
 @code{truncat-lines}变量决定。(见上文)。如果值是一个整数@var{n}，如果部分
 宽度窗口的列数少于@var{n}，则无论@code{truncat-lines}的值如何，都会对行进
 行截断；如果部分宽度窗口有@var{n}或更多的列数，则行的截断由
@@ -145,15 +144,15 @@ Lisp代码中间请求立即尝试重新显示屏幕，而不需要等待输入�
 @code{truncat-lines}的值是多少，每个局部宽度窗口的行都会被截断。
 @end defopt
 
-  当在窗口中使用水平滚动（@pxref{Horizontal Scrolling}）时，会强制截断。
+  当在窗口中使用水平滚动（@pxref{水平滚动}）时，会强制截断。
 
 @defvar wrap-prefix
 如果这个缓冲区本地变量是非@code{nil}，它就会定义一个@dfn{wrap prefix}，
 Emacs会在每一个延续行的开头显示这个变量。(如果行被截断，则不会使用
 @code{wrap-prefix}。)它的值可以是一个字符串或图像 (
-@pxref{Other Display Specs})，或者是一段空白空间，如@code{:width}或
-@code{:align-to}显示属性(@pxref{Specified Space})所指定的。该值的解释方
-式与@code{display}文本属性相同。@xref{Display Property}。
+@pxref{其他显示规格})，或者是一段空白空间，如@code{:width}或
+@code{:align-to}显示属性(@pxref{指定空白})所指定的。该值的解释方式与
+@code{display}文本属性相同。@xref{显示属性}。
 
 也可以使用@code{wrap-prefix}文本或覆盖属性，为文本区域指定一个包覆前缀。
 这优先于@code{wrap-prefix}变量。@xref{Special Properties}。
@@ -162,9 +161,9 @@ Emacs会在每一个延续行的开头显示这个变量。(如果行被截断�
 @defvar line-prefix
 如果这个缓冲区本地变量是非@code{nil}，它定义了一个
 @dfn{line prefix}，Emacs会在每一个非延续行开头显示。它的值可以是字符串
-或图像(@pxref{Other Display Specs})，也可以是一段空白，如@code{:width}
-或@code{:align-to}显示属性(@pxref{Specified Space})所指定。该值的解释
-方式与@code{display}文本属性相同。@xref{Display Property}。
+或图像(@pxref{其他显示规格})，也可以是一段空白，如@code{:width}
+或@code{:align-to}显示属性(@pxref{指定空白})所指定。该值的解释
+方式与@code{display}文本属性相同。@xref{显示属性}。
 也可以使用@code{line-prefix}文本或覆盖属性为文本区域指定行前缀。这优先于
 在@code{line-prefix}变量。@xref{Special Properties}。
 @end defvar
@@ -293,9 +292,9 @@ Reverting ‘subr.el’...
 @defun message-or-box format-string &rest arguments
 这个函数像@code{message}一样显示一条消息，但可能会在对话框中显示，而不是在
 回音区显示。如果这个函数在使用鼠标调用的命令中被调用---更准确地说，如果
-@code{last-nonmenu-event}(@pxref{Command Loop Info})是@code{nil}或列表
----使用对话框或弹出菜单来显示消息。否则它使用回声区。(这与@code{y-or-n-p}
-用于做出类似决定的标准相同；参见@ref{Yes-or-No Queries})。
+@code{last-nonmenu-event}(@pxref{命令循环信息})是@code{nil}或列表---使用对
+话框或弹出菜单来显示消息。否则它使用回声区。(这与@code{y-or-n-p}用于做出类似决定的
+标准相同；参见@ref{Yes-or-No Queries})。
 
 您可以通过在调用附近将@code{last-nonmenu-event}绑定一个合适的值来强制使用
 鼠标或回声区。
@@ -716,9 +715,8 @@ Lisp字节编译器就可以这样报告错误，并继续编译其他函数。(
 用函数@code{delay-warning}来实现这一点。
 
 @defun delay-warning type message &optional level buffer-name
-这个函数是@code{display-warning}的延迟对应函数。(
-@pxref{Warning Basics})，并以相同的参数调用它。警告信息被排入
-@code{delayed-warnings-list}。
+这个函数是@code{display-warning}的延迟对应函数。(@pxref{警告基础})，并以相同的
+参数调用它。警告信息被排入@code{delayed-warnings-list}。
 @end defun
 
 @defvar delayed-warnings-list
@@ -730,8 +728,8 @@ Lisp字节编译器就可以这样报告错误，并继续编译其他函数。(
 
 @noindent
 与@code{display-warning}的参数列表具有相同的形式和含义。在运行
-@code{post-command-hook}(@pxref{Command Overview})后，Emacs命令循环会
-立即显示该变量指定的所有警告，然后将其重置为@code{nil}。
+@code{post-command-hook}(@pxref{命令概述})后，Emacs命令循环会立即显示该变量指
+定的所有警告，然后将其重置为@code{nil}。
 @end defvar
 
   需要进一步定制延迟警告机制的程序可以更改@code{delayed-warnings-hook}变
@@ -761,7 +759,7 @@ Lisp字节编译器就可以这样报告错误，并继续编译其他函数。(
 
 @cindex invisible text
 您可以使用@code{invisible}属性使@dfn{invisible}字符不出现在屏幕上。这可以
-是一个文本属性(@pxref{Text Properties})或覆盖属性(@pxref{Overlays})。光
+是一个文本属性(@pxref{Text Properties})或覆盖属性(@pxref{叠加})。光
 标运动也会部分忽略这些字符，如果命令循环在命令后发现点在不可见文本的范围内
 ，就会将点重新定位到文本的另一侧。
 
@@ -980,8 +978,7 @@ Lisp字节编译器就可以这样报告错误，并继续编译其他函数。(
 @end group
 @end example
 
-您可以使用一个显示表格来代替省略号的其他文本（@samp{@dots{}}）。
-@xref{Display Tables}。
+您可以使用一个显示表格来代替省略号的其他文本（@samp{@dots{}}）。@xref{显示表}。
 @end defopt
 
 @node 临时显示
@@ -1105,7 +1102,7 @@ Help模式，那么@code{with-output-to-temp-buffer}就会使这个缓冲区在�
 
 如果且仅当一个窗口是为缓冲区专门创建的，那么它就会被调整大小。特别是，之前
 显示过其他缓冲区的窗口不会被调整大小。默认情况下，该模式使用
-@code{fit-window-to-buffer}(@pxref{Resizing Windows})来调整大小。您可以
+@code{fit-window-to-buffer}(@pxref{调整窗口大小})来调整大小。您可以
 通过自定义下面的@code{temp-buffer-max-height}和
 @code{temp-buffer-max-width}选项来指定不同的函数。
 @end defopt
@@ -1140,7 +1137,7 @@ Help模式，那么@code{with-output-to-temp-buffer}就会使这个缓冲区在�
 
 如果字符串@var{string}不包含控制字符，您可以通过使用@code{before-string}
 属性创建（然后随后删除）一个覆盖层，以更通用的方式完成同样的工作。
-@xref{Overlay Properties}。
+@xref{叠加属性}。
 
 如果@var{message}是非@code{nil}，则显示在回音区，而@var{string}则显示在缓
 冲区。如果是@code{nil}，则默认消息说要输入@var{char}来继续。
@@ -1409,7 +1406,7 @@ foo
 @var{primary}如上介绍，而@var{secondary}则是当@var{primary}和嵌套考虑不
 能解决覆盖层之间的优先级时使用的后备值。但是，建议你不要根据这个实现细节来
 设计Lisp程序，如果你需要将覆盖物按优先级排序，请使用@code{overlays-at}的
-@var{sorted}参数。@xref{Finding Overlays}.
+@var{sorted}参数。@xref{寻找叠加}.
 
 @item window
 @kindex window @r{(overlay property)}
@@ -1422,7 +1419,7 @@ foo
 
 @item face
 @kindex face @r{(overlay property)}
-此属性控制文本的外观(@pxref{Faces})。该属性的值可以是以下几种:
+此属性控制文本的外观(@pxref{字形})。该属性的值可以是以下几种:
 
 @itemize @bullet
 @item
@@ -4640,7 +4637,7 @@ ImageMagick。
 裁剪是在缩放之后但在旋转之前进行的。
 @end table
 
-@node SVG Images
+@node SVG图像
 @subsection SVG Images
 @cindex SVG images
 
@@ -6083,7 +6080,7 @@ The string is formatted #RRGGBB (hash followed by six hex digits)."
 * 通常的显示::   显示字符的通常惯例。
 * 显示表::      显示表由什么组成。
 * 活动的显示表:: Emacs如何选择要使用的显示表。
-* 字形::        如何定义字形，以及字形的含义。
+* 字元::        如何定义字元，以及字元的含义。
 * 无字形字符::   如何绘制无字形字符。
 @end menu
 
@@ -6282,7 +6279,7 @@ Emacs会使用通常的字符显示约定（@pxref{Usual Display}）。
 
 @file{disp-table}库定义了几个用于改变标准显示表的函数。
 
-@node 字形
+@node 字元
 @subsection Glyphs
 @cindex glyph
 

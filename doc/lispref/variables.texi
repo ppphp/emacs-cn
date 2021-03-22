@@ -2,7 +2,7 @@
 @c This is part of the GNU Emacs Lisp Reference Manual.
 @c Copyright (C) 1990--1995, 1998--2020 Free Software Foundation, Inc.
 @c See the file elisp.texi for copying conditions.
-@node Variables
+@node 变量
 @chapter Variables
 @cindex variable
 
@@ -84,7 +84,7 @@ x
 @end group
 @end example
 
-@node 常量
+@node 常态变量
 @section 不会改变的变量
 @cindex @code{setting-constant} error
 @cindex keyword symbol
@@ -299,7 +299,7 @@ value, if there is little room left, to make sure the debugger itself
 has room to execute.
 @end defopt
 
-@node Void Variables
+@node 空变量
 @section When a Variable is Void
 @cindex @code{void-variable} error
 @cindex void variable
@@ -395,7 +395,7 @@ Here are some examples (assuming dynamic binding is in effect):
 @end smallexample
 @end defun
 
-@node Defining Variables
+@node 定义变量
 @section Defining Global Variables
 @cindex variable definition
 
@@ -540,7 +540,7 @@ prevent this, use these special forms at top level in a file, where
 normally no local binding is in effect, and make sure to load the file
 before making a local binding for the variable.
 
-@node Tips for Defining
+@node 定义变量的提示
 @section Tips for Defining Variables Robustly
 
   When you define a variable whose value is a function, or a list of
@@ -640,7 +640,7 @@ This has all the same advantages as putting the initialization inside
 the @code{defvar}, except that you must type @kbd{C-M-x} twice, once on
 each form, if you do want to reinitialize the variable.
 
-@node Accessing Variables
+@node 访问变量
 @section Accessing Variable Values
 
   The usual way to reference a variable is to write the symbol which
@@ -696,7 +696,7 @@ than the symbol's value cell.  @xref{Variable Scoping}.
 @end example
 @end defun
 
-@node Setting Variables
+@node 设置变量
 @section Setting Variable Values
 
   The usual way to change the value of a variable is with the special
@@ -798,7 +798,7 @@ error is signaled.
 @end example
 @end defun
 
-@node Watching Variables
+@node 观察变量
 @section Running a function when a variable is changed.
 @cindex variable watchpoints
 @cindex watchpoints for Lisp variables
@@ -860,7 +860,7 @@ variable (unlike dynamic variables, which can be modified by any code
 at all, @pxref{Variable Scoping}).
 
 
-@node Variable Scoping
+@node 变量作用域
 @section Scoping Rules for Variable Bindings
 @cindex scoping rule
 
@@ -1241,7 +1241,7 @@ a variable name that starts with an underscore.  The byte-compiler
 interprets this as an indication that this is a variable known not to
 be used.)
 
-@node Buffer-Local Variables
+@node 缓冲区局部变量
 @section Buffer-Local Variables
 @cindex variable, buffer-local
 @cindex buffer-local variables
@@ -1754,7 +1754,7 @@ the context of @var{symbol}'s let-binding.
 @end defun
 
 
-@node File Local Variables
+@node 文件局部变量
 @section File Local Variables
 @cindex file local variables
 
@@ -1962,7 +1962,7 @@ such predicates (it's safe if any predicate succeeds), or @code{t}
 could include functions to call.  So Emacs discards all text
 properties from string values specified for file-local variables.
 
-@node Directory Local Variables
+@node 文件夹局部变量
 @section Directory Local Variables
 @cindex directory local variables
 
@@ -2073,7 +2073,7 @@ may be useful for modes that want to ignore directory-locals while
 still respecting file-local variables (@pxref{File Local Variables}).
 @end defvar
 
-@node Connection Local Variables
+@node 连接局部变量
 @section Connection Local Variables
 @cindex connection local variables
 
@@ -2242,7 +2242,7 @@ If @code{nil}, connection-local variables are ignored.  This variable
 shall be changed temporarily only in special modes.
 @end defvar
 
-@node Variable Aliases
+@node 变量别名
 @section Variable Aliases
 @cindex variable aliases
 @cindex alias, for variables
@@ -2335,7 +2335,7 @@ foo
      @result{} 0
 @end example
 
-@node Variables with Restricted Values
+@node 限定值的变量
 @section Variables with Restricted Values
 @cindex lisp variables defined in C, restrictions
 
@@ -2371,7 +2371,7 @@ Attempting to assign them any other value will result in an error:
 @error{} Wrong type argument: integerp, 1000.0
 @end example
 
-@node Generalized Variables
+@node 广义变量
 @section Generalized Variables
 
 @cindex generalized variable

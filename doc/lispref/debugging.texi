@@ -57,7 +57,7 @@ function (@pxref{Terminal Output}).
 * Edebug::              A source-level Emacs Lisp debugger.
 * Syntax Errors::       How to find syntax errors.
 * Test Coverage::       Ensuring you have tested all branches in your code.
-* Profiling::           Measuring the resources that your code uses.
+* 性能剖析::           Measuring the resources that your code uses.
 @end menu
 
 @node Debugger
