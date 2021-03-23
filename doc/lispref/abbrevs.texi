@@ -335,7 +335,7 @@
 
 @defvar lisp-mode-abbrev-table
 这是在Lisp模式下使用的本地缩写表，是Emacs Lisp模式下使用的本地缩写表的父表。
-@xref{Abbrev Table Properties}。
+@xref{缩写表属性}。
 @end defvar
 
 @node 缩写属性

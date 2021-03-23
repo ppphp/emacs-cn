@@ -22,7 +22,7 @@
 * 字形::        一个字型定义了文本字符的图形样式，包括字体、颜色等。
 * 边缘::        控制窗口边缘。
 * 滚动条::      控制滚动条。
-* 窗口分割器::  控制窗口的分割。
+* 窗口分隔线::  控制窗口的分割。
 * 显示属性::    控制图像、边距、文字大小等。
 * 图像::        在Emacs缓冲区中显示图像。
 * Xwidgets::    在Emacs缓冲区中显示本地部件。
@@ -1672,7 +1672,7 @@ foo
 
 下面的函数以像素为单位，返回文本在给定窗口中显示时的大小。这个函数被
 @code{fit-window-to-buffer}和@code{fit-frame-to-buffer}(
-@pxref{Resizing Windows})使用，以使窗口的大小与它所包含的文本完全相同。
+@pxref{调整窗口大小})使用，以使窗口的大小与它所包含的文本完全相同。
 
 @defun window-text-pixel-size &optional window from to x-limit y-limit mode-and-header-line
 此函数返回@var{window}缓冲区中文本的大小，单位为像素。@var{window}必须是
@@ -1687,7 +1687,7 @@ foo
 
 可选参数@var{x-limit}，如果不是@code{nil}，则指定可以返回的最大像素宽度。
 @var{x-limit}@code{nil}或省略代表使用@var{window}的主体的像素宽度 (
-@pxref{Window Sizes})；当调用者不打算改变@var{window}的宽度时，这很有用。
+@pxref{窗口大小})；当调用者不打算改变@var{window}的宽度时，这很有用。
 否则，调用者应该在这里指定@var{window}的主体可能承担的最大宽度。X坐标超出
 @var{x-limit}的文本将被忽略。由于计算长行的宽度需要一定的时间，所以最好将
 这个参数设置得越小越好；尤其是当缓冲区中可能包含长行时，无论如何都会被截断
@@ -1710,7 +1710,7 @@ y坐标超过@var{y-limit}的文本行将被忽略。由于计算一个大的缓
 @defun window-lines-pixel-dimensions &optional window first last body inverse left
 这个函数计算指定的@var{window}中显示的每一行的像素尺寸。它的计算方法是遍历
 @var{window}的当前字形矩阵--一个存储@var{window}中当前显示的每个缓冲字符
-的字形(@pxref{Glyphs})的矩阵。如果成功，它将返回一个cons对的列表，代表每行
+的字形(@pxref{字元})的矩阵。如果成功，它将返回一个cons对的列表，代表每行
 最后一个字符的右下角的x和y坐标。坐标是以@var{window}左上角为原点(0,0)，以
 像素为单位测量。@var{window}必须是一个实时窗口，默认为选定的窗口。
 
@@ -1863,7 +1863,7 @@ Lisp程序。
 关联的Lisp符号@footnote{为了向后兼容，你也可以使用一个字符串来指定一个字形
 名；这相当于一个具有相同名称的Lisp符号}。命名的字形是使用@code{defface}宏
 （@pxref{Defining Faces}）来定义的。Emacs自带了几个标准的命名面(
-@pxref{Basic Faces})。
+@pxref{基本字形})。
 
   Emacs的某些部分需要命名的字形（例如，在@ref{Attribute Functions}中记载
 的函数）。除非另有说明，否则我们将使用@dfn{face}来表示命名的字形。
@@ -1897,7 +1897,7 @@ Lisp程序。
   除了下面给出的值之外，每个字形属性可以有@code{unspecified}这个值。这个特
 殊的值意味着该字形没有直接指定该属性。一个@code{unspecified}属性会告诉
 Emacs引用一个父字形(见下面@code{:inherit}属性的描述)；或者，如果不能引用
-，则引用一个底层字形(@pxref{Displaying Faces})。@code{default}字形必须指
+，则引用一个底层字形(@pxref{显示字形})。@code{default}字形必须指
 定所有属性。
 
   其中有些属性只对某些类型的显示器有意义。如果您的显示器不能处理某个属性，
@@ -1923,7 +1923,7 @@ Emacs引用一个父字形(见下面@code{:inherit}属性的描述)；或者，�
 字体的高度。在最简单的情况下，这是一个以1/10点为单位的整数。
 
 该值也可以是浮点或函数，它指定了相对于@dfn{underlying face}的高度。(
-@pxref{Displaying Faces})。浮点值指定了缩放底层字形的高度的数量。调用函数
+@pxref{显示字形})。浮点值指定了缩放底层字形的高度的数量。调用函数
 值时，只需要一个参数，即底层字形的高度，并返回新字形的高度。如果函数的参数
 是整数，则必须返回一个整数。
 
@@ -2057,7 +2057,7 @@ Emacs引用一个父字形(见下面@code{:inherit}属性的描述)；或者，�
 @cindex inheritance, for faces
 @item :inherit
 继承属性的字形的名称，或字形名称的列表。来自继承的字形的属性会像底层字形一
-样被合并到字形中，其优先级高于底层字形(@pxref{Displaying Faces})。如果要
+样被合并到字形中，其优先级高于底层字形(@pxref{显示字形})。如果要
 继承的面孔是@code{unspecified}，则与@code{nil}处理相同，因为Emacs从不合并
 @code{:inherit}属性。如果使用了一个字形列表，那么列表中前面的字形的属性会
 覆盖后面的字形的属性。
@@ -2217,7 +2217,7 @@ init文件中读取的自定义），它的外观由自定义的字形规格决�
   通常情况下，一个字形只声明一次，使用@code{defface}，对其外观的任何进一步
 更改都是使用自定义框架（例如，通过自定义用户界面或通过
 @code{custom-set-faces}函数；@pxref{Applying Customizations}），或通过字
-形重映射（@pxref{Face Remapping}）。在极少数情况下，您需要直接从Lisp中
+形重映射（@pxref{字形重映射}）。在极少数情况下，您需要直接从Lisp中
 更改字形规格，您可以使用@code{face-spec-set}函数。
 
 @defun face-spec-set face spec &optional spec-type
@@ -2443,7 +2443,7 @@ init文件中读取的自定义），它的外观由自定义的字形规格决�
 
 @itemize @bullet
 @item
-如果文本由一个特殊的字形组成，则该字形可以指定一个特定的面。@xref{Glyphs}.
+如果文本由一个特殊的字形组成，则该字形可以指定一个特定的字形。@xref{字元}.
 
 @item
 如果文本位于活动区域内，Emacs会使用@code{region}面来高亮它。
@@ -2452,7 +2452,7 @@ init文件中读取的自定义），它的外观由自定义的字形规格决�
 @item
 如果文本位于一个非@code{nil}的@code{face}属性的覆盖范围内，Emacs就会应用
 该属性所指定的字形。如果覆盖有@code{mouse-face}属性，并且鼠标离覆盖足够近
-，Emacs会应用@code{mouse-face}属性指定的面孔或面孔属性。
+，Emacs会应用@code{mouse-face}属性指定的字形或字形属性。
 @xref{Overlay Properties}。
 
 当多个叠加覆盖一个字符时，优先级较高的叠加会覆盖优先级较低的叠加。
@@ -2475,7 +2475,7 @@ init文件中读取的自定义），它的外观由自定义的字形规格决�
 @code{mouse-face}属性，或者这些属性没有定义一些字形的属性，但受覆盖/显示属
 性影响的缓冲区文本确实定义了一个字形或这些属性，Emacs就会应用“下层”缓冲区
 文本的字形属性。请注意，即使覆盖或显示字符串显示在显示边距中，也是如此(
-@pxref{Display Margins})。
+@pxref{显示边距})。
 
 @item
 如果在前面的步骤中没有指定任何给定的属性，Emacs会应用@code{default}字形的
@@ -2602,7 +2602,7 @@ Lisp对象。
 @defun face-id face
 这个函数返回@var{face}的@dfn{face number}。这是在Emacs中唯一标识一个字形
 的数字。很少有必要用它的字形数来表示一个字形。然而，操作字形的函数，如
-@code{make-glyph-code}和@code{glyph-face}。(@pxref{Glyphs})内部访问字形
+@code{make-glyph-code}和@code{glyph-face}。(@pxref{字元})内部访问字形
 号。请注意，字形数是作为字形符号的@code{face}属性的值来存储的，所以我们建
 议不要将面的该属性设置为自己的任何值。
 @end defun
@@ -2724,7 +2724,7 @@ Manual}）。
 
   在Emacs在图形显示上绘制一个字符之前，它必须为该字符选择一个@dfn{font}
 @footnote{在此上下文中，术语@dfn{font}与字体锁定（
-@pxref{Font Lock Mode}）无关。
+@pxref{Font Lock Mode}）无关。}
 @xref{Fonts,,, emacs, The GNU Emacs Manual}。通常情况下，Emacs会根据分配
 给该字符的字形自动选择字体--特别是字形属性@code{:family}、@code{:weight}
 、@code{:slant}和@code{:width}。(@pxref{Face Attributes})。字体的选择也
@@ -3256,8 +3256,8 @@ OpenType字体，这个列表包括两个额外的元素，描述字体支持的
 
 @cindex font information for layout
 下面的四个函数返回了各种字体的大小信息，允许在Lisp程序中进行各种布局考虑。
-这些函数考虑到了面孔重映射，如果相关的字形被重映射，则返回有关重映射字形的
-信息。@xref{Face Remapping}.
+这些函数考虑到了字形重映射，如果相关的字形被重映射，则返回有关重映射字形的
+信息。@xref{字形重映射}.
 
 @defun default-font-width
 该函数返回当前缓冲区默认字形的字体的平均宽度，以像素为单位，因为该字形是为
@@ -3305,7 +3305,7 @@ OpenType字体，这个列表包括两个额外的元素，描述字体支持的
 
 @defvar fringes-outside-margins
 边缘通常出现在显示边框和窗口文字之间。如果数值是非@code{nil}，则出现在显示
-边框之外。@xref{Display Margins}。
+边框之外。@xref{显示边距}。
 @end defvar
 
 @defvar left-fringe-width
@@ -3798,14 +3798,13 @@ var{persistent}参数。(@pxref{Fringe Size/Pos})您可以通过在您的早期�
 这个变量控制是否在所有窗框上显示水平滚动条。
 @end defopt
 
-
-@node 窗口分割器
+@node 窗口分隔线
 @section Window Dividers
 @cindex window dividers
 @cindex right dividers
 @cindex bottom dividers
 
-窗口分割器是在一个窗框的窗口之间画出的条状物。右边的分界线是在一个窗口和任
+窗口分隔线是在一个窗框的窗口之间画出的条状物。右边的分界线是在一个窗口和任
 何相邻的右边窗口之间绘制的，它的宽度（厚度）由窗框参数
 @code{right-divider-width}指定。它的宽度（厚度）由窗框参数
 @code{right-divider-width}指定。底部分隔线是在一个窗口和相邻窗口的底部或
@@ -3815,7 +3814,7 @@ var{persistent}参数。(@pxref{Fringe Size/Pos})您可以通过在您的早期�
 
 从技术上讲，右边的分隔线属于它左边的窗口，这意味着它的宽度占该窗口的总宽度
 。底部的分隔线属于它上面的窗口，这意味着它的宽度占该窗口的总高度。
-@xref{Window Sizes}。当一个窗口同时拥有右边和底部分隔线时，以底部分隔线为
+@xref{窗口大小}。当一个窗口同时拥有右边和底部分隔线时，以底部分隔线为
 准。这意味着，底部分隔线的宽度要画在窗口的整个总宽度上，而右侧分隔线的终点
 在底部分隔线的上方。
 
@@ -3936,7 +3935,7 @@ A。
 @item :width @var{width}
 如果@var{width}是一个数字，它指定空间宽度应该是@var{width}乘以正常字符宽
 度。@var{width}也可以是@dfn{pixel width}规范 (
-@pxref{Pixel Specification})。
+@pxref{像素规格})。
 
 @item :relative-width @var{factor}
 指定应从具有相同@code{display}属性的连续字符组中的第一个字符开始计算拉伸宽
@@ -3947,7 +3946,7 @@ A。
 @item :align-to @var{hpos}
 指定空间的宽度应该足够达到@var{hpos}。如果@var{hpos}是一个数字，则以正常
 字符宽度为单位。@var{hpos}也可以是@dfn{pixel width}规范(
-@pxref{Pixel Specification})。
+@pxref{像素规格})。
 @end table
 
   你应该使用上述属性中的一个且仅有一个。你也可以用这些属性指定空间的高度:
@@ -3957,7 +3956,7 @@ A。
 指定空格的高度。
 如果@var{height}是一个数字，它指定空间高度应该是@var{height}乘以正常字符
 高度。@var{height}也可以是@dfn{pixel height}规范(
-@pxref{Pixel Specification})。
+@pxref{像素规格})。
 
 @item :relative-height @var{factor}
 指定空间的高度，将具有此显示规格的文字的普通高度乘以@var{factor}。
@@ -3965,7 +3964,7 @@ A。
 @item :ascent @var{ascent}
 如果@var{ascent}的值是一个不大于100的非负数，那么它指定@var{ascent}的高度
 占空间高度的百分比应被视为空间的上升--也就是基线以上的部分。也可以用
-@dfn{pixel ascent}规范(@pxref{Pixel Specification})以像素为单位指定上升
+@dfn{pixel ascent}规范(@pxref{像素规格})以像素为单位指定上升
 高度。
 @end table
 
@@ -3975,7 +3974,7 @@ A。
 性不支持。
 
   请注意，在重新排列双向文本的显示顺序时，空格属性被视为段落分隔符。详情请
-参考@xref{Bidirectional Display}。
+参考@xref{双向显示}。
 
 @node 像素规格
 @subsection Pixel Specification for Spaces
@@ -4160,7 +4159,7 @@ redisplay只检查缓冲区文本中它有理由认为自上次显示周期以�
 并将空白处显示规范放在before-string的内容上。
 
 请注意，如果要显示在页边的字符串没有指定字形，那么它的字形将使用与显示在文
-本区域的字符串相同的规则和优先级来确定 (@pxref{Displaying Faces})。如果这
+本区域的字符串相同的规则和优先级来确定 (@pxref{显示字形})。如果这
 导致不理想的字形"泄漏"到页边距中，请确保字符串有一个明确的字形。
 
 在显示边距能够显示任何东西之前，你必须给它们一个非零的宽度。通常的方法是设
@@ -5510,7 +5509,7 @@ WebKit组件。
 
 @item type
 @kindex type @r{(button property)}
-按钮类型。@xref{Button Types}.
+按钮类型。@xref{按钮类型}.
 
 @item help-echo
 @kindex help-echo @r{(button property)}
@@ -5572,8 +5571,8 @@ Emacs工具提示帮助系统显示的字符串；默认是
 
   按钮创建函数都使用@code{&rest}参数@var{properties}，它应该是一个
 @var{property value}对的序列，指定要添加到按钮的属性；参见
-@ref{Button Properties}。此外，关键字参数@code{:type}可以用来指定一个按钮类型
-，用来继承其他属性；参见@ref{Button Types}。任何在创建过程中没有明确指定的属性将
+@ref{按钮属性}。此外，关键字参数@code{:type}可以用来指定一个按钮类型
+，用来继承其他属性；参见@ref{按钮类型}。任何在创建过程中没有明确指定的属性将
 从按钮的类型中继承（如果类型定义了这样的属性）。
 
 以下函数使用覆盖层（@pxref{Overlays}）添加按钮，以保持按钮属性：
@@ -5760,7 +5759,7 @@ Emacs工具提示帮助系统显示的字符串；默认是
   通常情况下，您使用@code{ewoc-create}定义一个ewoc，然后将生成的ewoc结构传递给
 Ewoc包中的其他函数，以便在其中构建节点，并将其显示在缓冲区中。一旦在缓冲区中显示出来
 ，其他函数就会确定缓冲区位置和节点之间的对应关系，将点从一个节点的文本表示移动到另一
-个节点，等等。@xref{Abstract Display Functions}.
+个节点，等等。@xref{抽象显示功能}.
 
 @cindex encapsulation, ewoc
 @c 或"@cindex封装，抽象显示"？
@@ -5778,7 +5777,7 @@ Ewoc包中的其他函数，以便在其中构建节点，并将其显示在缓�
 
 @noindent
 您也可以使用一个Lisp对象（列表或向量）作为数据元素的值，该对象是实值的容器，或者是
-其他结构的索引。这个例子（@pxref{Abstract Display Example}）使用了后一种方法。
+其他结构的索引。这个例子（@pxref{抽象显示实例}）使用了后一种方法。
 
 当数据发生变化时，你会想要更新缓冲区中的文本。您可以通过调用@code{ewoc-refresh}
 更新所有的节点，或者使用@code{ewoc-invalidate}更新特定的节点，或者使用
@@ -5795,7 +5794,7 @@ Ewoc包中的其他函数，以便在其中构建节点，并将其显示在缓�
 @subsection Abstract Display Functions
 
   在本小节中，@var{ewoc}和@var{node}代表上面描述的结构（
-@pxref{Abstract Display}），而@var{data}则代表作为数据元素的任意Lisp对象。
+@pxref{抽象显示}），而@var{data}则代表作为数据元素的任意Lisp对象。
 
 @defun ewoc-create pretty-printer &optional header footer nosep
 这将构建并返回一个新的ewoc，没有节点（因此也没有数据元素）。@var{pretty-printer}
@@ -6171,7 +6170,7 @@ The string is formatted #RRGGBB (hash followed by six hex digits)."
   显示表的普通元素以字符代码为索引；索引@var{c}处的元素说明如何显示字符代码@var{c}
 。这个值应该是@code{nil}（表示按照通常的显示习惯来显示字符@var{c}；
 @pxref{Usual Display}），或者是一个字形代码的向量（表示按照这些字形来显示字符
-@var{c}；@pxref{Glyphs}）。
+@var{c}；@pxref{字元}）。
 
   @strong{警告:}如果您使用显示表来改变换行字符的显示，整个缓冲区将被显示为一条长线
 。
@@ -6181,7 +6180,7 @@ The string is formatted #RRGGBB (hash followed by six hex digits)."
 
 @table @asis
 @item 0
-截断屏幕行结束的字形（默认为@samp{$}）。@xref{Glyphs}.在图形终端上，Emacs默认使
+截断屏幕行结束的字形（默认为@samp{$}）。@xref{字元}.在图形终端上，Emacs默认使
 用边缘中的箭头来表示截断，因此显示表没有任何效果，除非你禁用边缘(
 @pxref{Fringes,,Window Fringes,emacs,the GNU Emacs Manual})。
 
@@ -6207,7 +6206,7 @@ The string is formatted #RRGGBB (hash followed by six hex digits)."
 @end table
 
   例如，下面是如何构造一个显示表，模仿将@code{ctl-arrow}设置为非@code{nil}值的
-效果（@pxref{Glyphs}，为 @code{make-glyph-code} 函数）:
+效果（@pxref{字元}，为 @code{make-glyph-code} 函数）:
 
 @example
 (setq disptab (make-display-table))

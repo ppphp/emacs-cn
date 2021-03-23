@@ -201,7 +201,7 @@ To view this manual in other formats, click
 
 * Read and Print::          Converting Lisp objects to text and back.
 * Minibuffers::             Using the minibuffer to read input.
-* Command Loop::            How the editor command loop works,
+* 命令循环::            How the editor command loop works,
                               and how you can call its subroutines.
 * Keymaps::                 Defining the bindings from keys to commands.
 * Modes::                   Defining major and minor modes.
@@ -1402,7 +1402,7 @@ Emacs显示
 * 字形::        一个字型定义了文本字符的图形样式，包括字体、颜色等。
 * 边缘::        控制窗口边缘。
 * 滚动条::      控制滚动条。
-* 窗口分割器::  控制窗口的分割。
+* 窗口分隔线::  控制窗口的分割。
 * 显示属性::    控制图像、边距、文字大小等。
 * 图像::        在Emacs缓冲区中显示图像。
 * Xwidgets::    在Emacs缓冲区中显示本地部件。

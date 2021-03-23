@@ -6,8 +6,8 @@
 @node Windows
 @chapter Windows
 
-本章介绍与Emacs窗口相关的函数和变量。@xref{Frames},用于了解如何为Emacs分配一个可
-用的屏幕区域。@xref{Display}, 用于了解如何在窗口中显示文本。
+本章介绍与Emacs窗口相关的函数和变量。@xref{窗帧},用于了解如何为Emacs分配一个可用
+的屏幕区域。@xref{显示}, 用于了解如何在窗口中显示文本。
 
 @menu
 * 基本窗口::         关于使用窗口的基本信息。
@@ -45,8 +45,8 @@
 @section Basic Concepts of Emacs Windows
 @cindex window
 
-一个@dfn{window}是屏幕上用来显示缓冲区的区域（@pxref{Buffers}）。在Emacs Lisp
-中，窗口由一个特殊的Lisp对象类型来表示。
+一个@dfn{window}是屏幕上用来显示缓冲区的区域（@pxref{缓冲区}）。在Emacs Lisp中
+，窗口由一个特殊的Lisp对象类型来表示。
 
 @cindex multiple windows
   窗口被分组为窗框（@pxref{Frames}）。每个窗框至少包含一个窗口；用户可以将其细分为
@@ -77,15 +77,15 @@ Emacs在X上运行时，其每一个图形X窗口都是一个Emacs窗框（包�
 @end defun
 
 @cindex internal windows
-每个框架中的窗口都被组织成一个@dfn{window tree}。@xref{Windows and Frames}。
-每个窗口树的叶子节点是实时窗口--实际显示缓冲区的窗口。窗口树的内部节点是
+每个框架中的窗口都被组织成一个@dfn{window tree}。@xref{窗口和窗框}。每个窗口树的
+叶子节点是实时窗口--实际显示缓冲区的窗口。窗口树的内部节点是
 @dfn{internal windows}，它们不是实时的。
 
 @cindex valid windows
   一个@dfn{valid window}是一个活的或内部的窗口。一个有效的窗口可以被
-@dfn{deleted}，即从它的有效窗框中移除 (@pxref{Deleting Windows})；那么它就不
-再有效了，但代表它的Lisp对象可能仍然可以从其它Lisp对象中引用。被删除的窗口可以通过
-恢复已保存的窗口配置来重新生效(@pxref{Window Configurations})。
+@dfn{deleted}，即从它的有效窗框中移除(@pxref{删除窗口})；那么它就不再有效了，但
+代表它的Lisp对象可能仍然可以从其它Lisp对象中引用。被删除的窗口可以通过恢复已保存的
+窗口配置来重新生效(@pxref{窗口配置})。
 
   您可以使用@code{window-valid-p}区分有效窗口和被删除的窗口。
 
@@ -99,8 +99,8 @@ Emacs在X上运行时，其每一个图形X窗口都是一个Emacs窗框（包�
   在每个有效窗框中，在任何时候，正好有一个Emacs窗口被指定为
 @dfn{selected within the frame}。插入或删除文本的键盘输入通常也会指向这个窗口
 。所选窗口的缓冲区通常也是当前缓冲区，除非使用了@code{set-buffer}（
-@pxref{Current Buffer}）。对于非选择的窗框，如果该窗框被选中，那么选择窗框内被选
-中的窗口就会成为被选中的窗口。@xref{Selecting Windows}。
+@pxref{当前缓冲区}）。对于非选择的窗框，如果该窗框被选中，那么选择窗框内被选中的窗
+口就会成为被选中的窗口。@xref{选择窗口}。
 
 @defun selected-window
 该函数返回所选窗口（始终是一个实时窗口）。
@@ -110,7 +110,7 @@ Emacs在X上运行时，其每一个图形X窗口都是一个Emacs窗框（包�
 例如，在Follow Mode(@pxref{Follow Mode,,, emacs})的管理下，这些窗口一起显示的
 缓冲区比一个窗口单独显示的缓冲区更大。将这样的@dfn{window group}视为一个单一的实
 体通常是很有用的。一些函数，如 @code{window-group-start} (
-@pxref{Window Start and End})，允许您通过提供其中一个窗口作为参数来代替整个组。
+@pxref{窗口开始和结束})，允许您通过提供其中一个窗口作为参数来代替整个组。
 
 @defun selected-window-group
 @vindex selected-window-group-function
@@ -362,112 +362,80 @@ Height |  |  |  |                       |  |  |  |  | Height
 @cindex window body
 @cindex text area of a window
 @cindex body of a window
-  At the center of the window is the @dfn{text area}, or @dfn{body},
-where the buffer text is displayed.  The text area can be surrounded by
-a series of optional areas.  On the left and right, from innermost to
-outermost, these are the left and right fringes, denoted by LF and RF
-(@pxref{Fringes}); the left and right margins, denoted by LM and RM in
-the schematic (@pxref{Display Margins}); the left or right vertical
-scroll bar, only one of which is present at any time, denoted by LS and
-RS (@pxref{Scroll Bars}); and the right divider, denoted by RD
-(@pxref{Window Dividers}).  At the top of the window is the header line
-(@pxref{Header Lines}).  At the bottom of the window are the horizontal
-scroll bar (@pxref{Scroll Bars}); the mode line (@pxref{Mode Line
-Format}); and the bottom divider (@pxref{Window Dividers}).
+  窗口的中心是@dfn{text area}，或者@dfn{body}，缓冲区的文本就显示在这里。文本区
+域可以被一系列可选的区域包围。在左边和右边，从最内侧到最外侧，分别是左、右边缘，用LF和RF表示（@pxref{边缘}）；左、右边缘，在原理图中用LM和RM表示（@pxref{显示边距}）
+。左或右垂直滚动条，任何时候只能有一个，用LS和RS表示(@pxref{滚动条})；以及右分隔符
+，用RD表示(@pxref{窗口分隔符})。窗口顶部是标题行(@pxref{Header Lines})。窗口底
+部是水平滚动条(@pxref{滚动条})；模式线(@pxref{模式行格式})；以及底部分隔线(
+@pxref{窗口分隔线})。
 
-  Emacs provides miscellaneous functions for finding the height and
-width of a window.  The return value of many of these functions can be
-specified either in units of pixels or in units of lines and columns.
-On a graphical display, the latter actually correspond to the height and
-width of a default character specified by the frame's default font
-as returned by @code{frame-char-height} and @code{frame-char-width}
-(@pxref{Frame Font}).  Thus, if a window is displaying text with a
-different font or size, the reported line height and column width for
-that window may differ from the actual number of text lines or columns
-displayed within it.
+Emacs提供了各种函数用于查找窗口的高度和宽度。这些函数中的许多函数的返回值可以以像素
+为单位或以行和列为单位来指定。在图形显示上，后者实际上对应于由
+@code{frame-char-height}和@code{frame-char-width}返回的由窗框默认字体指定的
+默认字符的高度和宽度。(@pxref{Frame Font})。因此，如果一个窗口正在显示不同字体或
+大小的文本，则该窗口报告的行高和列宽可能与该窗口内显示的实际文本行数或列数不同。
 
 @cindex window height
 @cindex height of a window
 @cindex total height of a window
-  The @dfn{total height} of a window is the number of lines comprising
-the window's body, the header line, the horizontal scroll bar, the mode
-line and the bottom divider (if any).
+  窗口的@dfn{total height}是指窗口的主体、标题线、水平滚动条、模式线和底部分隔线
+（如果有的话）组成的线数。
 
 @defun window-total-height &optional window round
-This function returns the total height, in lines, of the window
-@var{window}.  If @var{window} is omitted or @code{nil}, it defaults to
-the selected window.  If @var{window} is an internal window, the return
-value is the total height occupied by its descendant windows.
+此函数返回@var{window}窗口的总高度，以行为单位。如果省略了@var{window}或者
+@code{nil}，则默认为选中的窗口。如果@var{window}是一个内部窗口，则返回值是其子窗
+口所占的总高度。
 
-  If a window's pixel height is not an integral multiple of its frame's
-default character height, the number of lines occupied by the window is
-rounded internally.  This is done in a way such that, if the window is a
-parent window, the sum of the total heights of all its child windows
-internally equals the total height of their parent.  This means that
-although two windows have the same pixel height, their internal total
-heights may differ by one line.  This means also, that if window is
-vertically combined and has a next sibling, the topmost row of that
-sibling can be calculated as the sum of this window's topmost row and
-total height (@pxref{Coordinates and Windows})
+如果一个窗口的像素高度不是其窗框默认字符高度的整数倍，则该窗口所占用的行数将被内部舍
+入。这样做的方式是，如果该窗口是一个父窗口，则其所有子窗口的内部总高度之和等于其父窗
+口的总高度。这意味着，虽然两个窗口的像素高度相同，但它们的内部总高度可能相差一行。这
+也意味着，如果窗口是垂直组合的，并且有下一个兄弟姐妹，那么该兄弟姐妹的最上面一行可以
+计算为这个窗口的最上面一行和总高度之和(@pxref{坐标和窗口})
 
-  If the optional argument @var{round} is @code{ceiling}, this
-function returns the smallest integer larger than @var{window}'s pixel
-height divided by the character height of its frame; if it is
-@code{floor}, it returns the largest integer smaller than said value;
-with any other @var{round} it returns the internal value of
-@var{windows}'s total height.
+如果可选参数@var{round}是@code{ceiling}，则该函数返回比@var{window}的像素高度
+除以其框架字符高度的最小整数；如果是@code{floor}，则返回比上述值小的最大整数；如果
+是其他@var{round}，则返回@var{windows}的总高度的内部值。
 @end defun
 
 @cindex window width
 @cindex width of a window
 @cindex total width of a window
-The @dfn{total width} of a window is the number of lines comprising the
-window's body, its margins, fringes, scroll bars and a right divider (if
-any).
+  窗口的@dfn{total width}是指窗口的主体、边框、边缘、滚动条和右侧分隔线（如果有的
+话）组成的行数。
 
 @defun window-total-width &optional window round
-This function returns the total width, in columns, of the window
-@var{window}.  If @var{window} is omitted or @code{nil}, it defaults to
-the selected window.  If @var{window} is internal, the return value is
-the total width occupied by its descendant windows.
+此函数返回@var{window}窗口的总宽度，以列为单位。如果省略了@var{window}或者
+@code{nil}，则默认为所选窗口的宽度。如果@var{window}是内部窗口，则返回值是其子窗
+口的总宽度。
 
-  If a window's pixel width is not an integral multiple of its frame's
-character width, the number of lines occupied by the window is rounded
-internally.  This is done in a way such that, if the window is a parent
-window, the sum of the total widths of all its children internally
-equals the total width of their parent.  This means that although two
-windows have the same pixel width, their internal total widths may
-differ by one column.  This means also, that if this window is
-horizontally combined and has a next sibling, the leftmost column of
-that sibling can be calculated as the sum of this window's leftmost
-column and total width (@pxref{Coordinates and Windows}).  The optional
-argument @var{round} behaves as it does for @code{window-total-height}.
+如果一个窗口的像素宽度不是其窗框字符宽度的整数倍，则该窗口所占用的行数将在内部进行四
+舍五入。这样做的方式是，如果该窗口是一个父窗口，其所有子窗口的内部总宽度之和等于其父
+窗口的总宽度。这意味着虽然两个窗口的像素宽度相同，但其内部总宽度可能相差一列。这也意
+味着，如果这个窗口是水平组合的，并且有下一个兄弟姐妹，那么这个兄弟姐妹最左边的一列可
+以计算为这个窗口最左边的一列和总宽度之和（@pxref{坐标和窗口}）。可选参数
+@var{round}的行为与@code{window-total-height}相同。
 @end defun
 
 @defun window-total-size &optional window horizontal round
-This function returns either the total height in lines or the total
-width in columns of the window @var{window}.  If @var{horizontal} is
-omitted or @code{nil}, this is equivalent to calling
-@code{window-total-height} for @var{window}; otherwise it is equivalent
-to calling @code{window-total-width} for @var{window}.  The optional
-argument @var{round} behaves as it does for @code{window-total-height}.
+此函数返回窗口@var{window}的总高度（以行为单位）或总宽度（以列为单位）。如果省略了
+@var{horizontal}或@code{nil}，则相当于给@var{window}
+调用@code{window-total-height}；否则相当于给@var{window}调用
+@code{window-total-width}。可选参数@var{round}的作用与它在
+@code{window-total-height}里的作用相同。
 @end defun
 
-The following two functions can be used to return the total size of a
-window in units of pixels.
+以下两个函数可以用来返回窗口的总大小，单位是像素。
 
 @cindex window pixel height
 @cindex pixel height of a window
 @cindex total pixel height of a window
 
 @defun window-pixel-height &optional window
-This function returns the total height of window @var{window} in pixels.
-@var{window} must be a valid window and defaults to the selected one.
+此函数返回窗口@var{window}的总高度，单位为像素。@var{window}必须是一个有效的窗口
+，并且默认为选中的窗口。
 
-The return value includes mode and header line, a horizontal scroll bar
-and a bottom divider, if any.  If @var{window} is an internal window,
-its pixel height is the pixel height of the screen areas spanned by its
-children.
+返回值包括模式和标题行、水平滚动条和底部分隔线（如果有）。如果@var{window}是一个内
+部窗口，那么它的像素高度就是它的子窗口所覆盖的屏幕区域的像素高度。
 @end defun
 
 @cindex window pixel width
@@ -475,191 +443,150 @@ children.
 @cindex total pixel width of a window
 
 @defun window-pixel-width &optional window
-This function returns the width of window @var{window} in pixels.
-@var{window} must be a valid window and defaults to the selected one.
+此函数返回窗口@var{window}的宽度，单位为像素。@var{window}必须是一个有效的窗口，
+默认为所选窗口。
 
-The return value includes the fringes and margins of @var{window} as
-well as any vertical dividers or scroll bars belonging to @var{window}.
-If @var{window} is an internal window, its pixel width is the width of
-the screen areas spanned by its children.
+返回值包括@var{window}的边缘和边框，以及属于@var{window}的任何垂直分隔线或滚动条
+。如果@var{window}是一个内部窗口，那么它的像素宽度就是它的子窗口所覆盖的屏幕区域的
+宽度。
 @end defun
 
 @cindex full-width window
 @cindex full-height window
-  The following functions can be used to determine whether a given
-window has any adjacent windows.
+  以下函数可用于确定某个窗口是否有任何相邻的窗口。
 
 @defun window-full-height-p &optional window
-This function returns non-@code{nil} if @var{window} has no other window
-above or below it in its frame.  More precisely, this means that the
-total height of @var{window} equals the total height of the root window
-on that frame.  The minibuffer window does not count in this regard.  If
-@var{window} is omitted or @code{nil}, it defaults to the selected
-window.
+如果@var{window}的窗框中没有其他窗口在其上方或下方，则该函数返回非@code{nil}。更
+准确的说，这意味着@var{window}的总高度等于该框架中根窗口的总高度。minibuffer窗口
+在这方面不计入。如果省略了@var{window}或@code{nil}，则默认为选定的窗口。
 @end defun
 
-@defun window-full-width-p &optional window
-This function returns non-@code{nil} if @var{window} has no other
-window to the left or right in its frame, i.e., its total width equals
-that of the root window on that frame.  If @var{window} is omitted or
-@code{nil}, it defaults to the selected window.
+@defun window-full-width-p &optional window。
+如果@var{window}在其框架中左边或右边没有其他窗口，即其总宽度等于该框架中根窗口的宽
+度，则该函数返回非@code{nil}。如果省略了@var{window}或@code{nil}，则默认为选中
+的窗口。
 @end defun
 
 @cindex window body height
 @cindex body height of a window
-The @dfn{body height} of a window is the height of its text area, which
-does not include a mode or header line, a horizontal scroll bar, or a
-bottom divider.
+窗口的@dfn{body height}是指其文本区域的高度，它不包括模式或标题行、水平滚动条或底
+部分隔线。
 
 @defun window-body-height &optional window pixelwise
-This function returns the height, in lines, of the body of window
-@var{window}.  If @var{window} is omitted or @code{nil}, it defaults to
-the selected window; otherwise it must be a live window.
+此函数返回@var{window}窗口主体的高度，以行为单位。如果省略了@var{window}或者
+@code{nil}，则默认为选定的窗口，否则必须是实时窗口。
 
-If the optional argument @var{pixelwise} is non-@code{nil}, this
-function returns the body height of @var{window} counted in pixels.
+如果可选参数@var{pixelwise}是非@code{nil}，则该函数返回以像素为单位的
+@var{window}的主体高度。
 
-If @var{pixelwise} is @code{nil}, the return value is rounded down to
-the nearest integer, if necessary.  This means that if a line at the
-bottom of the text area is only partially visible, that line is not
-counted.  It also means that the height of a window's body can never
-exceed its total height as returned by @code{window-total-height}.
+如果@var{pixelwise}是@code{nil}，必要时，返回值会被四舍五入到最接近的整数。这意
+味着，如果文本区域底部的某一行只是部分可见，则该行不会被计算在内。这也意味着窗口主体
+的高度永远不能超过 @code{window-total-height} 返回的总高度。
 @end defun
 
 @cindex window body width
 @cindex body width of a window
-The @dfn{body width} of a window is the width of its text area, which
-does not include the scroll bar, fringes, margins or a right divider.
-Note that when one or both fringes are removed (by setting their width
-to zero), the display engine reserves two character cells, one on each
-side of the window, for displaying the continuation and truncation
-glyphs, which leaves 2 columns less for text display.  (The function
-@code{window-max-chars-per-line}, described below, takes this
-peculiarity into account.)
+窗口的@dfn{body width}是指文本区域的宽度，不包括滚动条、边框、边距或右侧分隔线。
+请注意，当去掉一个或两个边框时（将其宽度设置为零），显示引擎会保留两个字符单元，在
+窗口的两侧各保留一个，用于显示延续和截断字样，这样就少了两列用于显示文本。(下面介绍
+的函数@code{window-max-chars-per-line}就考虑到了这个特点。)
 
 @defun window-body-width &optional window pixelwise
-This function returns the width, in columns, of the body of window
-@var{window}.  If @var{window} is omitted or @code{nil}, it defaults to
-the selected window; otherwise it must be a live window.
+此函数返回@var{window}窗口主体的宽度，以列为单位。如果省略了@var{window}或者
+@code{nil}，则默认为选定的窗口，否则必须是实时窗口。
 
-If the optional argument @var{pixelwise} is non-@code{nil}, this
-function returns the body width of @var{window} in units of pixels.
+如果可选参数@var{pixelwise}是非@code{nil}，则该函数以像素为单位返回
+@var{window}的主体宽度。
 
-If @var{pixelwise} is @code{nil}, the return value is rounded down to
-the nearest integer, if necessary.  This means that if a column on the
-right of the text area is only partially visible, that column is not
-counted.  It also means that the width of a window's body can never
-exceed its total width as returned by @code{window-total-width}.
+如果@var{pixelwise}是@code{nil}，如果需要，返回值会被四舍五入到最接近的整数。这
+意味着，如果文本区域右侧的一列仅部分可见，则该列不被计算在内。这也意味着窗口主体的宽
+度永远不能超过 @code{window-total-width} 返回的总宽度。
 @end defun
 
 @cindex window body size
 @cindex body size of a window
 @defun window-body-size &optional window horizontal pixelwise
-This function returns the body height or body width of @var{window}.  If
-@var{horizontal} is omitted or @code{nil}, it is equivalent to calling
-@code{window-body-height} for @var{window}; otherwise it is equivalent
-to calling @code{window-body-width}.  In either case, the optional
-argument @var{pixelwise} is passed to the function called.
+此函数返回@var{window}的主体高度或主体宽度。如果省略了@var{horizontal}或
+@code{nil}，则相当于调用@code{window-body-height}来处理@var{window}；否则相
+当于调用@code{window-body-width}。无论哪种情况，都会将可选的参数
+@var{pixelwise} 传递给被调用的函数。
 @end defun
 
-For compatibility with previous versions of Emacs,
-@code{window-height} is an alias for @code{window-total-height}, and
-@code{window-width} is an alias for @code{window-body-width}.  These
-aliases are considered obsolete and will be removed in the future.
+为了与以前版本的Emacs兼容，@code{window-height}是@code{window-total-height}
+的别名，@code{window-width}是@code{window-body-width}的别名。这些别名被认为
+是过时的，将来会被删除。
 
-   The pixel heights of a window's mode and header line can be retrieved
-with the functions given below.  Their return value is usually accurate
-unless the window has not been displayed before: In that case, the
-return value is based on an estimate of the font used for the window's
-frame.
+窗口的模式和标题行的像素高度可以通过下面给出的函数来检索。它们的返回值通常是准确的，
+除非该窗口以前没有显示过。在这种情况下，返回值是基于对窗口窗框所用字体的估计。
 
 @defun window-mode-line-height &optional window
-This function returns the height in pixels of @var{window}'s mode line.
-@var{window} must be a live window and defaults to the selected one.  If
-@var{window} has no mode line, the return value is zero.
+此函数返回@var{window}模式线的高度，单位为像素。@var{window}必须是一个实时窗口，
+并且默认为选定的窗口。如果@var{window}没有模式线，则返回值为0。
 @end defun
 
 @defun window-header-line-height &optional window
-This function returns the height in pixels of @var{window}'s header
-line.  @var{window} must be a live window and defaults to the selected
-one.  If @var{window} has no header line, the return value is zero.
+此函数返回@var{window}标题行的高度，单位为像素。@var{window}必须是一个实时窗口，
+并且默认为选定的窗口。如果@var{window}没有标题行，则返回值为0。
 @end defun
 
-Functions for retrieving the height and/or width of window dividers
-(@pxref{Window Dividers}), fringes (@pxref{Fringes}), scroll bars
-(@pxref{Scroll Bars}), and display margins (@pxref{Display Margins}) are
-described in the corresponding sections.
+用于检索窗口分隔线(@pxref{窗口分隔线})、边缘(@pxref{边缘})、滚动条(
+@pxref{滚动条})和显示边距(@pxref{显示边距})的高度和/或宽度的函数在相应的章节中描
+述。
 
-If your Lisp program needs to make layout decisions, you will find the
-following function useful:
+如果你的Lisp程序需要进行布局决策，你会发现以下功能很有用:
 
 @defun window-max-chars-per-line &optional window face
-This function returns the number of characters displayed in the
-specified face @var{face} in the specified window @var{window} (which
-must be a live window).  If @var{face} was remapped (@pxref{Face
-Remapping}), the information is returned for the remapped face.  If
-omitted or @code{nil}, @var{face} defaults to the default face, and
-@var{window} defaults to the selected window.
+此函数返回在指定窗口中，在指定字形@var{face}中显示的字符数@var{window}。(它必须
+是一个实时窗口)。如果@var{face}被重映射了(@pxref{字形重映射})，则返回重映射后的
+字形的信息。如果省略或@code{nil}，@var{face}默认为默认的字形，@var{window}默认
+为选定的窗口。
 
-Unlike @code{window-body-width}, this function accounts for the actual
-size of @var{face}'s font, instead of working in units of the canonical
-character width of @var{window}'s frame (@pxref{Frame Font}).  It also
-accounts for space used by the continuation glyph, if @var{window} lacks
-one or both of its fringes.
+与@code{window-body-width}不同的是，这个函数考虑了@var{face}字体的实际大小，而
+不是以@var{window}窗框的规范字符宽度(@pxref{Frame Font})为单位。如果
+@var{window}缺少一个或两个边框，它也会考虑到延续字形所使用的空间。
 @end defun
 
 @cindex fixed-size window
 @vindex window-min-height
 @vindex window-min-width
-  Commands that change the size of windows (@pxref{Resizing Windows}),
-or split them (@pxref{Splitting Windows}), obey the variables
-@code{window-min-height} and @code{window-min-width}, which specify the
-smallest allowable window height and width.  They also obey the variable
-@code{window-size-fixed}, with which a window can be @dfn{fixed} in
-size (@pxref{Preserving Window Sizes}).
+  改变窗口大小（@pxref{调整窗口大小}）或分割窗口（@pxref{分割窗口}）的命令，都要
+服从变量@code{window-min-height}和@code{window-min-width}，这两个变量指定了
+允许的最小窗口高度和宽度。它们还服从变量@code{window-size-fixed}，用它可以使窗口
+的大小@dfn{fixed} (@pxref{保留窗口大小})。
 
 @defopt window-min-height
-This option specifies the minimum total height, in lines, of any window.
-Its value has to accommodate at least one text line as well as a mode
-and header line, a horizontal scroll bar and a bottom divider, if
-present.
+这个选项指定了任何窗口的最小总高度，以行为单位，它的值必须至少能容纳一个文本行、模式
+和标题行、水平滚动条和底部分隔线（如果有）。
 @end defopt
 
 @defopt window-min-width
-This option specifies the minimum total width, in columns, of any
-window.  Its value has to accommodate two text columns as well as
-margins, fringes, a scroll bar and a right divider, if present.
+这个选项指定任何窗口的最小总宽度，以列为单位。它的值必须能容纳两列文本，以及边框、边
+框、滚动条和右侧分隔线（如果有）。
 @end defopt
 
-The following function tells how small a specific window can get taking
-into account the sizes of its areas and the values of
-@code{window-min-height}, @code{window-min-width} and
-@code{window-size-fixed} (@pxref{Preserving Window Sizes}).
+下面的函数告诉我们，考虑到特定窗口的区域大小以及@code{window-min-height}、
+@code{window-min-width}和@code{window-size-fixed}的值，该窗口可以变得多小。
+(@pxref{保留窗口大小})。
 
 @defun window-min-size &optional window horizontal ignore pixelwise
-This function returns the minimum size of @var{window}.  @var{window}
-must be a valid window and defaults to the selected one.  The optional
-argument @var{horizontal} non-@code{nil} means to return the minimum
-number of columns of @var{window}; otherwise return the minimum number
-of @var{window}'s lines.
+此函数返回@var{window}的最小尺寸。@var{window}必须是一个有效的窗口，默认为所选窗
+口。参数@var{horizontal}是non-@code{nil}表示返回@var{window}的最小列数，否则
+返回@var{window}的最小行数。
 
-The return value makes sure that all components of @var{window} remain
-fully visible if @var{window}'s size were actually set to it.  With
-@var{horizontal} @code{nil} it includes the mode and header line, the
-horizontal scroll bar and the bottom divider, if present.  With
-@var{horizontal} non-@code{nil} it includes the margins and fringes, the
-vertical scroll bar and the right divider, if present.
+返回值确保@var{window}的所有组件保持完全可见，如果@var{window}的大小确实被设置为
+它的话。对于@var{horizontal}是@code{nil}，它包括模式和标题行、水平滚动条和底部
+分隔线（如果存在的话）。如果@var{horizontal}非@code{nil}，则包括边框和边缘、垂
+直滚动条和右侧分隔线（如果存在）。
 
-The optional argument @var{ignore}, if non-@code{nil}, means ignore
-restrictions imposed by fixed size windows, @code{window-min-height} or
-@code{window-min-width} settings.  If @var{ignore} equals @code{safe},
-live windows may get as small as @code{window-safe-min-height} lines and
-@code{window-safe-min-width} columns.  If @var{ignore} is a window,
-ignore restrictions for that window only.  Any other non-@code{nil}
-value means ignore all of the above restrictions for all windows.
+可选参数@var{ignore}，如果是非@code{nil}，则表示忽略固定大小的窗口、
+@code{window-min-height}或@code{window-min-width}设置所带来的限制。如果
+@var{ignore}等于@code{safe}，那么实时窗口可能会变得和
+@code{window-safe-min-height}行和@code{window-safe-min-width}列一样小。如
+果@var{ignore}是一个窗口，则只忽略该窗口的限制。其他任何非@code{nil}的值都意味着
+忽略所有窗口的上述限制。
 
-The optional argument @var{pixelwise} non-@code{nil} means to return the
-minimum size of @var{window} counted in pixels.
+可选参数@var{pixelwise}非@code{nil}表示返回@var{window}的最小尺寸，单位为像素
+。
 @end defun
 
 
@@ -670,254 +597,197 @@ minimum size of @var{window} counted in pixels.
 @cindex changing window size
 @cindex window size, changing
 
-  This section describes functions for resizing a window without
-changing the size of its frame.  Because live windows do not overlap,
-these functions are meaningful only on frames that contain two or more
-windows: resizing a window also changes the size of a neighboring
-window.  If there is just one window on a frame, its size cannot be
-changed except by resizing the frame (@pxref{Frame Size}).
+  本节介绍了在不改变窗框大小的情况下调整窗口大小的功能。因为实时窗口不会重叠，所以这
+些函数只对包含两个或更多窗口的窗框有意义：调整一个窗口的大小也会改变相邻窗口的大小。
+如果一个窗框上只有一个窗口，那么除非调整窗框的大小，否则不能改变其大小（
+@pxref{窗框大小}）。
 
-  Except where noted, these functions also accept internal windows as
-arguments.  Resizing an internal window causes its child windows to be
-resized to fit the same space.
+  除非另有说明，这些函数也接受内部窗口作为参数。调整内部窗口的大小会导致其子窗口的大
+小被调整以适应相同的空间。
 
 @defun window-resizable window delta &optional horizontal ignore pixelwise
-This function returns @var{delta} if the size of @var{window} can be
-changed vertically by @var{delta} lines.  If the optional argument
-@var{horizontal} is non-@code{nil}, it instead returns @var{delta} if
-@var{window} can be resized horizontally by @var{delta} columns.  It
-does not actually change the window size.
+如果@var{delta}行可以垂直改变@var{window}的大小，则该函数返回@var{delta}。如果
+可选的参数@var{horizontal}是非@code{nil}，那么如果@var{window}可以通过
+@var{delta}列水平调整大小，它将返回@var{delta}。它实际上并没有改变窗口的大小，而
+是返回@var{delta}。
 
-If @var{window} is @code{nil}, it defaults to the selected window.
+如果@var{window}是@code{nil}，则默认为选定的窗口。
 
-A positive value of @var{delta} means to check whether the window can be
-enlarged by that number of lines or columns; a negative value of
-@var{delta} means to check whether the window can be shrunk by that many
-lines or columns.  If @var{delta} is non-zero, a return value of 0 means
-that the window cannot be resized.
+如果@var{delta}为正值，表示检查窗口是否可以放大该行或列的数量；如果@var{delta}为
+负值，表示检查窗口是否可以缩小该行或列的数量。如果@var{delta}为非零，则返回值为0，
+表示不能调整窗口大小。
 
-Normally, the variables @code{window-min-height} and
-@code{window-min-width} specify the smallest allowable window size
-(@pxref{Window Sizes}).  However, if the optional argument @var{ignore}
-is non-@code{nil}, this function ignores @code{window-min-height} and
-@code{window-min-width}, as well as @code{window-size-fixed}.  Instead,
-it considers the minimum-height window to be one consisting of a header
-and a mode line, a horizontal scrollbar and a bottom divider (if any),
-plus a text area one line tall; and a minimum-width window as one
-consisting of fringes, margins, a scroll bar and a right divider (if
-any), plus a text area two columns wide.
+通常情况下，变量 @code{window-min-height} 和 @code{window-min-width} 指定了允许的最小窗口尺寸(@pxref{窗口尺寸})。但是，如果可选参数@var{ignore}是非
+@code{nil}，则该函数将忽略@code{window-min-height}和
+@code{window-min-width}以及@code{window-size-fixed}。相反，它认为最小高度的
+窗口是由页眉和模式线、水平滚动条和底部分隔线（如果有的话）以及一行高的文本区域组成；
+最小宽度的窗口是由边缘、边框、滚动条和右侧分隔线（如果有的话）以及两列宽的文本区域组
+成。
 
-If the optional argument @var{pixelwise} is non-@code{nil},
-@var{delta} is interpreted as pixels.
+如果可选参数@var{pixelwise}是非@code{nil}，则@var{delta}解释为像素。
 @end defun
 
 @defun window-resize window delta &optional horizontal ignore pixelwise
-This function resizes @var{window} by @var{delta} increments.  If
-@var{horizontal} is @code{nil}, it changes the height by @var{delta}
-lines; otherwise, it changes the width by @var{delta} columns.  A
-positive @var{delta} means to enlarge the window, and a negative
-@var{delta} means to shrink it.
+此函数以@var{delta}为单位调整@var{window}的大小。如果@var{horizontal}是
+@code{nil}，则按@var{delta}行改变高度；否则，按@var{delta}列改变宽度。正的
+@var{delta}表示放大窗口，负的@var{delta}表示缩小窗口。
 
-If @var{window} is @code{nil}, it defaults to the selected window.  If
-the window cannot be resized as demanded, an error is signaled.
+如果@var{window}是@code{nil}，则默认为选定的窗口。如果窗口不能按要求调整大小，则
+会发出错误信号。
 
-The optional argument @var{ignore} has the same meaning as for the
-function @code{window-resizable} above.
+可选参数@var{ignore}与上面函数@code{window-resizable}的含义相同。
 
-If the optional argument @var{pixelwise} is non-@code{nil},
-@var{delta} will be interpreted as pixels.
+如果可选参数@var{pixelwise}是非@code{nil}，则@var{delta}将被解释为像素。
 
-The choice of which window edges this function alters depends on the
-values of the option @code{window-combination-resize} and the
-combination limits of the involved windows; in some cases, it may alter
-both edges.  @xref{Recombining Windows}.  To resize by moving only the
-bottom or right edge of a window, use the function
-@code{adjust-window-trailing-edge}.
+该函数改变哪些窗口边缘的选择取决于@code{window-combination-size}选项的值和涉及
+的窗口的组合限制；在某些情况下，它可能会改变两个边缘。@xref{重新组合窗口}。如果只移
+动窗口的底部或右侧边缘来调整大小，请使用函数@code{adjust-window-trailing-edge}
+。
 @end defun
 
-@c The commands enlarge-window, enlarge-window-horizontally,
-@c shrink-window, and shrink-window-horizontally are documented in the
-@c Emacs manual.  They are not preferred for calling from Lisp.
+@c 放大-窗口、放大-窗口-水平方向的命令shrink-window和
+@c shrink-window-horizontally在Emacs手册。它们不适合从Lisp调用。
 
 @defun adjust-window-trailing-edge window delta &optional horizontal pixelwise
-This function moves @var{window}'s bottom edge by @var{delta} lines.
-If optional argument @var{horizontal} is non-@code{nil}, it instead
-moves the right edge by @var{delta} columns.  If @var{window} is
-@code{nil}, it defaults to the selected window.
+此函数将@var{window}的底边移动@var{delta}行。如果可选参数@var{horizontal}是非
+@code{nil}，则该函数会将右边缘移动@var{delta}列。如果@var{window}是非
+@code{nil}，则默认为选中的窗口。
 
-If the optional argument @var{pixelwise} is non-@code{nil},
-@var{delta} is interpreted as pixels.
+如果可选参数@var{pixelwise}是非@code{nil}，则@var{delta}解释为像素。
 
-A positive @var{delta} moves the edge downwards or to the right; a
-negative @var{delta} moves it upwards or to the left.  If the edge
-cannot be moved as far as specified by @var{delta}, this function
-moves it as far as possible but does not signal an error.
+正值@var{delta}表示将边缘向下或向右移动；负值@var{delta}表示将边缘向上或向左移动
+。如果边不能按照@var{delta}的指定移动，这个函数会尽可能地移动它，但不会发出错误信
+号。
 
-This function tries to resize windows adjacent to the edge that is
-moved.  If this is not possible for some reason (e.g., if that adjacent
-window is fixed-size), it may resize other windows.
+这个函数试图调整与被移动的边缘相邻的窗口的大小。如果由于某些原因无法做到这一点（例如
+，如果相邻的窗口是固定大小的），它可能会调整其他窗口的大小。
 @end defun
 
 @cindex pixelwise, resizing windows
 @defopt window-resize-pixelwise
-If the value of this option is non-@code{nil}, Emacs resizes windows in
-units of pixels.  This currently affects functions like
-@code{split-window} (@pxref{Splitting Windows}), @code{maximize-window},
-@code{minimize-window}, @code{fit-window-to-buffer},
-@code{fit-frame-to-buffer} and
-@code{shrink-window-if-larger-than-buffer} (all listed below).
+如果这个选项的值是非@code{nil}，Emacs会以像素为单位调整窗口的大小。这目前影响到
+@code{split-window}等函数。(@pxref{分割窗口})、@code{maximize-window}、
+@code{minimize-window}、@code{fit-window-to-buffer}、
+@code{fit-fram-to-buffer}和@code{shrink-window-if-larger-than-buffer}
+以下全部列出)。
 
-Note that when a frame's pixel size is not a multiple of its character
-size, at least one window may get resized pixelwise even if this
-option is @code{nil}.  The default value is @code{nil}.
+请注意，当一个框架的像素大小不是字符大小的倍数时，即使这个选项是@code{nil}，至少有
+一个窗口可能会被调整像素大小。默认值是@code{nil}。
 @end defopt
 
-  The following commands resize windows in more specific ways.  When
-called interactively, they act on the selected window.
+  以下命令以更具体的方式调整窗口大小。当交互式调用时，它们会对所选窗口产生作用。
 
 @deffn Command fit-window-to-buffer &optional window max-height min-height max-width min-width preserve-size
-This command adjusts the height or width of @var{window} to fit the text
-in it.  It returns non-@code{nil} if it was able to resize @var{window},
-and @code{nil} otherwise.  If @var{window} is omitted or @code{nil}, it
-defaults to the selected window.  Otherwise, it should be a live window.
+这条命令可以调整@var{window}的高度或宽度，以适应其中的文字。如果能够调整
+@var{window}的大小，则返回非@code{nil}，否则返回@code{nil}。如果省略了
+@var{window}或@code{nil}，则默认为选定的窗口。否则，它应该是一个实时窗口。
 
-If @var{window} is part of a vertical combination, this function adjusts
-@var{window}'s height.  The new height is calculated from the actual
-height of the accessible portion of its buffer.  The optional argument
-@var{max-height}, if non-@code{nil}, specifies the maximum total height
-that this function can give @var{window}.  The optional argument
-@var{min-height}, if non-@code{nil}, specifies the minimum total height
-that it can give, which overrides the variable @code{window-min-height}.
-Both @var{max-height} and @var{min-height} are specified in lines and
-include mode and header line and a bottom divider, if any.
+如果@var{window}是垂直组合的一部分，这个函数会调整@var{window}的高度。新的高度是
+根据缓冲区中可访问部分的实际高度计算出来的。可选参数@var{max-height}，如果是非
+@code{nil}，则指定此函数可以给@var{window}的最大总高度。可选参数
+@var{min-height}，如果是非@code{nil}，则指定该函数所能给出的最小总高度，它覆盖
+了变量@code{window-min-height}。@var{max-height}和@var{min-height}都是以
+行为单位来指定的，并且包括模式、标题行和底部分隔线（如果有的话）。
 
-If @var{window} is part of a horizontal combination and the value of the
-option @code{fit-window-to-buffer-horizontally} (see below) is
-non-@code{nil}, this function adjusts @var{window}'s width.  The new
-width of @var{window} is calculated from the maximum length of its
-buffer's lines that follow the current start position of @var{window}.
-The optional argument @var{max-width} specifies a maximum width and
-defaults to the width of @var{window}'s frame.  The optional argument
-@var{min-width} specifies a minimum width and defaults to
-@code{window-min-width}.  Both @var{max-width} and @var{min-width} are
-specified in columns and include fringes, margins and scrollbars, if
-any.
+如果@var{window}是水平组合的一部分，并且
+@code{fit-window-to-buffer-horizontally}(见下文)选项的值是非@code{nil}，那
+么这个函数将调整@var{window}的宽度。新的@var{window}宽度是根据@var{window}当
+前起始位置后的缓冲区行的最大长度计算的。可选参数@var{max-width}指定了一个最大的宽
+度，默认为@var{window}的窗框宽度。可选参数@var{min-width}指定了最小宽度，默认值
+为@code{window-min-width}。@var{max-width}和@var{min-width}都是以列为单位
+指定的，并且包括边缘、边框和滚动条（如果有）。
 
-The optional argument @var{preserve-size}, if non-@code{nil}, will
-install a parameter to preserve the size of @var{window} during future
-resize operations (@pxref{Preserving Window Sizes}).
+可选参数@var{preserve-size}，如果非@code{nil}，则将安装一个参数，以便在未来的调
+整大小操作中保留@var{window}的大小（@pxref{保留窗口大小}）。
 
-If the option @code{fit-frame-to-buffer} (see below) is non-@code{nil},
-this function will try to resize the frame of @var{window} to fit its
-contents by calling @code{fit-frame-to-buffer} (see below).
+如果选项@code{fit-frame-to-buffer}。(见下文)是非@code{nil}，这个函数将通过调
+用@code{fit-frame-to-buffer}来调整@var{window}的窗框大小以适应其内容。(见下文
+)。
 @end deffn
 
 @defopt fit-window-to-buffer-horizontally
-If this is non-@code{nil}, @code{fit-window-to-buffer} can resize
-windows horizontally.  If this is @code{nil} (the default)
-@code{fit-window-to-buffer} never resizes windows horizontally.  If this
-is @code{only}, it can resize windows horizontally only.  Any other
-value means @code{fit-window-to-buffer} can resize windows in both
-dimensions.
+如果这个值是非@code{nil}，那么@code{fit-window-to-buffer}可以水平调整窗口大小
+。如果这个值是@code{nil}(默认值)，那么@code{fit-window-to-buffer}可以水平调整
+窗口的大小。@code{fit-window-to-buffer}从来不会水平调整窗口大小，如果是
+@code{only}，则只能水平调整窗口大小。如果这个值是@code{only}，那么它只能水平调整
+窗口大小。其他任何值都意味着@code{fit-window-to-buffer}可以在两个维度上调整窗口
+的大小。
 @end defopt
 
 @defopt fit-frame-to-buffer
-If this option is non-@code{nil}, @code{fit-window-to-buffer} can fit a
-frame to its buffer.  A frame is fit if and only if its root window is a
-live window and this option is non-@code{nil}.  If this is
-@code{horizontally}, frames are fit horizontally only.  If this is
-@code{vertically}, frames are fit vertically only.  Any other
-non-@code{nil} value means frames can be resized in both dimensions.
+如果这个选项是非@code{nil}，@code{fit-window-to-buffer}可以将一个窗框贴合到它
+的缓冲区。如果且仅当它的根窗口是一个实时窗口，并且这个选项是非@code{nil}时，窗框才
+会被拟合。如果这个选项是@code{horizontally}，那么窗框只能被水平地贴合。如果这个选
+项是@code{vertical}，则窗框只在垂直方向适合。任何其他非@code{nil}的值都意味着窗
+框可以在两个维度上调整大小。
 @end defopt
 
-If you have a frame that displays only one window, you can fit that
-frame to its buffer using the command @code{fit-frame-to-buffer}.
+如果您有一个只显示一个窗口的窗框，您可以使用@code{fit-frame-to-buffer}命令将该窗
+框装入其缓冲区。
 
 @deffn Command fit-frame-to-buffer &optional frame max-height min-height max-width min-width only
-This command adjusts the size of @var{frame} to display the contents of
-its buffer exactly.  @var{frame} can be any live frame and defaults to
-the selected one.  Fitting is done only if @var{frame}'s root window is
-live.  The arguments @var{max-height}, @var{min-height}, @var{max-width}
-and @var{min-width} specify bounds on the new total size of
-@var{frame}'s root window.  @var{min-height} and @var{min-width} default
-to the values of @code{window-min-height} and @code{window-min-width}
-respectively.
+此命令调整@var{frame}的大小，以准确显示其缓冲区的内容。@var{frame}可以是任何一个
+实时窗框，默认为选定的窗框。只有当@var{frame}的根窗口是实时的，才会进行调整。参数
+@var{max-height},@var{min-height},@var{max-width}和@var{min-width}指定了
+@var{frame}的根窗口的新总尺寸的界限。@var{min-height}和@var{min-width}分别默
+认为@code{window-min-height}和@code{window-min-width}的值。
 
-If the optional argument @var{only} is @code{vertically}, this function
-may resize the frame vertically only.  If @var{only} is
-@code{horizontally}, it may resize the frame horizontally only.
+如果可选参数@var{only}是@code{vertical}，则该函数只能垂直调整窗框的大小。如果
+@var{only}的参数是@code{horizontally}，那么这个函数只能水平调整画面的大小。
 @end deffn
 
-The behavior of @code{fit-frame-to-buffer} can be controlled with the
-help of the two options listed next.
+可以通过下面列出的两个选项来控制@code{fit-frame-to-buffer}的行为。
 
 @defopt fit-frame-to-buffer-margins
-This option can be used to specify margins around frames to be fit by
-@code{fit-frame-to-buffer}.  Such margins can be useful to avoid, for
-example, that the resized frame overlaps the taskbar or parts of its
-parent frame.
-
-It specifies the numbers of pixels to be left free on the left, above,
-the right, and below a frame that shall be fit.  The default specifies
-@code{nil} for each which means to use no margins.  The value specified
-here can be overridden for a specific frame by that frame's
-@code{fit-frame-to-buffer-margins} parameter, if present.
+这个选项可以用来指定@code{fit-frame-to-buffer}所要适应的框架的边距。这样的边距
+对于避免调整后的窗框与任务栏或其父窗框的部分重叠是很有用的。
+它指定了一个窗框的左边、上面、右边和下面的空闲像素数，这些像素数应该是适合的。默认情
+况下，@code{nil}的意思是不使用边距。此处指定的值可以被特定帧的
+@code{fit-fram-to-buffer-margins}参数（如果存在的话）覆盖。
 @end defopt
 
 @defopt fit-frame-to-buffer-sizes
-This option specifies size boundaries for @code{fit-frame-to-buffer}.
-It specifies the total maximum and minimum lines and maximum and minimum
-columns of the root window of any frame that shall be fit to its buffer.
-If any of these values is non-@code{nil}, it overrides the corresponding
-argument of @code{fit-frame-to-buffer}.
+这个选项指定了@code{fit-frame-to-buffer}的大小边界。它指定了任何窗框的根窗口的
+最大和最小行数以及最大和最小列数。如果这些值中的任何一个是非@code{nil}，它将覆盖
+@code{fit-frame-to-buffer}的相应参数。
 @end defopt
 
 @deffn Command shrink-window-if-larger-than-buffer &optional window
-This command attempts to reduce @var{window}'s height as much as
-possible while still showing its full buffer, but no less than
-@code{window-min-height} lines.  The return value is non-@code{nil} if
-the window was resized, and @code{nil} otherwise.  If @var{window} is
-omitted or @code{nil}, it defaults to the selected window.  Otherwise,
-it should be a live window.
+这条命令试图尽可能地减小@var{window}的高度，同时仍然显示完整的缓冲区，但不能少于
+@code{window-min-height}行。如果窗口被调整了大小，返回值是非@code{nil}，否则为
+@code{nil}。如果省略了@var{window}或者@code{nil}，则默认为选定的窗口。否则，它
+应该是一个实时窗口。
 
-This command does nothing if the window is already too short to
-display all of its buffer, or if any of the buffer is scrolled
-off-screen, or if the window is the only live window in its frame.
+如果窗口已经太短，无法显示所有的缓冲区，或者任何缓冲区被滚动到屏幕外，或者窗口是其窗
+框中唯一的实时窗口，则该命令不做任何操作。
 
-This command calls @code{fit-window-to-buffer} (see above) to do its
-work.
+该命令调用@code{fit-window-to-buffer}。(见上文)来开展工作。
 @end deffn
 
 
 @cindex balancing window sizes
 @deffn Command balance-windows &optional window-or-frame
-This function balances windows in a way that gives more space to
-full-width and/or full-height windows.  If @var{window-or-frame}
-specifies a frame, it balances all windows on that frame.  If
-@var{window-or-frame} specifies a window, it balances only that window
-and its siblings (@pxref{Windows and Frames}).
+这个函数以一种给全宽和/或全高的窗口提供更多空间的方式来平衡窗口。如果
+@var{window-or-frame}指定了一个窗框，则平衡该窗框架的所有窗口。如果
+@var{window-or-frame}指定了一个窗口，则只平衡该窗口及其同级窗口
+(@pxref{窗口和窗框})。
 @end deffn
 
 @deffn Command balance-windows-area
-This function attempts to give all windows on the selected frame
-approximately the same share of the screen area.  Full-width or
-full-height windows are not given more space than other windows.
+此功能试图给所选窗框上的所有窗口提供大致相同的屏幕区域份额。全宽或全高的窗口不会比其
+他窗口获得更多的空间。
 @end deffn
 
 @cindex maximizing windows
 @deffn Command maximize-window &optional window
-This function attempts to make @var{window} as large as possible, in
-both dimensions, without resizing its frame or deleting other windows.
-If @var{window} is omitted or @code{nil}, it defaults to the selected
-window.
+这个函数试图使@var{window}在两个维度上都尽可能的大，而不需要调整其窗框大小或删除其
+他窗口。如果省略了@var{window}或者@code{nil}，则默认为选中的窗口。
 @end deffn
 
 @cindex minimizing windows
 @deffn Command minimize-window &optional window
-This function attempts to make @var{window} as small as possible, in
-both dimensions, without deleting it or resizing its frame.  If
-@var{window} is omitted or @code{nil}, it defaults to the selected
-window.
+这个函数试图使@var{window}在两个维度上都尽可能的小，而不需要删除它或调整它的窗框大
+小。如果省略了@var{window}或@code{nil}，则默认为选定的窗口。
 @end deffn
 
 
@@ -925,91 +795,65 @@ window.
 @section Preserving Window Sizes
 @cindex preserving window sizes
 
-A window can get resized explicitly by using one of the functions from
-the preceding section or implicitly, for example, when resizing an
-adjacent window, when splitting or deleting a window (@pxref{Splitting
-Windows}, @pxref{Deleting Windows}) or when resizing the window's frame
-(@pxref{Frame Size}).
+窗口可以通过使用上一节中的一个函数显式地调整大小，也可以隐式地调整大小，例如，当调整
+相邻窗口的大小时，当分割或删除窗口时（@pxref{分割窗口},@pxref{删除窗口}）或当调整
+窗口的窗框大小时（@pxref{Frame Size}）。
 
-  It is possible to avoid implicit resizing of a specific window when
-there are one or more other resizable windows on the same frame.  For
-this purpose, Emacs must be advised to @dfn{preserve} the size of that
-window.  There are two basic ways to do that.
+当同一窗框上有一个或多个其他可调整大小的窗口时，可以避免隐式地调整特定窗口的大小，为
+此，Emacs必须建议 @dfn{preserve}该窗口的大小。有两种基本方法可以做到这一点。
 
 @defvar window-size-fixed
-If this buffer-local variable is non-@code{nil}, the size of any window
-displaying the buffer cannot normally be changed.  Deleting a window or
-changing the frame's size may still change the window's size, if there
-is no choice.
+如果这个缓冲区本地变量是非@code{nil}，通常不能改变任何显示缓冲区的窗口的大小。如果
+没有选择，删除窗口或改变窗框的大小，仍然会改变窗口的大小。
 
-If the value is @code{height}, then only the window's height is fixed;
-if the value is @code{width}, then only the window's width is fixed.
-Any other non-@code{nil} value fixes both the width and the height.
+如果值是@code{height}，则只固定窗口的高度；如果值是@code{width}，则只固定窗口的
+宽度。其他任何非@code{nil}的值都会固定宽度和高度。
 
-If this variable is @code{nil}, this does not necessarily mean that any
-window showing the buffer can be resized in the desired direction.  To
-determine that, use the function @code{window-resizable}.
-@xref{Resizing Windows}.
+如果这个变量是@code{nil}，这并不意味着任何显示缓冲区的窗口都可以按照所需的方向调整
+大小。要确定这一点，请使用函数@code{window-resizable}。@xref{调整窗口大小}。
 @end defvar
 
-Often @code{window-size-fixed} is overly aggressive because it inhibits
-any attempt to explicitly resize or split an affected window as well.
-This may even happen after the window has been resized implicitly, for
-example, when deleting an adjacent window or resizing the window's
-frame.  The following function tries hard to never disallow resizing
-such a window explicitly:
+通常情况下，@code{window-size-fixed}是过于激进的，因为它抑制了任何试图显式调整或
+分割受影响窗口的行为。这种情况甚至可能发生在窗口被隐式调整大小之后，例如，在删除相邻窗口或调整窗口窗框大小的时候。下面的函数努力尝试不允许显式地调整这种窗口的大小:
 
 @defun window-preserve-size &optional window horizontal preserve
-This function (un-)marks the height of window @var{window} as preserved
-for future resize operations.  @var{window} must be a live window and
-defaults to the selected one.  If the optional argument @var{horizontal}
-is non-@code{nil}, it (un-)marks the width of @var{window} as preserved.
+此函数将窗口@var{window}的高度(取消)标记为保留，以便将来进行调整大小的操作。
+@var{window}必须是一个实时窗口，并且默认为选定的窗口。如果参数@var{horizontal}
+是非@code{nil}，则将@var{window}的宽度(取消)标记为保留。
 
-If the optional argument @var{preserve} is @code{t}, this means to
-preserve the current height/width of @var{window}'s body.  The
-height/width of @var{window} will change only if Emacs has no better
-choice.  Resizing a window whose height/width is preserved by this
-function never throws an error.
+如果可选的参数@var{preserve}是@code{t}，这意味着要保留@var{window}的主体的当前
+高度/宽度。只有当Emacs没有更好的选择时，@var{window}的高度/宽度才会改变。调整一个
+窗口的高度/宽度，如果这个函数保留了这个窗口的高度/宽度，则不会产生错误。
 
-If @var{preserve} is @code{nil}, this means to stop preserving the
-height/width of @var{window}, lifting any respective restraint induced
-by a previous call of this function for @var{window}.  Calling
-@code{enlarge-window}, @code{shrink-window} or
-@code{fit-window-to-buffer} with @var{window} as argument may also
-remove the respective restraint.
+如果@var{preserve}是@code{nil}，这意味着停止保留@var{window}的高度/宽度，解除
+之前调用此函数对@var{window}引起的限制。以@var{window}为参数调用
+@code{enlarge-window}, @code{shrink-window}或
+@code{fit-window-to-buffer}也可能会取消各自的限制。
 @end defun
 
-@code{window-preserve-size} is currently invoked by the following
-functions:
+目前@code{window-preserve-size}被以下函数调用:
 
 @table @code
 @item fit-window-to-buffer
-If the optional argument @var{preserve-size} of that function
-(@pxref{Resizing Windows}) is non-@code{nil}, the size established by
-that function is preserved.
+如果该函数(@pxref{调整窗口大小})的可选参数@var{preserve-size}是非@code{nil}，
+则保留该函数建立的大小。
 
 @item display-buffer
-If the @var{alist} argument of that function (@pxref{Choosing Window})
-contains a @code{preserve-size} entry, the size of the window produced
-by that function is preserved.
+如果该函数(@pxref{选择窗口})的@var{alist}参数包含一个@code{preserve-size}条
+目，则该函数产生的窗口大小将被保留。
 @end table
 
-  @code{window-preserve-size} installs a window parameter (@pxref{Window
-Parameters}) called @code{window-preserved-size} which is consulted by the
-window resizing functions.  This parameter will not prevent resizing the
-window when the window shows another buffer than the one when
-@code{window-preserve-size} was invoked or if its size has changed since
-then.
+  @code{window-preserved-size}安装了一个名为@code{window-preserved-size}
+的窗口参数(@pxref{窗口参数})，该参数被窗口大小调整函数所参考。当窗口显示的缓冲区比
+调用@code{window-preserve-size}时的缓冲区要大，或者它的大小在那之后发生了变化，
+这个参数不会阻止调整窗口的大小。
 
-The following function can be used to check whether the height of a
-particular window is preserved:
+下面的函数可以用来检查特定窗口的高度是否被保留:
 
 @defun window-preserved-size &optional window horizontal
-This function returns the preserved height of window @var{window} in
-pixels.  @var{window} must be a live window and defaults to the selected
-one.  If the optional argument @var{horizontal} is non-@code{nil}, it
-returns the preserved width of @var{window}.  It returns @code{nil} if
-the size of @var{window} is not preserved.
+此函数返回窗口@var{window}的保留高度，单位为像素。@var{window}必须是一个实时窗口
+，并且默认为选定的窗口。如果可选参数@var{horizontal}是非@code{nil}，则返回
+@var{window}的保留宽度。如果@var{window}的大小没有保留，则返回@code{nil}。
 @end defun
 
 
@@ -1050,7 +894,7 @@ wide.
 Hence, if @var{size} is specified, it's the caller's responsibility to
 check whether the emanating windows are large enough to encompass all
 areas like a mode line or a scroll bar.  The function
-@code{window-min-size} (@pxref{Window Sizes}) can be used to determine
+@code{window-min-size} (@pxref{窗口大小}) can be used to determine
 the minimum requirements of @var{window} in this regard.  Since the new
 window usually inherits areas like the mode line or the scroll bar
 from @var{window}, that function is also a good guess for the minimum
@@ -1091,7 +935,7 @@ parameter, if any.  @xref{Window Parameters}.
 @end defun
 
   As an example, here is a sequence of @code{split-window} calls that
-yields the window configuration discussed in @ref{Windows and Frames}.
+yields the window configuration discussed in @ref{窗口和窗框}.
 This example demonstrates splitting a live window as well as splitting
 an internal window.  We begin with a frame containing a single window
 (a live root window), which we denote by @var{W4}.  Calling
@@ -1284,7 +1128,7 @@ are the opposite of what they are in those other functions.
 When deleting the last sibling of a window @var{W}, its parent window
 is deleted too, with @var{W} replacing it in the window tree.  This
 means that @var{W} must be recombined with its parent's siblings to
-form a new window combination (@pxref{Windows and Frames}).  In some
+form a new window combination (@pxref{窗口和窗框}).  In some
 occasions, deleting a live window may even entail the deletion of two
 internal windows.
 
@@ -1641,7 +1485,7 @@ windows.
 
 @defun select-window window &optional norecord
 This function makes @var{window} the selected window and the window
-selected within its frame (@pxref{Basic Windows}), and selects that
+selected within its frame (@pxref{基本窗口}), and selects that
 frame.  It also makes @var{window}'s buffer (@pxref{Buffers and
 Windows}) current and sets that buffer's value of @code{point} to the
 value of @code{window-point} (@pxref{Window Point}) in @var{window}.
@@ -1787,7 +1631,7 @@ is called the @dfn{cyclic ordering of windows}.
 
   The ordering is determined by a depth-first traversal of each frame's
 window tree, retrieving the live windows which are the leaf nodes of the
-tree (@pxref{Windows and Frames}).  If the minibuffer is active, the
+tree (@pxref{窗口和窗框}).  If the minibuffer is active, the
 minibuffer window is included too.  The ordering is cyclic, so the last
 window in the sequence is followed by the first one.
 
@@ -2545,7 +2389,7 @@ If @var{alist} also contains a @code{window} entry, its value
 specifies a reference window.  That value can be a special symbol like
 @code{main} which stands for the selected frame's main window
 (@pxref{Side Window Options and Functions}) or @code{root} standing
-for the selected frame's root window (@pxref{Windows and Frames}).  It
+for the selected frame's root window (@pxref{窗口和窗框}).  It
 can also specify an arbitrary valid window.  Any other value (or
 omitting the @code{window} entry entirely) means to use the selected
 window as reference window.
@@ -2838,7 +2682,7 @@ are @code{shrink-window-if-larger-than-buffer} and
 @end itemize
 
 By convention, the height of the chosen window is adjusted only if the
-window is part of a vertical combination (@pxref{Windows and Frames})
+window is part of a vertical combination (@pxref{窗口和窗框})
 to avoid changing the height of other, unrelated windows.  Also, this
 entry should be processed only under certain conditions which are
 specified right below this list.
@@ -2869,8 +2713,7 @@ width of the window; its return value is ignored.
 @end itemize
 
 By convention, the width of the chosen window is adjusted only if the
-window is part of a horizontal combination (@pxref{Windows and
-Frames}) to avoid changing the width of other, unrelated windows.
+window is part of a horizontal combination (@pxref{窗口和窗框}) to avoid changing the width of other, unrelated windows.
 Also, this entry should be processed under only certain conditions
 which are specified right below this list.
 
@@ -4147,7 +3990,7 @@ Interaction Parameters}).
 @cindex main window of a frame
 
 Side windows are special windows positioned at any of the four sides of
-a frame's root window (@pxref{Windows and Frames}).  In practice, this
+a frame's root window (@pxref{窗口和窗框}).  In practice, this
 means that the area of the frame's root window is subdivided into a main
 window and a number of side windows surrounding that main window.  The
 main window is either a ``normal'' live window or specifies the area
@@ -5874,7 +5717,7 @@ This function puts the window state @var{state} into @var{window}.
 The argument @var{state} should be the state of a window returned by
 an earlier invocation of @code{window-state-get}, see above.  The
 optional argument @var{window} can be either a live window or an
-internal window (@pxref{Windows and Frames}).  If @var{window} is not
+internal window (@pxref{窗口和窗框}).  If @var{window} is not
 a live window, it is replaced by a new live window created on the same
 frame before putting @var{state} into it.  If @var{window} is @code{nil},
 it puts the window state into a new window.
