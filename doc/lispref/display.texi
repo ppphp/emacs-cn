@@ -3708,7 +3708,7 @@ Emacs可以在缓冲区边界--即缓冲区的第一行和最后一行--出现�
 @end defun
 
 使用@code{set-window-scroll-bar}和@code{set-window-fringes}的
-var{persistent}参数。(@pxref{Fringe Size/Pos})您可以通过在您的早期初始文
+@var{persistent}参数。(@pxref{Fringe Size/Pos})您可以通过在您的早期初始文
 件(@pxref{Init File})中添加以下代码段来可靠地永久关闭任何迷你缓冲区窗口中
 的滚动条和/或边缘。
 
@@ -4010,7 +4010,7 @@ A。
   @code{in}、@code{mm}和@code{cm}单位分别指定每英寸、毫米和厘米的像素数。
 @code{width}和@code{height}单位对应于当前面的默认宽度和高度。图像规范的表
 单@w{@code{(image . @var{props})}}。(@pxref{Image Descriptors})对应于指
-定图像的宽度或高度。类似地，表单@w{@code{(xwidget . @var{props})}的
+定图像的宽度或高度。类似地，表单@w{@code{(xwidget . @var{props})}}的
 小部件规范代表指定的小部件的宽度或高度。@xref{Xwidgets}.
 
   元素@code{left-fringe}、@code{right-fringe}、@code{left-margin}、
@@ -5265,7 +5265,7 @@ Emacs将每个片断作为单独的图像显示，并允许更直观地向上/�
 @cindex image animation
 @cindex image frames
 有些图像文件可以包含一个以上的图像。我们说图像中存在多个"帧"。目前，Emacs支持GIF、
-TIFF和某些ImageMagick格式（如DJVM@）的多帧。
+TIFF和某些ImageMagick格式（如DJVM）的多帧。
 
 帧可以用来表示多个页面（例如，这通常是多帧TIFF文件的情况），或者用来创建动画（通常是
 多帧GIF文件的情况）。
@@ -6495,7 +6495,7 @@ Emacs以守护进程的形式被调用时，它不会创建任何初始框架，
 
 @defun tooltip-mode
 工具提示模式是一种能够显示工具提示的次要模式。关闭该模式会使工具提示显示在回声区域。
-在文本模式（又名@：``TTY''）窗框上，工具提示总是显示在回声区域。
+在文本模式（又名@:``TTY''）窗框上，工具提示总是显示在回声区域。
 @end defun
 
 @vindex x-gtk-use-system-tooltips
@@ -6563,7 +6563,7 @@ GTK+设置来控制工具提示的外观。GTK+工具提示可以通过将变量
 顺序，即人类阅读的顺序。每个字符。在从右到左和双向文本中，字符在屏幕上的显示顺序（称
 为@dfn{visual order}）与逻辑顺序不同，字符的屏幕位置不会随着字符串或缓冲区位置的
 增加而单调增加。在执行这个@dfn{bidirectional reordering}时，Emacs遵循Unicode
-双向算法（又名@：@acronym{UBA}），该算法在Unicode标准的附件#9中有所描述（
+双向算法（又名@:@acronym{UBA}），该算法在Unicode标准的附件#9中有所描述（
 @url{http://www.unicode.org/reports/tr9/}）。Emacs提供了一个@acronym{UBA}
 的"完全双向"类实现，符合Unicode标准v9.0的要求。但请注意，当文本方向与基本段落方向
 相反时，Emacs显示续行的方式与UBA不同，UBA要求在重新排序显示文本之前进行包行。

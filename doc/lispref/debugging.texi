@@ -1035,6 +1035,5 @@ Emacs对此具有内置支持。要开始分析，请键入@kbd{M-x profiler-sta
 要在Emacs的C代码级别上分析Emacs，可以使用@command{configure}的
 @option{--enable-profiling}选项对其进行构建。 当Emacs退出时，它将生成一个文件
 @file{gmon.out}，您可以使用@command{gprof}实用程序进行检查。 此功能主要用于调
-试Emacs。 实际上，它停止了上述Lisp级别的@kbd{M-x profiler- @ dots {}}命令的
-工作。
+试Emacs。实际上，它停止了上述Lisp级别的@kbd{M-x profiler-@dots{}}命令的工作。
 @end ifnottex
