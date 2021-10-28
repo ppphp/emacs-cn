@@ -325,7 +325,8 @@ Existing, Completion, Prompt。
 @pxref{File Name Expansion})。Existing, Completion, Default, Prompt.
 
 @item e
-在调用命令的按键序列中的第一个或下一个非键盘事件。更准确地说，@samp{e}得到的事件是列表，所以你可以查看列表中的数据。@xref{Input Events}。No I/O。
+在调用命令的按键序列中的第一个或下一个非键盘事件。更准确地说，@samp{e}得到的事件是列
+表，所以你可以查看列表中的数据。@xref{Input Events}。No I/O。
 
 您可以使用@samp{e}来处理鼠标事件和特殊系统事件（@pxref{Misc Events}）。命令接收
 的事件列表取决于事件。@xref{Input Events}，它在相应的小节中描述了每个事件的列表
@@ -344,7 +345,8 @@ Prompt.
 一个文件名。文件不需要存在。 Completion, Default, Prompt.
 
 @item G
-一个文件名。该文件不需要存在。如果用户只输入一个目录名，那么值就只是该目录名，不添加目录内的文件名。 Completion, Default, Prompt.
+一个文件名。该文件不需要存在。如果用户只输入一个目录名，那么值就只是该目录名，不添加目
+录内的文件名。 Completion, Default, Prompt.
 
 @item i
 一个不相关的参数。此代码总是提供@code{nil}作为参数的值。 No I/O.
@@ -371,7 +373,8 @@ Prompt.
 @pxref{Input Methods,,, emacs, The GNU Emacs Manual}）。 Prompt.
 
 @item n
-一个数字，用minibuffer读取。如果输入的不是数字，用户必须再试一次。@samp{n}从不使用前缀参数。Prompt.
+一个数字，用minibuffer读取。如果输入的不是数字，用户必须再试一次。@samp{n}从不使用
+前缀参数。Prompt.
 
 @item N
 数字前缀参数；但如果没有前缀参数，则像@kbd{n}一样读取一个数字。值总是一个数字。
@@ -519,7 +522,8 @@ Put them into three windows, selecting the last one."
 命令包括字符串和向量（被视为键盘宏）、包含顶级@code{interactive}表单的lambda表达
 式（@pxref{Using Interactive}）、由这些lambda表达式构成的字节码函数对象、被声
 明为交互式的自动加载对象（@code{autoload}的第四个参数非@code{nil}），以及一些原
-始函数。另外，如果一个符号有一个非@code{nil}的@code{interactive-form}属性，或者它的函数定义满足@code{commandp}，第四个参数，那么它就被认为是一个命令。
+始函数。另外，如果一个符号有一个非@code{nil}的@code{interactive-form}属性，或者
+它的函数定义满足@code{commandp}，第四个参数，那么它就被认为是一个命令。
 
 如果@var{for-call-interactively}是非@code{nil}，那么@code{commandp}只对
 @code{call-interactively}可以调用的对象返回@code{t}--因此，不对键盘宏返回。
@@ -757,23 +761,19 @@ Put them into three windows, selecting the last one."
 是@code{let}的一个特性，在这种情况下，它恰恰是我们想要避免的。
 
 @defvar this-original-command
-This has the same value as @code{this-command} except when command
-remapping occurs (@pxref{Remapping Commands}).  In that case,
-@code{this-command} gives the command actually run (the result of
-remapping), and @code{this-original-command} gives the command that
-was specified to run but remapped into another command.
+这与@code{this-command}的值相同，但当发生命令重映射时除外（@pxref{重映射命令}）。
+在这种情况下，@code{this-command}给出了实际运行的命令（重映射的结果），而
+@code{this-original-command}给出了指定运行但重映射为另一个命令的命令。
 @end defvar
 
 @defun this-command-keys
-This function returns a string or vector containing the key sequence
-that invoked the present command, plus any previous commands that
-generated the prefix argument for this command.  Any events read by the
-command using @code{read-event} without a timeout get tacked on to the end.
+这个函数返回一个字符串或向量，其中包含调用当前命令的键序列，加上之前为这个命令生成前
+缀参数的任何命令。任何由命令使用@code{read-event}读取的、没有超时的事件都会被加到
+最后。
 
-However, if the command has called @code{read-key-sequence}, it
-returns the last read key sequence.  @xref{Key Sequence Input}.  The
-value is a string if all events in the sequence were characters that
-fit in a string.  @xref{Input Events}.
+但是，如果命令调用了@code{read-key-sequence}，则返回最后读取的键序列。
+@xref{键序列输入}。如果序列中的所有事件都是适合于字符串的字符，则该值是一个字符串。
+@xref{输入事件}。
 
 @example
 @group
@@ -786,34 +786,27 @@ fit in a string.  @xref{Input Events}.
 
 @defun this-command-keys-vector
 @anchor{Definition of this-command-keys-vector}
-Like @code{this-command-keys}, except that it always returns the events
-in a vector, so you don't need to deal with the complexities of storing
-input events in a string (@pxref{Strings of Events}).
+和@code{this-command-keys}一样，只是它总是以向量的形式返回事件，所以你不需要处理
+将输入事件存储在字符串中的复杂问题 (@pxref{事件字符串})。
 @end defun
 
 @defun clear-this-command-keys &optional keep-record
-This function empties out the table of events for
-@code{this-command-keys} to return.  Unless @var{keep-record} is
-non-@code{nil}, it also empties the records that the function
-@code{recent-keys} (@pxref{Recording Input}) will subsequently return.
-This is useful after reading a password, to prevent the password from
-echoing inadvertently as part of the next command in certain cases.
+这个函数清空了@code{this-command-keys}要返回的事件表。除非@var{keep-record}是
+非@code{nil}，否则它也会清空函数@code{recent-keys}所返回的记录。(
+@pxref{记录输入})随后将返回。这在读取密码后很有用，可以防止在某些情况下，密码作为
+下一条命令的一部分被无意中回传。
 @end defun
 
 @defvar last-nonmenu-event
-This variable holds the last input event read as part of a key sequence,
-not counting events resulting from mouse menus.
+这个变量保存了最后一次读取的输入事件，作为按键序列的一部分，不包括鼠标菜单产生的事件。
 
-One use of this variable is for telling @code{x-popup-menu} where to pop
-up a menu.  It is also used internally by @code{y-or-n-p}
-(@pxref{Yes-or-No Queries}).
+这个变量的一个用途是告诉@code{x-popup-menu}在哪里弹出一个菜单。它也被
+@code{y-or-n-p}内部使用(@pxref{Yes-or-No Queries})。
 @end defvar
 
 @defvar last-command-event
-This variable is set to the last input event that was read by the
-command loop as part of a command.  The principal use of this variable
-is in @code{self-insert-command}, which uses it to decide which
-character to insert.
+这个变量被设置为命令循环读取的最后一个输入事件，作为命令的一部分。这个变量的主要用途
+是在@code{self-insert-command}中，用来决定插入哪个字符。
 
 @example
 @group
@@ -824,17 +817,14 @@ last-command-event
 @end example
 
 @noindent
-The value is 5 because that is the @acronym{ASCII} code for @kbd{C-e}.
+这个值是5，因为这是@kbd{C-e}的@acronym{ASCII}码。
 @end defvar
 
 @defvar last-event-frame
-This variable records which frame the last input event was directed to.
-Usually this is the frame that was selected when the event was
-generated, but if that frame has redirected input focus to another
-frame, the value is the frame to which the event was redirected.
-@xref{Input Focus}.
+这个变量记录了最后一个输入事件被指向的窗框。通常这是事件生成时被选中的窗框，但如果该
+窗框已将输入焦点重定向到另一窗框，则该值是事件被重定向到的窗框。@xref{输入焦点}。
 
-If the last event came from a keyboard macro, the value is @code{macro}.
+如果最后一个事件来自于键盘宏，那么其值为@code{macro}。
 @end defvar
 
 @node 调整点
@@ -844,28 +834,22 @@ If the last event came from a keyboard macro, the value is @code{macro}.
 @cindex @code{display} property, and point display
 @cindex @code{composition} property, and point display
 
-  Emacs cannot display the cursor when point is in the middle of a
-sequence of text that has the @code{display} or @code{composition}
-property, or is invisible.  Therefore, after a command finishes and
-returns to the command loop, if point is within such a sequence, the
-command loop normally moves point to the edge of the sequence, making this
-sequence effectively intangible.
+  当点处于具有@code{display}或@code{composition}属性的，或者是隐形的文本序列中间
+时，Emacs无法显示光标。因此，在一条命令完成并返回命令循环后，如果点在这样的序列内，
+命令循环通常会将点移动到序列的边缘，使得这个序列实际上是无形的。
 
-  A command can inhibit this feature by setting the variable
-@code{disable-point-adjustment}:
+  一个命令可以通过设置变量@code{disable-point-adjustment}来抑制该功能：
 
 @defvar disable-point-adjustment
-If this variable is non-@code{nil} when a command returns to the
-command loop, then the command loop does not check for those text
-properties, and does not move point out of sequences that have them.
+如果当一个命令返回到命令循环时，这个变量是非@code{nil}，那么命令循环就不会检查这些文
+本属性，也不会将点从有这些属性的序列中移出。
 
-The command loop sets this variable to @code{nil} before each command,
-so if a command sets it, the effect applies only to that command.
+命令循环在每条命令之前都会将这个变量设置为@code{nil}，所以如果某条命令设置了这个变量
+，那么效果只适用于这条命令。
 @end defvar
 
 @defvar global-disable-point-adjustment
-If you set this variable to a non-@code{nil} value, the feature of
-moving point out of these sequences is completely turned off.
+如果将这个变量设置为非@code{nil}值，则完全关闭这些序列中移动点的功能。
 @end defvar
 
 @node 输入事件
@@ -873,80 +857,69 @@ moving point out of these sequences is completely turned off.
 @cindex events
 @cindex input events
 
-The Emacs command loop reads a sequence of @dfn{input events} that
-represent keyboard or mouse activity, or system events sent to Emacs.
-The events for keyboard activity are characters or symbols; other
-events are always lists.  This section describes the representation
-and meaning of input events in detail.
+Emacs命令循环读取一连串的@dfn{输入事件}，这些事件代表键盘或鼠标活动，或者是发
+送给Emacs的系统事件。键盘活动的事件是字符或符号，其他事件总是列表。本节详细介绍
+输入事件的表示方法和意义。
 
 @defun eventp object
-This function returns non-@code{nil} if @var{object} is an input event
-or event type.
+如果@var{object}是一个输入事件或事件类型，则该函数返回非@code{nil}。
 
-Note that any non-@code{nil} symbol might be used as an event or an
-event type; @code{eventp} cannot distinguish whether a symbol is
-intended by Lisp code to be used as an event.
+请注意，任何非@code{nil}符号都可能被用作事件或事件类型；@code{eventp}不能区分
+Lisp代码是否打算将一个符号用作事件。
 @end defun
 
 @menu
-* Keyboard Events::             Ordinary characters -- keys with symbols on them.
-* Function Keys::               Function keys -- keys with names, not symbols.
-* Mouse Events::                Overview of mouse events.
-* Click Events::                Pushing and releasing a mouse button.
-* Drag Events::                 Moving the mouse before releasing the button.
-* Button-Down Events::          A button was pushed and not yet released.
-* Repeat Events::               Double and triple click (or drag, or down).
-* Motion Events::               Just moving the mouse, not pushing a button.
-* Focus Events::                Moving the mouse between frames.
-* Misc Events::                 Other events the system can generate.
-* Event Examples::              Examples of the lists for mouse events.
-* Classifying Events::          Finding the modifier keys in an event symbol.
-                                Event types.
-* Accessing Mouse::             Functions to extract info from mouse events.
-* Accessing Scroll::            Functions to get info from scroll bar events.
-* Strings of Events::           Special considerations for putting
-                                  keyboard character events in a string.
+* 键盘事件::                     普通字符 -- 带符号的键。
+* 功能键::                       功能键 -- 有名称而非符号的键。
+* 鼠标事件::                     鼠标事件概述。
+* 点击事件::                     按压和释放鼠标按钮。
+* 拖动事件::                     在释放按钮之前移动鼠标。
+* 按下按钮事件::                  按钮被按下后尚未释放。
+* 重复事件::                     双击和三击（或拖动，或按下）。
+* 运动事件::                     只是移动鼠标，而不按下按钮。
+* 焦点事件::                     在窗框之间移动鼠标。
+* 杂项事件::                     系统可以产生的其他事件。
+* 事件示例::                     鼠标事件的列表示例。
+* 分类事件::                     寻找事件符号中的修饰键。事件类型。
+* 访问鼠标::                     从鼠标事件中提取信息的函数。
+* 访问滚动条::                   从滚动条事件中获取信息的函数。
+* 事件字符串::                   将键盘字符事件放在字符串中的特殊注意事项。
 @end menu
 
-@node Keyboard Events
+@node 键盘事件
 @subsection Keyboard Events
 @cindex keyboard events
 
 @cindex character event
-There are two kinds of input you can get from the keyboard: ordinary
-keys, and function keys.  Ordinary keys correspond to (possibly
-modified) characters; the events they generate are represented in Lisp
-as characters.  The event type of a @dfn{character event} is the
-character itself (an integer), which might have some modifier bits
-set; see @ref{Classifying Events}.
+你可以从键盘上获得两种输入：普通键和功能键。普通键对应的是（可能是修改过的）字符；
+它们产生的事件在Lisp中表示为字符。一个@dfn{字符事件}的事件类型是字符本身（一个
+整数），它可能设置了一些修饰位；参见 @ref{分类事件}。
 
 @cindex modifier bits (of input character)
 @cindex basic code (of input character)
-An input character event consists of a @dfn{basic code} between 0 and
-524287, plus any or all of these @dfn{modifier bits}:
+一个输入字符事件由0到524287之间的@dfn{基本码}，加上任何或所有这些@dfn{修饰位}
+组成：
 
 @table @asis
 @item meta
-The
+该
 @tex
 @math{2^{27}}
 @end tex
 @ifnottex
 2**27
 @end ifnottex
-bit in the character code indicates a character
-typed with the meta key held down.
+字符码中的位表示按住元键输入的字符。
 
 @item control
-The
+该
 @tex
 @math{2^{26}}
 @end tex
 @ifnottex
 2**26
 @end ifnottex
-bit in the character code indicates a non-@acronym{ASCII}
-control character.
+字符码中的位表示非@acronym{ASCII}控制字符。
 
 @sc{ascii} control characters such as @kbd{C-a} have special basic
 codes of their own, so Emacs needs no special bit to indicate them.
@@ -1043,7 +1016,7 @@ specify the characters (@pxref{Changing Key Bindings}).  The function
 @code{event-convert-list} converts such a list into an event type
 (@pxref{Classifying Events}).
 
-@node Function Keys
+@node 功能键
 @subsection Function Keys
 
 @cindex function keys
@@ -1120,7 +1093,7 @@ Thus, the symbol for the key @key{F3} with @key{META} held down is
 write them in alphabetical order; but the order does not matter in
 arguments to the key-binding lookup and modification functions.
 
-@node Mouse Events
+@node 鼠标事件
 @subsection Mouse Events
 
 Emacs supports four kinds of mouse events: click events, drag events,
@@ -1142,7 +1115,7 @@ buffer.  This does not imply that clicking in a window selects that
 window or its buffer---that is entirely under the control of the command
 binding of the key sequence.
 
-@node Click Events
+@node 点击事件
 @subsection Click Events
 @cindex click event
 @cindex mouse click event
@@ -1316,7 +1289,7 @@ handle), @code{up} (the up arrow at one end of the scroll bar), or
 @end table
 
 
-@node Drag Events
+@node 拖动事件
 @subsection Drag Events
 @cindex drag event
 @cindex mouse drag event
@@ -1353,7 +1326,7 @@ changes the drag event into a click event at the drag's starting
 position.  This means that you don't have to distinguish between click
 and drag events unless you want to.
 
-@node Button-Down Events
+@node 按下按钮事件
 @subsection Button-Down Events
 @cindex button-down event
 
@@ -1377,7 +1350,7 @@ reason to define a button-down event is so that you can track mouse
 motion (by reading motion events) until the button is released.
 @xref{Motion Events}.
 
-@node Repeat Events
+@node 重复事件
 @subsection Repeat Events
 @cindex repeat events
 @cindex double-click events
@@ -1472,7 +1445,7 @@ successive button presses must be less than the value of
 position only.
 @end defopt
 
-@node Motion Events
+@node 运动事件
 @subsection Motion Events
 @cindex motion event
 @cindex mouse motion events
@@ -1503,7 +1476,7 @@ small movements.  Otherwise, motion events are not generated as long
 as the mouse cursor remains pointing to the same glyph in the text.
 @end defvar
 
-@node Focus Events
+@node 焦点事件
 @subsection Focus Events
 @cindex focus event
 
@@ -1539,7 +1512,7 @@ sequence---that is, after a prefix key---then Emacs reorders the events
 so that the focus event comes either before or after the multi-event key
 sequence, and not within it.
 
-@node Misc Events
+@node 杂项事件
 @subsection Miscellaneous System Events
 
 A few other event types represent occurrences within the system.
@@ -1681,7 +1654,7 @@ is, after a prefix key---then Emacs reorders the events so that this
 event comes either before or after the multi-event key sequence, not
 within it.
 
-@node Event Examples
+@node 事件示例
 @subsection Event Examples
 
 If the user presses and releases the left mouse button over the same
@@ -1731,7 +1704,7 @@ bind it to the @code{signal usr1} event sequence:
 (global-set-key [signal usr1] 'usr1-handler)
 @end smallexample
 
-@node Classifying Events
+@node 分类事件
 @subsection Classifying Events
 @cindex event type
 @cindex classifying events
@@ -1848,7 +1821,7 @@ must be the last element of the list.  For example,
 @end example
 @end defun
 
-@node Accessing Mouse
+@node 访问鼠标
 @subsection Accessing Mouse Events
 @cindex mouse events, data in
 @cindex keyboard events, data in
@@ -2021,7 +1994,7 @@ to the window text area, otherwise they are relative to
 the entire window area including scroll bars, margins and fringes.
 @end defun
 
-@node Accessing Scroll
+@node 访问滚动条
 @subsection Accessing Scroll Bar Events
 @cindex scroll bar events, data in
 
@@ -2054,7 +2027,7 @@ Recall that scroll bar events have two integers forming a ratio, in place
 of a pair of x and y coordinates.
 @end defun
 
-@node Strings of Events
+@node 事件字符串
 @subsection Putting Keyboard Events in Strings
 @cindex keyboard events in strings
 @cindex strings with keyboard events
@@ -2218,7 +2191,7 @@ with a mouse event is read using the keymaps of the buffer in the
 window that the mouse was in, not the current buffer.)
 
 If the events are all characters and all can fit in a string, then
-@code{read-key-sequence} returns a string (@pxref{Strings of Events}).
+@code{read-key-sequence} returns a string (@pxref{事件字符串}).
 Otherwise, it returns a vector, since a vector can hold all kinds of
 events---characters, symbols, and lists.  The elements of the string or
 vector are the events in the key sequence.
@@ -2272,7 +2245,7 @@ and does not set @code{quit-flag}.  @xref{Quitting}.
 @defun read-key-sequence-vector prompt &optional continue-echo dont-downcase-last switch-frame-ok command-loop
 This is like @code{read-key-sequence} except that it always
 returns the key sequence as a vector, never as a string.
-@xref{Strings of Events}.
+@xref{事件字符串}.
 @end defun
 
 @cindex upper case key sequence
