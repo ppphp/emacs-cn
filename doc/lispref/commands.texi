@@ -921,208 +921,173 @@ Lisp代码是否打算将一个符号用作事件。
 @end ifnottex
 字符码中的位表示非@acronym{ASCII}控制字符。
 
-@sc{ascii} control characters such as @kbd{C-a} have special basic
-codes of their own, so Emacs needs no special bit to indicate them.
-Thus, the code for @kbd{C-a} is just 1.
+@sc{ascii}控制字符，如@kbd{C-a}，有它们自己的特殊的基本编码，所以Emacs不需要
+特殊的位来表示它们。因此，@kbd{C-a}的编码只是1。
 
-But if you type a control combination not in @acronym{ASCII}, such as
-@kbd{%} with the control key, the numeric value you get is the code
-for @kbd{%} plus
+但是，如果你输入一个非@acronym{ASCII}的控制组合，例如 用控制键和@kbd{%}，得到的数
+值就是编码@kbd{%}加上
 @tex
 @math{2^{26}}
 @end tex
 @ifnottex
 2**26
 @end ifnottex
-(assuming the terminal supports non-@acronym{ASCII}
-control characters), i.e.@: with the 27th bit set.
+(假设终端支持非@acronym{ASCII}控制字符)，即@:，设置第27位。
 
 @item shift
-The
+该
 @tex
 @math{2^{25}}
 @end tex
 @ifnottex
 2**25
 @end ifnottex
-bit (the 26th bit) in the character event code indicates an
-@acronym{ASCII} control character typed with the shift key held down.
+位（第26位）在字符事件代码中，表示的是一个按住shift键输入的@acronym{ASCII}控制字符。
 
-For letters, the basic code itself indicates upper versus lower case;
-for digits and punctuation, the shift key selects an entirely different
-character with a different basic code.  In order to keep within the
-@acronym{ASCII} character set whenever possible, Emacs avoids using the
+对于字母，基本码本身就表达大写与小写；对于数字和标点符号，shift键选择的是完全不同的字
+符，基本码也不同。为了尽可能保持使用@acronym{ASCII}字符集，Emacs避免使用
 @tex
 @math{2^{25}}
 @end tex
 @ifnottex
 2**25
 @end ifnottex
-bit for those character events.
+位的那些字符事件。
 
-However, @acronym{ASCII} provides no way to distinguish @kbd{C-A} from
-@kbd{C-a}, so Emacs uses the
+但是，@acronym{ASCII}没有提供区分@kbd{C-A}和@kbd{C-a}的方法，所以Emacs使用了
 @tex
 @math{2^{25}}
 @end tex
 @ifnottex
 2**25
 @end ifnottex
-bit in @kbd{C-A} and not in
-@kbd{C-a}.
+位，在@kbd{C-A}中，不在@kbd{C-a}中。
 
 @item hyper
-The
+该
 @tex
 @math{2^{24}}
 @end tex
 @ifnottex
 2**24
 @end ifnottex
-bit in the character event code indicates a character
-typed with the hyper key held down.
+字符事件代码中的位表示按住hyper键输入的字符。
 
 @item super
-The
+该
 @tex
 @math{2^{23}}
 @end tex
 @ifnottex
 2**23
 @end ifnottex
-bit in the character event code indicates a character
-typed with the super key held down.
+字符事件代码中的位表示按住super键输入的字符。
 
 @item alt
-The
+该
 @tex
 @math{2^{22}}
 @end tex
 @ifnottex
 2**22
 @end ifnottex
-bit in the character event code indicates a character typed with the
-alt key held down.  (The key labeled @key{Alt} on most keyboards is
-actually treated as the meta key, not this.)
+字符事件代码中的位表示在按住alt键的情况下输入了一个字符，（大多数键盘上标有
+@key{Alt}的键实际上被当作meta键处理，而不是这个）。
 @end table
 
-  It is best to avoid mentioning specific bit numbers in your program.
-To test the modifier bits of a character, use the function
-@code{event-modifiers} (@pxref{Classifying Events}).  When making key
-bindings, you can use the read syntax for characters with modifier bits
-(@samp{\C-}, @samp{\M-}, and so on).  For making key bindings with
-@code{define-key}, you can use lists such as @code{(control hyper ?x)} to
-specify the characters (@pxref{Changing Key Bindings}).  The function
-@code{event-convert-list} converts such a list into an event type
-(@pxref{Classifying Events}).
+  最好避免在程序中提到具体的位数。要测试一个字符的修饰位，请使用函数
+@code{event-modifiers}(@pxref{分类事件})。在制作键绑定时，您可以
+为带有修饰位的字符（@samp{\C-}、@samp{\M-}等）使用读语法。对于用
+@code{define-key}制作键绑定，您可以使用@code{(control hyper ?x)}等列表来指定
+字符(@pxref{Changing Key Bindings})。函数@code{event-convert-list}可以将这
+样的列表转换为事件类型 (@pxref{分类事件})。
 
 @node 功能键
 @subsection Function Keys
 
 @cindex function keys
-Most keyboards also have @dfn{function keys}---keys that have names or
-symbols that are not characters.  Function keys are represented in
-Emacs Lisp as symbols; the symbol's name is the function key's label,
-in lower case.  For example, pressing a key labeled @key{F1} generates
-an input event represented by the symbol @code{f1}.
+大部分键盘也有@dfn{功能键}——有名字或不是字符的符号的键。在Emacs Lisp中，功能键是
+以符号的形式来表示的；符号的名称就是功能键的标签，用小写字母表示。例如，按下一个标
+有@key{F1}的键会产生一个输入事件，用符号@code{f1}表示。
 
-The event type of a function key event is the event symbol itself.
-@xref{Classifying Events}.
+函数键事件的事件类型就是事件符号本身。@xref{分类事件}。
 
-Here are a few special cases in the symbol-naming convention for
-function keys:
+下面是函数键的符号命名惯例中的几种特殊情况：
 
 @table @asis
 @item @code{backspace}, @code{tab}, @code{newline}, @code{return}, @code{delete}
-These keys correspond to common @acronym{ASCII} control characters that have
-special keys on most keyboards.
+这些键对应于常见的@acronym{ASCII}控制字符，这些字符在大多数键盘上有特殊的键。
 
-In @acronym{ASCII}, @kbd{C-i} and @key{TAB} are the same character.  If the
-terminal can distinguish between them, Emacs conveys the distinction to
-Lisp programs by representing the former as the integer 9, and the
-latter as the symbol @code{tab}.
+在@acronym{ASCII}中，@kbd{C-i}和@key{TAB}是同一个字符。如果终端能够区分它们，
+Emacs就会将它们的区别传达给Lisp程序，将前者表示为整数9，后者表示为符号@code{tab}。
 
-Most of the time, it's not useful to distinguish the two.  So normally
-@code{local-function-key-map} (@pxref{Translation Keymaps}) is set up
-to map @code{tab} into 9.  Thus, a key binding for character code 9
-(the character @kbd{C-i}) also applies to @code{tab}.  Likewise for
-the other symbols in this group.  The function @code{read-char}
-likewise converts these events into characters.
+大多数情况下，区分这两者是没有用的。所以一般情况下，
+@code{local-function-key-map}(@pxref{Translation Keymaps})是为了将@code{tab}
+映射到9而设置的。因此，字符代码9的键绑定（字符 @kbd{C-i}）也适用于@code{tab}。同样，
+对于这一组中的其他符号也是如此。函数@code{read-char}也同样将这些事件转换为字符。
 
-In @acronym{ASCII}, @key{BS} is really @kbd{C-h}.  But @code{backspace}
-converts into the character code 127 (@key{DEL}), not into code 8
-(@key{BS}).  This is what most users prefer.
+在@acronym{ASCII}中，@key{BS}实际上是@kbd{C-h}。但是@code{backspace}会转换成字
+符代码127(@key{DEL})，而不是代码8(@key{BS})。这是大多数用户所喜欢的。
 
 @item @code{left}, @code{up}, @code{right}, @code{down}
-Cursor arrow keys
+光标方向键
 @item @code{kp-add}, @code{kp-decimal}, @code{kp-divide}, @dots{}
-Keypad keys (to the right of the regular keyboard).
+键盘键（在普通键盘的右侧）。
 @item @code{kp-0}, @code{kp-1}, @dots{}
-Keypad keys with digits.
+带数字的键盘键。
 @item @code{kp-f1}, @code{kp-f2}, @code{kp-f3}, @code{kp-f4}
-Keypad PF keys.
+键盘PF键。
 @item @code{kp-home}, @code{kp-left}, @code{kp-up}, @code{kp-right}, @code{kp-down}
-Keypad arrow keys.  Emacs normally translates these into the
-corresponding non-keypad keys @code{home}, @code{left}, @dots{}
+键盘方向键。Emacs通常会将这些键翻译成相应的非键盘键@code{home}, @code{left},
+@dots{}。
 @item @code{kp-prior}, @code{kp-next}, @code{kp-end}, @code{kp-begin}, @code{kp-insert}, @code{kp-delete}
-Additional keypad duplicates of keys ordinarily found elsewhere.  Emacs
-normally translates these into the like-named non-keypad keys.
+额外的键盘重复键，通常在其他地方都能找到，Emacs通常会将这些键翻译成同名的非键盘
+键。Emacs通常会将这些键翻译成相同名称的非键盘键。
 @end table
 
-You can use the modifier keys @key{ALT}, @key{CTRL}, @key{HYPER},
-@key{META}, @key{SHIFT}, and @key{SUPER} with function keys.  The way to
-represent them is with prefixes in the symbol name:
+您可以用功能键同时使用修饰键@key{ALT}，@key{CTRL}，@key{HYPER}，@key{META}，
+@key{SHIFT}，@key{SUPER}。方法是代表它们的是符号名称中的前缀：
 
 @table @samp
 @item A-
-The alt modifier.
+alt修饰。
 @item C-
-The control modifier.
+ctrl修饰。
 @item H-
-The hyper modifier.
+hyper修饰。
 @item M-
-The meta modifier.
+meta修饰。
 @item S-
-The shift modifier.
+shift修饰。
 @item s-
-The super modifier.
+super修饰。
 @end table
 
-Thus, the symbol for the key @key{F3} with @key{META} held down is
-@code{M-f3}.  When you use more than one prefix, we recommend you
-write them in alphabetical order; but the order does not matter in
-arguments to the key-binding lookup and modification functions.
+因此，按住@key{META}的键@key{F3}的符号是@code{M-f3}。当您使用一个以上的前缀时，
+我们建议您按字母顺序来写；但在键绑定查找和修改函数的参数中，顺序并不重要。
 
 @node 鼠标事件
 @subsection Mouse Events
 
-Emacs supports four kinds of mouse events: click events, drag events,
-button-down events, and motion events.  All mouse events are represented
-as lists.  The @sc{car} of the list is the event type; this says which
-mouse button was involved, and which modifier keys were used with it.
-The event type can also distinguish double or triple button presses
-(@pxref{Repeat Events}).  The rest of the list elements give position
-and time information.
+Emacs支持四种鼠标事件：点击事件、拖动事件、下键事件和运动事件。所有的鼠标事件都用
+列表来表示。列表中的@sc{car}是事件类型；它说明了涉及到的是哪个鼠标按钮，以及使用
+了哪些修饰键。事件类型也可以区分双击或三击按钮（@pxref{重复事件}）。其余的列表元
+素给出了位置和时间信息。
 
-For key lookup, only the event type matters: two events of the same type
-necessarily run the same command.  The command can access the full
-values of these events using the @samp{e} interactive code.
-@xref{Interactive Codes}.
+为了键查询，只有事件类型才是重要的：两个相同类型的事件必然运行同一个命令。命令可以
+使用@samp{e}交互式代码访问这些事件的全部值。@xref{交互式代码}。
 
-A key sequence that starts with a mouse event is read using the keymaps
-of the buffer in the window that the mouse was in, not the current
-buffer.  This does not imply that clicking in a window selects that
-window or its buffer---that is entirely under the control of the command
-binding of the key sequence.
+一个以鼠标事件开始的按键序列是使用鼠标所在窗口的缓冲区的键位图来读取的，而不是当前
+缓冲区。这并不意味着点击一个窗口就能选择该窗口或其缓冲区--这完全是由按键序列的命令
+绑定所控制的。
 
 @node 点击事件
 @subsection Click Events
 @cindex click event
 @cindex mouse click event
 
-When the user presses a mouse button and releases it at the same
-location, that generates a @dfn{click} event.  All mouse click event
-share the same format:
+当用户按下鼠标按钮并在同一位置松开时，就会产生一个@dfn{click}事件。所有的鼠标点
+击事件都有相同的格式：
 
 @example
 (@var{event-type} @var{position} @var{click-count})
@@ -1130,35 +1095,27 @@ share the same format:
 
 @table @asis
 @item @var{event-type}
-This is a symbol that indicates which mouse button was used.  It is
-one of the symbols @code{mouse-1}, @code{mouse-2}, @dots{}, where the
-buttons are numbered left to right.
+这是一个表示使用了哪个鼠标按钮的符号。它是符号@code{mouse-1}、@code{mouse-2}、
+@dots{}中的一种，其中按钮从左到右编号。
 
-You can also use prefixes @samp{A-}, @samp{C-}, @samp{H-}, @samp{M-},
-@samp{S-} and @samp{s-} for modifiers alt, control, hyper, meta, shift
-and super, just as you would with function keys.
+您也可以使用前缀@samp{A-}、@samp{C-}、@samp{H-}、@samp{M-}、@samp{s-}和
+@samp{s-}代表修饰器alt、control、hyper、meta、shift和超级，就像你用功能键一样。
 
-This symbol also serves as the event type of the event.  Key bindings
-describe events by their types; thus, if there is a key binding for
-@code{mouse-1}, that binding would apply to all events whose
-@var{event-type} is @code{mouse-1}.
+这个符号也作为事件的事件类型。键绑定通过事件类型来描述事件；因此，如果有一个
+@code{mouse-1}的键绑定，该绑定将适用于所有@var{event-type}为@code{mouse-1}的事
+件。
 
 @item @var{position}
 @cindex mouse position list
-This is a @dfn{mouse position list} specifying where the mouse click
-occurred; see below for details.
+这是一个@dfn{鼠标位置列表}，指定了鼠标点击的位置，详情见下文。
 
 @item @var{click-count}
-This is the number of rapid repeated presses so far of the same mouse
-button.  @xref{Repeat Events}.
+这是到目前为止，快速重复按下同一个鼠标按钮的次数。@xref{重复事件}。
 @end table
 
-  To access the contents of a mouse position list in the
-@var{position} slot of a click event, you should typically use the
-functions documented in @ref{Accessing Mouse}.  The explicit format of
-the list depends on where the click occurred.  For clicks in the text
-area, mode line, header line, tab line, or in the fringe or marginal
-areas, the mouse position list has the form
+  要访问点击事件的@var{position}槽中的鼠标位置列表的内容，通常应该使用
+@ref{访问鼠标}中记载的函数。列表的显式格式取决于点击发生的位置。对于在文本区域、模
+式行、页眉行、标签行、边缘或边缘区域的点击，鼠标位置列表的格式为
 
 @example
 (@var{window} @var{pos-or-area} (@var{x} . @var{y}) @var{timestamp}
@@ -1167,11 +1124,11 @@ areas, the mouse position list has the form
 @end example
 
 @noindent
-The meanings of these list elements are as follows:
+这些清单要素的含义如下：
 
 @table @asis
 @item @var{window}
-The window in which the click occurred.
+发生点击的窗口。
 
 @item @var{pos-or-area}
 The buffer position of the character clicked on in the text area; or,
