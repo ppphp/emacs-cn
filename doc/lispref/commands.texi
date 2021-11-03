@@ -1131,84 +1131,65 @@ Emacs支持四种鼠标事件：点击事件、拖动事件、下键事件和运
 发生点击的窗口。
 
 @item @var{pos-or-area}
-The buffer position of the character clicked on in the text area; or,
-if the click was outside the text area, the window area where it
-occurred.  It is one of the symbols @code{mode-line},
-@code{header-line}, @code{tab-line}, @code{vertical-line},
-@code{left-margin}, @code{right-margin}, @code{left-fringe}, or
-@code{right-fringe}.
+文字区域中被点击的字符的缓冲位置；如果点击是在文字区域之外，则为其发生的窗口区域
+。它是@code{mode-line}, @code{header-line}, @code{tab-line},
+@code{vertical-line}, @code{left-margin}, @code{right-margin},
+@code{left-fringe}, 或@code{right-fringe}等符号中的一种。
 
-In one special case, @var{pos-or-area} is a list containing a symbol
-(one of the symbols listed above) instead of just the symbol.  This
-happens after the imaginary prefix keys for the event are registered
-by Emacs.  @xref{Key Sequence Input}.
+在一种特殊情况下，@var{pos-or-area}是一个包含符号（上面列出的符号之一）的列表，
+而不仅仅是符号。这发生在Emacs注册了事件的虚前缀键之后。@xref{键序列输入}。
 
 @item @var{x}, @var{y}
-The relative pixel coordinates of the click.  For clicks in the text
-area of a window, the coordinate origin @code{(0 . 0)} is taken to be
-the top left corner of the text area.  @xref{Window Sizes}.  For
-clicks in a mode line, header line or tab line, the coordinate origin
-is the top left corner of the window itself.  For fringes, margins,
-and the vertical border, @var{x} does not have meaningful data.
-For fringes and margins, @var{y} is relative to the bottom edge of the
-header line.  In all cases, the @var{x} and @var{y} coordinates
-increase rightward and downward respectively.
+点击的相对像素坐标。对于窗口文字区域的点击，坐标原点@code{(0 . 0)}取为文字区域
+的左上角。@xref{窗口大小}。对于模式行、标题行或标签行中的点击，坐标原点为窗口本
+身的左上角。对于边缘、边框和垂直边框，@var{x}没有有意义的数据。对于边缘和边框，
+@var{y}是相对于页眉线的底边而言的。在所有情况下，@var{x}和@var{y}的坐标分别向
+右和向下增加。
 
 @item @var{timestamp}
-The time at which the event occurred, as an integer number of
-milliseconds since a system-dependent initial time.
+事件发生的时间，为系统初始时间后的整数毫秒。
 
 @item @var{object}
-Either @code{nil}, which means the click occurred on buffer text, or a
-cons cell of the form @w{(@var{string} . @var{string-pos})} if there
-is a string from a text property or an overlay at the click position.
+要么是@code{nil}，表示点击发生在缓冲区文本上，要么是
+@w{(@var{string} .@var{string-pos})}形式的cons单元格，如果点击位置有文本属
+性的字符串或覆盖层。
 
 @table @asis
 @item @var{string}
-The string which was clicked on, including any properties.
+被点击的字符串，包括任何属性。
 
 @item @var{string-pos}
-The position in the string where the click occurred.
+字符串中发生点击的位置。
 @end table
 
 @item @var{text-pos}
-For clicks on a marginal area or on a fringe, this is the buffer
-position of the first visible character in the corresponding line in
-the window.  For clicks on the mode line, the header line or the tab
-line, this is @code{nil}.  For other events, it is the buffer position
-closest to the click.
+对于在边缘区域或边缘线上的点击，这是窗口中相应行中第一个可见字符的缓冲位置。对于
+模式行、页眉行或标签行的点击，是@code{nil}。对于其他事件，它是最接近点击的缓冲
+区位置。
 
 @item @var{col}, @var{row}
-These are the actual column and row coordinate numbers of the glyph
-under the @var{x}, @var{y} position.  If @var{x} lies beyond the last
-column of actual text on its line, @var{col} is reported by adding
-fictional extra columns that have the default character width.
-Row 0 is taken to be the header line if the window has one, or Row 1
-if the window also has the tab line, or the topmost row of
-the text area otherwise.  Column 0 is taken to be the leftmost
-column of the text area for clicks on a window text area, or the
-leftmost mode line or header line column for clicks there.  For clicks
-on fringes or vertical borders, these have no meaningful data.  For
-clicks on margins, @var{col} is measured from the left edge of the
-margin area and @var{row} is measured from the top of the margin area.
+这些是@var{x}、@var{y}位置下字型的实际列和行坐标号。如果@var{x}位于其行上实际
+文本的最后一列之外，@var{col}则通过添加虚构的额外列来报告，这些列具有默认的字符
+宽度。如果窗口有页眉行，则第0行被视为页眉行，如果窗口有标签行，则第1行被视为页眉
+行，否则被视为文本区域的最上面一行。第0列是指在窗口文本区域上点击的文本区域最左
+边的一列，或者在那里点击的最左边的模式线或页眉线列。对于边缘或垂直边界上的点击，
+这些没有有意义的数据。对于在边框上的点击，@var{col}是从边框区域的左边缘开始测量
+的，@var{row}是从边框区域的顶部开始测量的。
 
 @item @var{image}
-If there is an image at the click location, this is the image object
-as returned by @code{find-image} (@pxref{Defining Images}); otherwise
-this is @code{nil}.
+如果点击位置有图像，则是@code{find-image}返回的图像对象。(@pxref{定义图像})；
+否则就是@code{nil}。
 
 @item @var{dx}, @var{dy}
-These are the pixel coordinates of the click, relative to the top left
-corner of @var{object}, which is @code{(0 . 0)}.  If @var{object} is
-@code{nil}, which stands for a buffer, the coordinates are relative to
-the top left corner of the character glyph clicked on.
+这些是点击的像素坐标，相对于@var{object}的左上角，也就是@code{(0 . 0)}。如果
+@var{object}是@code{nil}，代表缓冲区，则坐标是相对于被点击的字符字形的左上角。
 
 @item @var{width}, @var{height}
-These are the pixel width and height of @var{object} or, if this is
-@code{nil}, those of the character glyph clicked on.
+这些是@var{object}的像素宽度和高度，如果是@code{nil}，则是被点击的字符字形的宽
+度和高度。
 @end table
 
-For clicks on a scroll bar, @var{position} has this form:
+对于滚动条上的点击，@var{position}有这样的形式：
 
 @example
 (@var{window} @var{area} (@var{portion} . @var{whole}) @var{timestamp} @var{part})
@@ -1216,33 +1197,28 @@ For clicks on a scroll bar, @var{position} has this form:
 
 @table @asis
 @item @var{window}
-The window whose scroll bar was clicked on.
+其滚动条被点击的窗口。
 
 @item @var{area}
-This is the symbol @code{vertical-scroll-bar}.
+这是符号@code{vertical-scroll-bar}。
 
 @item @var{portion}
-The number of pixels from the top of the scroll bar to the click
-position.  On some toolkits, including GTK+, Emacs cannot extract this
-data, so the value is always @code{0}.
+从滚动条的顶部到点击位置的像素数，在一些工具包中，包括GTK+，Emacs不能提取这个数据
+，所以总是@code{0}。
 
 @item @var{whole}
-The total length, in pixels, of the scroll bar.  On some toolkits,
-including GTK+, Emacs cannot extract this data, so the value is always
-@code{0}.
+滚动条的总长度，以像素为单位。在一些工具包中，包括GTK+，Emacs不能提取这个数据，所
+以值总是@code{0}。
 
 @item @var{timestamp}
-The time at which the event occurred, in milliseconds.  On some
-toolkits, including GTK+, Emacs cannot extract this data, so the value
-is always @code{0}.
+事件发生的时间，以毫秒为单位。在某些工具包中，包括GTK+，Emacs不能提取这个数据，所
+以值总是@code{0}。
 
 @item @var{part}
-The part of the scroll bar on which the click occurred.  It is one of
-the symbols @code{handle} (the scroll bar handle), @code{above-handle}
-(the area above the handle), @code{below-handle} (the area below the
-handle), @code{up} (the up arrow at one end of the scroll bar), or
-@code{down} (the down arrow at one end of the scroll bar).
-@c The 'top', 'bottom', and 'end-scroll' codes don't seem to be used.
+点击发生在滚动条上的部分。它是@code{handle}(滚动条抓手)，@code{above-handle}(
+抓手上方的区域)，@code{below-handle}(抓手下面的区域)，@code{up}(滚动条一端的向
+上箭头)，或@code{down}(滚动条一端的向下箭头)符号之一。
+@c 'top'、'bottom'和'end-scroll'代码似乎没有被使用。
 @end table
 
 
@@ -1251,12 +1227,9 @@ handle), @code{up} (the up arrow at one end of the scroll bar), or
 @cindex drag event
 @cindex mouse drag event
 
-With Emacs, you can have a drag event without even changing your
-clothes.  A @dfn{drag event} happens every time the user presses a mouse
-button and then moves the mouse to a different character position before
-releasing the button.  Like all mouse events, drag events are
-represented in Lisp as lists.  The lists record both the starting mouse
-position and the final position, like this:
+使用Emacs，你甚至不用换衣服就可以发生拖动事件。每当用户按下鼠标按钮，然后在释放按
+钮之前将鼠标移动到不同的字符位置时，都会发生@dfn{拖动事件}。像所有的鼠标事件一样，
+拖动事件在Lisp中以列表的形式表示。列表同时记录了鼠标的起始位置和最终位置，就像这样：
 
 @example
 (@var{event-type}
@@ -1264,48 +1237,34 @@ position and the final position, like this:
  (@var{window2} END-POSITION))
 @end example
 
-For a drag event, the name of the symbol @var{event-type} contains the
-prefix @samp{drag-}.  For example, dragging the mouse with button 2
-held down generates a @code{drag-mouse-2} event.  The second and third
-elements of the event give the starting and ending position of the
-drag, as mouse position lists (@pxref{Click Events}).  You can access
-the second element of any mouse event in the same way.  However, the
-drag event may end outside the boundaries of the frame that was
-initially selected.  In that case, the third element's position list
-contains that frame in place of a window.
+对于拖动事件，符号@var{event-type}的名称包含@samp{drag-}的前缀。例如，在按住
+按钮2的情况下拖动鼠标会产生@code{drag-mouse-2}事件。事件的第二个和第三个元素给
+出了拖动的开始和结束位置，作为鼠标位置列表(@pxref{点击事件})。您可以以同样的方式
+访问任何鼠标事件的第二个元素。然而，拖动事件可能会在最初选择的窗框边界之外结束。在
+这种情况下，第三个元素的位置列表将包含该窗框而不是窗口。
 
-The @samp{drag-} prefix follows the modifier key prefixes such as
-@samp{C-} and @samp{M-}.
+@samp{drag-}前缀跟随修饰键前缀，如@samp{C-}和@samp{M-}。
 
-If @code{read-key-sequence} receives a drag event that has no key
-binding, and the corresponding click event does have a binding, it
-changes the drag event into a click event at the drag's starting
-position.  This means that you don't have to distinguish between click
-and drag events unless you want to.
+如果@code{read-key-sequence}接收到一个没有键绑定的拖动事件，而对应的点击事件有
+绑定，它就会在拖动的起始位置将拖动事件变为点击事件。这意味着您不必区分点击和拖动
+事件，除非您想这样做。
 
 @node 按下按钮事件
 @subsection Button-Down Events
 @cindex button-down event
 
-Click and drag events happen when the user releases a mouse button.
-They cannot happen earlier, because there is no way to distinguish a
-click from a drag until the button is released.
+点击和拖动事件发生在用户释放鼠标按钮时。它们不可能在更早的时候发生，因为在释放按
+钮之前，无法区分点击和拖动。
 
-If you want to take action as soon as a button is pressed, you need to
-handle @dfn{button-down} events.@footnote{Button-down is the
-conservative antithesis of drag.}  These occur as soon as a button is
-pressed.  They are represented by lists that look exactly like click
-events (@pxref{Click Events}), except that the @var{event-type} symbol
-name contains the prefix @samp{down-}.  The @samp{down-} prefix follows
-modifier key prefixes such as @samp{C-} and @samp{M-}.
+如果你想在按钮被按下后立即采取行动，你需要处理@dfn{按下按钮}事件。@footnote{按
+下按钮是拖动的保守反义词}。这些事件在按钮被按下后立即发生。它们由看起来与点击事件
+完全相同的列表来表示(@pxref{点击事件})，只是@var{event-type}符号名包含
+@samp{down-}的前缀。@samp{down-} 前缀跟随修饰键前缀，如@samp{C-}和@samp{M-}。
 
-The function @code{read-key-sequence} ignores any button-down events
-that don't have command bindings; therefore, the Emacs command loop
-ignores them too.  This means that you need not worry about defining
-button-down events unless you want them to do something.  The usual
-reason to define a button-down event is so that you can track mouse
-motion (by reading motion events) until the button is released.
-@xref{Motion Events}.
+函数@code{read-key-sequence}忽略任何没有命令绑定的按钮式事件；因此，Emacs命令
+循环也会忽略它们。这意味着，除非你想让它们做一些事情，否则你不需要担心定义按下按
+钮事件。通常定义一个向下按钮事件的原因是为了让您可以跟踪鼠标运动（通过读取运动事
+件），直到按钮被释放。@xref{运动事件}。
 
 @node 重复事件
 @subsection Repeat Events
@@ -1314,92 +1273,65 @@ motion (by reading motion events) until the button is released.
 @cindex triple-click events
 @cindex mouse events, repeated
 
-If you press the same mouse button more than once in quick succession
-without moving the mouse, Emacs generates special @dfn{repeat} mouse
-events for the second and subsequent presses.
+如果您在没有移动鼠标的情况下，连续多次按下同一个鼠标按钮，Emacs会为第二次和后续
+的按压生成特殊的@dfn{重复}鼠标事件。
 
-The most common repeat events are @dfn{double-click} events.  Emacs
-generates a double-click event when you click a button twice; the event
-happens when you release the button (as is normal for all click
-events).
+最常见的重复事件是@dfn{双击}事件。Emacs会在您点击一个按钮两次时生成一个双击事件
+；当您释放按钮时，该事件就会发生（与所有点击事件一样正常）。
 
-The event type of a double-click event contains the prefix
-@samp{double-}.  Thus, a double click on the second mouse button with
-@key{meta} held down comes to the Lisp program as
-@code{M-double-mouse-2}.  If a double-click event has no binding, the
-binding of the corresponding ordinary click event is used to execute
-it.  Thus, you need not pay attention to the double click feature
-unless you really want to.
+双击事件的事件类型包含前缀@samp{double-}。因此，双击第二个鼠标按钮，按住
+@key{meta}，在Lisp程序中就会显示为@code{M-double-mouse-2}。如果双击事件没有
+绑定，则使用对应的普通点击事件的绑定来执行。因此，除非你真的想关注双击功能，否则
+你不需要关注。
 
-When the user performs a double click, Emacs generates first an ordinary
-click event, and then a double-click event.  Therefore, you must design
-the command binding of the double click event to assume that the
-single-click command has already run.  It must produce the desired
-results of a double click, starting from the results of a single click.
+当用户执行双击时，Emacs会先生成一个普通的点击事件，然后再生成一个双击事件。因此
+，你必须设计双击事件的命令绑定，假设单击命令已经运行。它必须从单次点击的结果出发
+，产生双击的预期结果。
 
-This is convenient, if the meaning of a double click somehow builds
-on the meaning of a single click---which is recommended user interface
-design practice for double clicks.
+这很方便，如果双击的意义某种程度上建立在单击的意义上------这是推荐的双击的用户
+界面设计实践。
 
-If you click a button, then press it down again and start moving the
-mouse with the button held down, then you get a @dfn{double-drag} event
-when you ultimately release the button.  Its event type contains
-@samp{double-drag} instead of just @samp{drag}.  If a double-drag event
-has no binding, Emacs looks for an alternate binding as if the event
-were an ordinary drag.
+如果你点击一个按钮，然后再按下按钮，并开始按住按钮移动鼠标，那么当你最终释放按钮
+时，你会得到一个@dfn{双拖}事件。其事件类型包含@samp{double-drag}而不是
+@samp{drag}。如果一个双拖事件没有绑定，Emacs 就会像普通的拖拽事件一样寻找替代
+绑定。
 
-Before the double-click or double-drag event, Emacs generates a
-@dfn{double-down} event when the user presses the button down for the
-second time.  Its event type contains @samp{double-down} instead of just
-@samp{down}.  If a double-down event has no binding, Emacs looks for an
-alternate binding as if the event were an ordinary button-down event.
-If it finds no binding that way either, the double-down event is
-ignored.
+在双击或双拖事件之前，当用户第二次按下按钮时，Emacs会产生一个@dfn{double-down}
+事件。它的事件类型包含@samp{double-down}，而不是只包含@samp{down}。如果双击事
+件没有绑定，Emacs会寻找一个替代绑定，就像该事件是一个普通的按下按钮事件一样。如
+果它也没有找到这样的绑定，则忽略双击事件。
 
-To summarize, when you click a button and then press it again right
-away, Emacs generates a down event and a click event for the first
-click, a double-down event when you press the button again, and finally
-either a double-click or a double-drag event.
+总结一下，当你点击一个按钮，然后马上再按一次，Emacs会产生一个按下按钮事件和第一
+次点击的点击事件，当你再次按下按钮时，会产生一个双向下事件，最后不是双击就是双拖
+事件。
 
-If you click a button twice and then press it again, all in quick
-succession, Emacs generates a @dfn{triple-down} event, followed by
-either a @dfn{triple-click} or a @dfn{triple-drag}.  The event types of
-these events contain @samp{triple} instead of @samp{double}.  If any
-triple event has no binding, Emacs uses the binding that it would use
-for the corresponding double event.
+如果您点击一个按钮两次，然后再按一次，所有这些都是连续的，Emacs会产生一个
+@dfn{triple-down}事件，然后是@dfn{triple-click}或@dfn{triple-dag}事件，这
+些事件类型包含@samp{triple}而不是@samp{double}。如果任何三重事件没有绑定，
+Emacs会使用对应的双重事件的绑定。
 
-If you click a button three or more times and then press it again, the
-events for the presses beyond the third are all triple events.  Emacs
-does not have separate event types for quadruple, quintuple, etc.@:
-events.  However, you can look at the event list to find out precisely
-how many times the button was pressed.
+如果你点击一个按钮三次或三次以上，然后再按一次，第三次以后的按压事件都是三重事件。
+Emacs没有为四倍、五倍等@: 事件单独设置事件类型。但是，你可以通过查看事件列表来精
+确地了解按钮被按下的次数。
 
 @defun event-click-count event
-This function returns the number of consecutive button presses that led
-up to @var{event}.  If @var{event} is a double-down, double-click or
-double-drag event, the value is 2.  If @var{event} is a triple event,
-the value is 3 or greater.  If @var{event} is an ordinary mouse event
-(not a repeat event), the value is 1.
+此函数返回导致@var{event}的连续按键次数。如果@var{event}是一个双击、双击或双拖
+事件，则返回值为2。如果@var{event}是一个三重事件，则返回值为3或更大。如果
+@var{event}是一个普通的鼠标事件 (不是重复事件)，值为 1。
 @end defun
 
 @defopt double-click-fuzz
-To generate repeat events, successive mouse button presses must be at
-approximately the same screen position.  The value of
-@code{double-click-fuzz} specifies the maximum number of pixels the
-mouse may be moved (horizontally or vertically) between two successive
-clicks to make a double-click.
+要生成重复事件，连续的鼠标按键必须在屏幕上大约相同的位置。
+@code{double-click-fuzz}的值指定了鼠标在两次连续点击之间可以移动（水平或垂直）
+的最大像素数，以实现双击。
 
-This variable is also the threshold for motion of the mouse to count
-as a drag.
+这个变量也是鼠标运动算作拖动的阈值。
 @end defopt
 
 @defopt double-click-time
-To generate repeat events, the number of milliseconds between
-successive button presses must be less than the value of
-@code{double-click-time}.  Setting @code{double-click-time} to
-@code{nil} disables multi-click detection entirely.  Setting it to
-@code{t} removes the time limit; Emacs then detects multi-clicks by
-position only.
+要产生重复事件，连续按下按钮之间的毫秒数必须小于@code{double-click-time}的值。
+将@code{double-click-time}设置为@code{nil}会完全禁止多点击检测。将其设置为
+@code{t}则会取消时间限制，Emacs 将仅通过位置检测多点击。
 @end defopt
 
 @node 运动事件
@@ -1407,9 +1339,8 @@ position only.
 @cindex motion event
 @cindex mouse motion events
 
-Emacs sometimes generates @dfn{mouse motion} events to describe motion
-of the mouse without any button activity.  Mouse motion events are
-represented by lists that look like this:
+Emacs有时会生成@dfn{鼠标运动}事件来描述没有任何按钮活动的鼠标运动。鼠标运
+动事件用类似这样的列表来表示：
 
 @example
 (mouse-movement POSITION)
