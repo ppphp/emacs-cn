@@ -1478,25 +1478,20 @@ Emacs有时会生成@dfn{鼠标运动}事件来描述没有任何按钮活动的
 
 @cindex @code{language-change} event
 @item language-change
-This kind of event is generated on MS-Windows when the input language
-has changed.  This typically means that the keyboard keys will send to
-Emacs characters from a different language.  The generated event has
-this form:
+当输入语言发生变化时，MS-Windows上就会产生这种事件，通常这意味着键盘键会向Emacs
+发送不同语言的字符。生成的事件有这样的形式：
 
 @smallexample
 (language-change @var{frame} @var{codepage} @var{language-id})
 @end smallexample
 
 @noindent
-Here @var{frame} is the frame which was current when the input
-language changed; @var{codepage} is the new codepage number; and
-@var{language-id} is the numerical ID of the new input language.  The
-coding-system (@pxref{Coding Systems}) that corresponds to
-@var{codepage} is @code{cp@var{codepage}} or
-@code{windows-@var{codepage}}.  To convert @var{language-id} to a
-string (e.g., to use it for various language-dependent features, such
-as @code{set-language-environment}), use the
-@code{w32-get-locale-info} function, like this:
+这里@var{frame}是输入语言改变时当前的窗框；@var{codepage}是新的代码页号；
+@var{language-id}是新输入语言的数字ID。与@var{codepage}对应的编码系统（
+@pxref{编码系统}）是@code{cp@var{codepage}}或@code{windows-@var{codepage}}
+。要将@var{language-id}转换为字符串(例如，将它用于各种语言相关的功能，如
+@code{set-language-environment})，请使用@code{w32-get-locale-info}函数，
+像这样：
 
 @smallexample
 ;; Get the abbreviated language name, such as "ENU" for English
@@ -1509,16 +1504,14 @@ as @code{set-language-environment}), use the
 @end smallexample
 @end table
 
-  If one of these events arrives in the middle of a key sequence---that
-is, after a prefix key---then Emacs reorders the events so that this
-event comes either before or after the multi-event key sequence, not
-within it.
+  如果这些事件中的一个事件出现在一个键序列的中间--也就是在一个前缀键之后--那么
+Emacs就会重新安排事件的顺序，使这个事件出现在多事件键序列之前或之后，而不是在其内
+部。
 
 @node 事件示例
 @subsection Event Examples
 
-If the user presses and releases the left mouse button over the same
-location, that generates a sequence of events like this:
+如果用户在同一位置上按下并释放鼠标左键，就会产生一连串类似这样的事件：
 
 @smallexample
 (down-mouse-1 (#<window 18 on NEWS> 2613 (0 . 38) -864320))
