@@ -325,7 +325,8 @@ Existing, Completion, Prompt。
 @pxref{File Name Expansion})。Existing, Completion, Default, Prompt.
 
 @item e
-在调用命令的按键序列中的第一个或下一个非键盘事件。更准确地说，@samp{e}得到的事件是列表，所以你可以查看列表中的数据。@xref{Input Events}。No I/O。
+在调用命令的按键序列中的第一个或下一个非键盘事件。更准确地说，@samp{e}得到的事件是列
+表，所以你可以查看列表中的数据。@xref{Input Events}。No I/O。
 
 您可以使用@samp{e}来处理鼠标事件和特殊系统事件（@pxref{Misc Events}）。命令接收
 的事件列表取决于事件。@xref{Input Events}，它在相应的小节中描述了每个事件的列表
@@ -344,7 +345,8 @@ Prompt.
 一个文件名。文件不需要存在。 Completion, Default, Prompt.
 
 @item G
-一个文件名。该文件不需要存在。如果用户只输入一个目录名，那么值就只是该目录名，不添加目录内的文件名。 Completion, Default, Prompt.
+一个文件名。该文件不需要存在。如果用户只输入一个目录名，那么值就只是该目录名，不添加目
+录内的文件名。 Completion, Default, Prompt.
 
 @item i
 一个不相关的参数。此代码总是提供@code{nil}作为参数的值。 No I/O.
@@ -371,7 +373,8 @@ Prompt.
 @pxref{Input Methods,,, emacs, The GNU Emacs Manual}）。 Prompt.
 
 @item n
-一个数字，用minibuffer读取。如果输入的不是数字，用户必须再试一次。@samp{n}从不使用前缀参数。Prompt.
+一个数字，用minibuffer读取。如果输入的不是数字，用户必须再试一次。@samp{n}从不使用
+前缀参数。Prompt.
 
 @item N
 数字前缀参数；但如果没有前缀参数，则像@kbd{n}一样读取一个数字。值总是一个数字。
@@ -519,7 +522,8 @@ Put them into three windows, selecting the last one."
 命令包括字符串和向量（被视为键盘宏）、包含顶级@code{interactive}表单的lambda表达
 式（@pxref{Using Interactive}）、由这些lambda表达式构成的字节码函数对象、被声
 明为交互式的自动加载对象（@code{autoload}的第四个参数非@code{nil}），以及一些原
-始函数。另外，如果一个符号有一个非@code{nil}的@code{interactive-form}属性，或者它的函数定义满足@code{commandp}，第四个参数，那么它就被认为是一个命令。
+始函数。另外，如果一个符号有一个非@code{nil}的@code{interactive-form}属性，或者
+它的函数定义满足@code{commandp}，第四个参数，那么它就被认为是一个命令。
 
 如果@var{for-call-interactively}是非@code{nil}，那么@code{commandp}只对
 @code{call-interactively}可以调用的对象返回@code{t}--因此，不对键盘宏返回。
@@ -757,23 +761,19 @@ Put them into three windows, selecting the last one."
 是@code{let}的一个特性，在这种情况下，它恰恰是我们想要避免的。
 
 @defvar this-original-command
-This has the same value as @code{this-command} except when command
-remapping occurs (@pxref{Remapping Commands}).  In that case,
-@code{this-command} gives the command actually run (the result of
-remapping), and @code{this-original-command} gives the command that
-was specified to run but remapped into another command.
+这与@code{this-command}的值相同，但当发生命令重映射时除外（@pxref{重映射命令}）。
+在这种情况下，@code{this-command}给出了实际运行的命令（重映射的结果），而
+@code{this-original-command}给出了指定运行但重映射为另一个命令的命令。
 @end defvar
 
 @defun this-command-keys
-This function returns a string or vector containing the key sequence
-that invoked the present command, plus any previous commands that
-generated the prefix argument for this command.  Any events read by the
-command using @code{read-event} without a timeout get tacked on to the end.
+这个函数返回一个字符串或向量，其中包含调用当前命令的键序列，加上之前为这个命令生成前
+缀参数的任何命令。任何由命令使用@code{read-event}读取的、没有超时的事件都会被加到
+最后。
 
-However, if the command has called @code{read-key-sequence}, it
-returns the last read key sequence.  @xref{Key Sequence Input}.  The
-value is a string if all events in the sequence were characters that
-fit in a string.  @xref{Input Events}.
+但是，如果命令调用了@code{read-key-sequence}，则返回最后读取的键序列。
+@xref{键序列输入}。如果序列中的所有事件都是适合于字符串的字符，则该值是一个字符串。
+@xref{输入事件}。
 
 @example
 @group
@@ -786,34 +786,27 @@ fit in a string.  @xref{Input Events}.
 
 @defun this-command-keys-vector
 @anchor{Definition of this-command-keys-vector}
-Like @code{this-command-keys}, except that it always returns the events
-in a vector, so you don't need to deal with the complexities of storing
-input events in a string (@pxref{Strings of Events}).
+和@code{this-command-keys}一样，只是它总是以向量的形式返回事件，所以你不需要处理
+将输入事件存储在字符串中的复杂问题 (@pxref{事件字符串})。
 @end defun
 
 @defun clear-this-command-keys &optional keep-record
-This function empties out the table of events for
-@code{this-command-keys} to return.  Unless @var{keep-record} is
-non-@code{nil}, it also empties the records that the function
-@code{recent-keys} (@pxref{Recording Input}) will subsequently return.
-This is useful after reading a password, to prevent the password from
-echoing inadvertently as part of the next command in certain cases.
+这个函数清空了@code{this-command-keys}要返回的事件表。除非@var{keep-record}是
+非@code{nil}，否则它也会清空函数@code{recent-keys}所返回的记录。(
+@pxref{记录输入})随后将返回。这在读取密码后很有用，可以防止在某些情况下，密码作为
+下一条命令的一部分被无意中回传。
 @end defun
 
 @defvar last-nonmenu-event
-This variable holds the last input event read as part of a key sequence,
-not counting events resulting from mouse menus.
+这个变量保存了最后一次读取的输入事件，作为按键序列的一部分，不包括鼠标菜单产生的事件。
 
-One use of this variable is for telling @code{x-popup-menu} where to pop
-up a menu.  It is also used internally by @code{y-or-n-p}
-(@pxref{Yes-or-No Queries}).
+这个变量的一个用途是告诉@code{x-popup-menu}在哪里弹出一个菜单。它也被
+@code{y-or-n-p}内部使用(@pxref{Yes-or-No Queries})。
 @end defvar
 
 @defvar last-command-event
-This variable is set to the last input event that was read by the
-command loop as part of a command.  The principal use of this variable
-is in @code{self-insert-command}, which uses it to decide which
-character to insert.
+这个变量被设置为命令循环读取的最后一个输入事件，作为命令的一部分。这个变量的主要用途
+是在@code{self-insert-command}中，用来决定插入哪个字符。
 
 @example
 @group
@@ -824,17 +817,14 @@ last-command-event
 @end example
 
 @noindent
-The value is 5 because that is the @acronym{ASCII} code for @kbd{C-e}.
+这个值是5，因为这是@kbd{C-e}的@acronym{ASCII}码。
 @end defvar
 
 @defvar last-event-frame
-This variable records which frame the last input event was directed to.
-Usually this is the frame that was selected when the event was
-generated, but if that frame has redirected input focus to another
-frame, the value is the frame to which the event was redirected.
-@xref{Input Focus}.
+这个变量记录了最后一个输入事件被指向的窗框。通常这是事件生成时被选中的窗框，但如果该
+窗框已将输入焦点重定向到另一窗框，则该值是事件被重定向到的窗框。@xref{输入焦点}。
 
-If the last event came from a keyboard macro, the value is @code{macro}.
+如果最后一个事件来自于键盘宏，那么其值为@code{macro}。
 @end defvar
 
 @node 调整点
@@ -844,28 +834,22 @@ If the last event came from a keyboard macro, the value is @code{macro}.
 @cindex @code{display} property, and point display
 @cindex @code{composition} property, and point display
 
-  Emacs cannot display the cursor when point is in the middle of a
-sequence of text that has the @code{display} or @code{composition}
-property, or is invisible.  Therefore, after a command finishes and
-returns to the command loop, if point is within such a sequence, the
-command loop normally moves point to the edge of the sequence, making this
-sequence effectively intangible.
+  当点处于具有@code{display}或@code{composition}属性的，或者是隐形的文本序列中间
+时，Emacs无法显示光标。因此，在一条命令完成并返回命令循环后，如果点在这样的序列内，
+命令循环通常会将点移动到序列的边缘，使得这个序列实际上是无形的。
 
-  A command can inhibit this feature by setting the variable
-@code{disable-point-adjustment}:
+  一个命令可以通过设置变量@code{disable-point-adjustment}来抑制该功能：
 
 @defvar disable-point-adjustment
-If this variable is non-@code{nil} when a command returns to the
-command loop, then the command loop does not check for those text
-properties, and does not move point out of sequences that have them.
+如果当一个命令返回到命令循环时，这个变量是非@code{nil}，那么命令循环就不会检查这些文
+本属性，也不会将点从有这些属性的序列中移出。
 
-The command loop sets this variable to @code{nil} before each command,
-so if a command sets it, the effect applies only to that command.
+命令循环在每条命令之前都会将这个变量设置为@code{nil}，所以如果某条命令设置了这个变量
+，那么效果只适用于这条命令。
 @end defvar
 
 @defvar global-disable-point-adjustment
-If you set this variable to a non-@code{nil} value, the feature of
-moving point out of these sequences is completely turned off.
+如果将这个变量设置为非@code{nil}值，则完全关闭这些序列中移动点的功能。
 @end defvar
 
 @node 输入事件
@@ -873,283 +857,237 @@ moving point out of these sequences is completely turned off.
 @cindex events
 @cindex input events
 
-The Emacs command loop reads a sequence of @dfn{input events} that
-represent keyboard or mouse activity, or system events sent to Emacs.
-The events for keyboard activity are characters or symbols; other
-events are always lists.  This section describes the representation
-and meaning of input events in detail.
+Emacs命令循环读取一连串的@dfn{输入事件}，这些事件代表键盘或鼠标活动，或者是发
+送给Emacs的系统事件。键盘活动的事件是字符或符号，其他事件总是列表。本节详细介绍
+输入事件的表示方法和意义。
 
 @defun eventp object
-This function returns non-@code{nil} if @var{object} is an input event
-or event type.
+如果@var{object}是一个输入事件或事件类型，则该函数返回非@code{nil}。
 
-Note that any non-@code{nil} symbol might be used as an event or an
-event type; @code{eventp} cannot distinguish whether a symbol is
-intended by Lisp code to be used as an event.
+请注意，任何非@code{nil}符号都可能被用作事件或事件类型；@code{eventp}不能区分
+Lisp代码是否打算将一个符号用作事件。
 @end defun
 
 @menu
-* Keyboard Events::             Ordinary characters -- keys with symbols on them.
-* Function Keys::               Function keys -- keys with names, not symbols.
-* Mouse Events::                Overview of mouse events.
-* Click Events::                Pushing and releasing a mouse button.
-* Drag Events::                 Moving the mouse before releasing the button.
-* Button-Down Events::          A button was pushed and not yet released.
-* Repeat Events::               Double and triple click (or drag, or down).
-* Motion Events::               Just moving the mouse, not pushing a button.
-* Focus Events::                Moving the mouse between frames.
-* Misc Events::                 Other events the system can generate.
-* Event Examples::              Examples of the lists for mouse events.
-* Classifying Events::          Finding the modifier keys in an event symbol.
-                                Event types.
-* Accessing Mouse::             Functions to extract info from mouse events.
-* Accessing Scroll::            Functions to get info from scroll bar events.
-* Strings of Events::           Special considerations for putting
-                                  keyboard character events in a string.
+* 键盘事件::                     普通字符 -- 带符号的键。
+* 功能键::                       功能键 -- 有名称而非符号的键。
+* 鼠标事件::                     鼠标事件概述。
+* 点击事件::                     按压和释放鼠标按钮。
+* 拖动事件::                     在释放按钮之前移动鼠标。
+* 按下按钮事件::                  按钮被按下后尚未释放。
+* 重复事件::                     双击和三击（或拖动，或按下）。
+* 运动事件::                     只是移动鼠标，而不按下按钮。
+* 焦点事件::                     在窗框之间移动鼠标。
+* 杂项事件::                     系统可以产生的其他事件。
+* 事件示例::                     鼠标事件的列表示例。
+* 分类事件::                     寻找事件符号中的修饰键。事件类型。
+* 访问鼠标::                     从鼠标事件中提取信息的函数。
+* 访问滚动条::                   从滚动条事件中获取信息的函数。
+* 事件字符串::                   将键盘字符事件放在字符串中的特殊注意事项。
 @end menu
 
-@node Keyboard Events
+@node 键盘事件
 @subsection Keyboard Events
 @cindex keyboard events
 
 @cindex character event
-There are two kinds of input you can get from the keyboard: ordinary
-keys, and function keys.  Ordinary keys correspond to (possibly
-modified) characters; the events they generate are represented in Lisp
-as characters.  The event type of a @dfn{character event} is the
-character itself (an integer), which might have some modifier bits
-set; see @ref{Classifying Events}.
+你可以从键盘上获得两种输入：普通键和功能键。普通键对应的是（可能是修改过的）字符；
+它们产生的事件在Lisp中表示为字符。一个@dfn{字符事件}的事件类型是字符本身（一个
+整数），它可能设置了一些修饰位；参见 @ref{分类事件}。
 
 @cindex modifier bits (of input character)
 @cindex basic code (of input character)
-An input character event consists of a @dfn{basic code} between 0 and
-524287, plus any or all of these @dfn{modifier bits}:
+一个输入字符事件由0到524287之间的@dfn{基本码}，加上任何或所有这些@dfn{修饰位}
+组成：
 
 @table @asis
 @item meta
-The
+该
 @tex
 @math{2^{27}}
 @end tex
 @ifnottex
 2**27
 @end ifnottex
-bit in the character code indicates a character
-typed with the meta key held down.
+字符码中的位表示按住元键输入的字符。
 
 @item control
-The
+该
 @tex
 @math{2^{26}}
 @end tex
 @ifnottex
 2**26
 @end ifnottex
-bit in the character code indicates a non-@acronym{ASCII}
-control character.
+字符码中的位表示非@acronym{ASCII}控制字符。
 
-@sc{ascii} control characters such as @kbd{C-a} have special basic
-codes of their own, so Emacs needs no special bit to indicate them.
-Thus, the code for @kbd{C-a} is just 1.
+@sc{ascii}控制字符，如@kbd{C-a}，有它们自己的特殊的基本编码，所以Emacs不需要
+特殊的位来表示它们。因此，@kbd{C-a}的编码只是1。
 
-But if you type a control combination not in @acronym{ASCII}, such as
-@kbd{%} with the control key, the numeric value you get is the code
-for @kbd{%} plus
+但是，如果你输入一个非@acronym{ASCII}的控制组合，例如 用控制键和@kbd{%}，得到的数
+值就是编码@kbd{%}加上
 @tex
 @math{2^{26}}
 @end tex
 @ifnottex
 2**26
 @end ifnottex
-(assuming the terminal supports non-@acronym{ASCII}
-control characters), i.e.@: with the 27th bit set.
+(假设终端支持非@acronym{ASCII}控制字符)，即@:，设置第27位。
 
 @item shift
-The
+该
 @tex
 @math{2^{25}}
 @end tex
 @ifnottex
 2**25
 @end ifnottex
-bit (the 26th bit) in the character event code indicates an
-@acronym{ASCII} control character typed with the shift key held down.
+位（第26位）在字符事件代码中，表示的是一个按住shift键输入的@acronym{ASCII}控制字符。
 
-For letters, the basic code itself indicates upper versus lower case;
-for digits and punctuation, the shift key selects an entirely different
-character with a different basic code.  In order to keep within the
-@acronym{ASCII} character set whenever possible, Emacs avoids using the
+对于字母，基本码本身就表达大写与小写；对于数字和标点符号，shift键选择的是完全不同的字
+符，基本码也不同。为了尽可能保持使用@acronym{ASCII}字符集，Emacs避免使用
 @tex
 @math{2^{25}}
 @end tex
 @ifnottex
 2**25
 @end ifnottex
-bit for those character events.
+位的那些字符事件。
 
-However, @acronym{ASCII} provides no way to distinguish @kbd{C-A} from
-@kbd{C-a}, so Emacs uses the
+但是，@acronym{ASCII}没有提供区分@kbd{C-A}和@kbd{C-a}的方法，所以Emacs使用了
 @tex
 @math{2^{25}}
 @end tex
 @ifnottex
 2**25
 @end ifnottex
-bit in @kbd{C-A} and not in
-@kbd{C-a}.
+位，在@kbd{C-A}中，不在@kbd{C-a}中。
 
 @item hyper
-The
+该
 @tex
 @math{2^{24}}
 @end tex
 @ifnottex
 2**24
 @end ifnottex
-bit in the character event code indicates a character
-typed with the hyper key held down.
+字符事件代码中的位表示按住hyper键输入的字符。
 
 @item super
-The
+该
 @tex
 @math{2^{23}}
 @end tex
 @ifnottex
 2**23
 @end ifnottex
-bit in the character event code indicates a character
-typed with the super key held down.
+字符事件代码中的位表示按住super键输入的字符。
 
 @item alt
-The
+该
 @tex
 @math{2^{22}}
 @end tex
 @ifnottex
 2**22
 @end ifnottex
-bit in the character event code indicates a character typed with the
-alt key held down.  (The key labeled @key{Alt} on most keyboards is
-actually treated as the meta key, not this.)
+字符事件代码中的位表示在按住alt键的情况下输入了一个字符，（大多数键盘上标有
+@key{Alt}的键实际上被当作meta键处理，而不是这个）。
 @end table
 
-  It is best to avoid mentioning specific bit numbers in your program.
-To test the modifier bits of a character, use the function
-@code{event-modifiers} (@pxref{Classifying Events}).  When making key
-bindings, you can use the read syntax for characters with modifier bits
-(@samp{\C-}, @samp{\M-}, and so on).  For making key bindings with
-@code{define-key}, you can use lists such as @code{(control hyper ?x)} to
-specify the characters (@pxref{Changing Key Bindings}).  The function
-@code{event-convert-list} converts such a list into an event type
-(@pxref{Classifying Events}).
+  最好避免在程序中提到具体的位数。要测试一个字符的修饰位，请使用函数
+@code{event-modifiers}(@pxref{分类事件})。在制作键绑定时，您可以
+为带有修饰位的字符（@samp{\C-}、@samp{\M-}等）使用读语法。对于用
+@code{define-key}制作键绑定，您可以使用@code{(control hyper ?x)}等列表来指定
+字符(@pxref{Changing Key Bindings})。函数@code{event-convert-list}可以将这
+样的列表转换为事件类型 (@pxref{分类事件})。
 
-@node Function Keys
+@node 功能键
 @subsection Function Keys
 
 @cindex function keys
-Most keyboards also have @dfn{function keys}---keys that have names or
-symbols that are not characters.  Function keys are represented in
-Emacs Lisp as symbols; the symbol's name is the function key's label,
-in lower case.  For example, pressing a key labeled @key{F1} generates
-an input event represented by the symbol @code{f1}.
+大部分键盘也有@dfn{功能键}——有名字或不是字符的符号的键。在Emacs Lisp中，功能键是
+以符号的形式来表示的；符号的名称就是功能键的标签，用小写字母表示。例如，按下一个标
+有@key{F1}的键会产生一个输入事件，用符号@code{f1}表示。
 
-The event type of a function key event is the event symbol itself.
-@xref{Classifying Events}.
+函数键事件的事件类型就是事件符号本身。@xref{分类事件}。
 
-Here are a few special cases in the symbol-naming convention for
-function keys:
+下面是函数键的符号命名惯例中的几种特殊情况：
 
 @table @asis
 @item @code{backspace}, @code{tab}, @code{newline}, @code{return}, @code{delete}
-These keys correspond to common @acronym{ASCII} control characters that have
-special keys on most keyboards.
+这些键对应于常见的@acronym{ASCII}控制字符，这些字符在大多数键盘上有特殊的键。
 
-In @acronym{ASCII}, @kbd{C-i} and @key{TAB} are the same character.  If the
-terminal can distinguish between them, Emacs conveys the distinction to
-Lisp programs by representing the former as the integer 9, and the
-latter as the symbol @code{tab}.
+在@acronym{ASCII}中，@kbd{C-i}和@key{TAB}是同一个字符。如果终端能够区分它们，
+Emacs就会将它们的区别传达给Lisp程序，将前者表示为整数9，后者表示为符号@code{tab}。
 
-Most of the time, it's not useful to distinguish the two.  So normally
-@code{local-function-key-map} (@pxref{Translation Keymaps}) is set up
-to map @code{tab} into 9.  Thus, a key binding for character code 9
-(the character @kbd{C-i}) also applies to @code{tab}.  Likewise for
-the other symbols in this group.  The function @code{read-char}
-likewise converts these events into characters.
+大多数情况下，区分这两者是没有用的。所以一般情况下，
+@code{local-function-key-map}(@pxref{Translation Keymaps})是为了将@code{tab}
+映射到9而设置的。因此，字符代码9的键绑定（字符 @kbd{C-i}）也适用于@code{tab}。同样，
+对于这一组中的其他符号也是如此。函数@code{read-char}也同样将这些事件转换为字符。
 
-In @acronym{ASCII}, @key{BS} is really @kbd{C-h}.  But @code{backspace}
-converts into the character code 127 (@key{DEL}), not into code 8
-(@key{BS}).  This is what most users prefer.
+在@acronym{ASCII}中，@key{BS}实际上是@kbd{C-h}。但是@code{backspace}会转换成字
+符代码127(@key{DEL})，而不是代码8(@key{BS})。这是大多数用户所喜欢的。
 
 @item @code{left}, @code{up}, @code{right}, @code{down}
-Cursor arrow keys
+光标方向键
 @item @code{kp-add}, @code{kp-decimal}, @code{kp-divide}, @dots{}
-Keypad keys (to the right of the regular keyboard).
+键盘键（在普通键盘的右侧）。
 @item @code{kp-0}, @code{kp-1}, @dots{}
-Keypad keys with digits.
+带数字的键盘键。
 @item @code{kp-f1}, @code{kp-f2}, @code{kp-f3}, @code{kp-f4}
-Keypad PF keys.
+键盘PF键。
 @item @code{kp-home}, @code{kp-left}, @code{kp-up}, @code{kp-right}, @code{kp-down}
-Keypad arrow keys.  Emacs normally translates these into the
-corresponding non-keypad keys @code{home}, @code{left}, @dots{}
+键盘方向键。Emacs通常会将这些键翻译成相应的非键盘键@code{home}, @code{left},
+@dots{}。
 @item @code{kp-prior}, @code{kp-next}, @code{kp-end}, @code{kp-begin}, @code{kp-insert}, @code{kp-delete}
-Additional keypad duplicates of keys ordinarily found elsewhere.  Emacs
-normally translates these into the like-named non-keypad keys.
+额外的键盘重复键，通常在其他地方都能找到，Emacs通常会将这些键翻译成同名的非键盘
+键。Emacs通常会将这些键翻译成相同名称的非键盘键。
 @end table
 
-You can use the modifier keys @key{ALT}, @key{CTRL}, @key{HYPER},
-@key{META}, @key{SHIFT}, and @key{SUPER} with function keys.  The way to
-represent them is with prefixes in the symbol name:
+您可以用功能键同时使用修饰键@key{ALT}，@key{CTRL}，@key{HYPER}，@key{META}，
+@key{SHIFT}，@key{SUPER}。方法是代表它们的是符号名称中的前缀：
 
 @table @samp
 @item A-
-The alt modifier.
+alt修饰。
 @item C-
-The control modifier.
+ctrl修饰。
 @item H-
-The hyper modifier.
+hyper修饰。
 @item M-
-The meta modifier.
+meta修饰。
 @item S-
-The shift modifier.
+shift修饰。
 @item s-
-The super modifier.
+super修饰。
 @end table
 
-Thus, the symbol for the key @key{F3} with @key{META} held down is
-@code{M-f3}.  When you use more than one prefix, we recommend you
-write them in alphabetical order; but the order does not matter in
-arguments to the key-binding lookup and modification functions.
+因此，按住@key{META}的键@key{F3}的符号是@code{M-f3}。当您使用一个以上的前缀时，
+我们建议您按字母顺序来写；但在键绑定查找和修改函数的参数中，顺序并不重要。
 
-@node Mouse Events
+@node 鼠标事件
 @subsection Mouse Events
 
-Emacs supports four kinds of mouse events: click events, drag events,
-button-down events, and motion events.  All mouse events are represented
-as lists.  The @sc{car} of the list is the event type; this says which
-mouse button was involved, and which modifier keys were used with it.
-The event type can also distinguish double or triple button presses
-(@pxref{Repeat Events}).  The rest of the list elements give position
-and time information.
+Emacs支持四种鼠标事件：点击事件、拖动事件、下键事件和运动事件。所有的鼠标事件都用
+列表来表示。列表中的@sc{car}是事件类型；它说明了涉及到的是哪个鼠标按钮，以及使用
+了哪些修饰键。事件类型也可以区分双击或三击按钮（@pxref{重复事件}）。其余的列表元
+素给出了位置和时间信息。
 
-For key lookup, only the event type matters: two events of the same type
-necessarily run the same command.  The command can access the full
-values of these events using the @samp{e} interactive code.
-@xref{Interactive Codes}.
+为了键查询，只有事件类型才是重要的：两个相同类型的事件必然运行同一个命令。命令可以
+使用@samp{e}交互式代码访问这些事件的全部值。@xref{交互式代码}。
 
-A key sequence that starts with a mouse event is read using the keymaps
-of the buffer in the window that the mouse was in, not the current
-buffer.  This does not imply that clicking in a window selects that
-window or its buffer---that is entirely under the control of the command
-binding of the key sequence.
+一个以鼠标事件开始的按键序列是使用鼠标所在窗口的缓冲区的键位图来读取的，而不是当前
+缓冲区。这并不意味着点击一个窗口就能选择该窗口或其缓冲区--这完全是由按键序列的命令
+绑定所控制的。
 
-@node Click Events
+@node 点击事件
 @subsection Click Events
 @cindex click event
 @cindex mouse click event
 
-When the user presses a mouse button and releases it at the same
-location, that generates a @dfn{click} event.  All mouse click event
-share the same format:
+当用户按下鼠标按钮并在同一位置松开时，就会产生一个@dfn{click}事件。所有的鼠标点
+击事件都有相同的格式：
 
 @example
 (@var{event-type} @var{position} @var{click-count})
@@ -1157,35 +1095,27 @@ share the same format:
 
 @table @asis
 @item @var{event-type}
-This is a symbol that indicates which mouse button was used.  It is
-one of the symbols @code{mouse-1}, @code{mouse-2}, @dots{}, where the
-buttons are numbered left to right.
+这是一个表示使用了哪个鼠标按钮的符号。它是符号@code{mouse-1}、@code{mouse-2}、
+@dots{}中的一种，其中按钮从左到右编号。
 
-You can also use prefixes @samp{A-}, @samp{C-}, @samp{H-}, @samp{M-},
-@samp{S-} and @samp{s-} for modifiers alt, control, hyper, meta, shift
-and super, just as you would with function keys.
+您也可以使用前缀@samp{A-}、@samp{C-}、@samp{H-}、@samp{M-}、@samp{s-}和
+@samp{s-}代表修饰器alt、control、hyper、meta、shift和超级，就像你用功能键一样。
 
-This symbol also serves as the event type of the event.  Key bindings
-describe events by their types; thus, if there is a key binding for
-@code{mouse-1}, that binding would apply to all events whose
-@var{event-type} is @code{mouse-1}.
+这个符号也作为事件的事件类型。键绑定通过事件类型来描述事件；因此，如果有一个
+@code{mouse-1}的键绑定，该绑定将适用于所有@var{event-type}为@code{mouse-1}的事
+件。
 
 @item @var{position}
 @cindex mouse position list
-This is a @dfn{mouse position list} specifying where the mouse click
-occurred; see below for details.
+这是一个@dfn{鼠标位置列表}，指定了鼠标点击的位置，详情见下文。
 
 @item @var{click-count}
-This is the number of rapid repeated presses so far of the same mouse
-button.  @xref{Repeat Events}.
+这是到目前为止，快速重复按下同一个鼠标按钮的次数。@xref{重复事件}。
 @end table
 
-  To access the contents of a mouse position list in the
-@var{position} slot of a click event, you should typically use the
-functions documented in @ref{Accessing Mouse}.  The explicit format of
-the list depends on where the click occurred.  For clicks in the text
-area, mode line, header line, tab line, or in the fringe or marginal
-areas, the mouse position list has the form
+  要访问点击事件的@var{position}槽中的鼠标位置列表的内容，通常应该使用
+@ref{访问鼠标}中记载的函数。列表的显式格式取决于点击发生的位置。对于在文本区域、模
+式行、页眉行、标签行、边缘或边缘区域的点击，鼠标位置列表的格式为
 
 @example
 (@var{window} @var{pos-or-area} (@var{x} . @var{y}) @var{timestamp}
@@ -1194,91 +1124,72 @@ areas, the mouse position list has the form
 @end example
 
 @noindent
-The meanings of these list elements are as follows:
+这些清单要素的含义如下：
 
 @table @asis
 @item @var{window}
-The window in which the click occurred.
+发生点击的窗口。
 
 @item @var{pos-or-area}
-The buffer position of the character clicked on in the text area; or,
-if the click was outside the text area, the window area where it
-occurred.  It is one of the symbols @code{mode-line},
-@code{header-line}, @code{tab-line}, @code{vertical-line},
-@code{left-margin}, @code{right-margin}, @code{left-fringe}, or
-@code{right-fringe}.
+文字区域中被点击的字符的缓冲位置；如果点击是在文字区域之外，则为其发生的窗口区域
+。它是@code{mode-line}, @code{header-line}, @code{tab-line},
+@code{vertical-line}, @code{left-margin}, @code{right-margin},
+@code{left-fringe}, 或@code{right-fringe}等符号中的一种。
 
-In one special case, @var{pos-or-area} is a list containing a symbol
-(one of the symbols listed above) instead of just the symbol.  This
-happens after the imaginary prefix keys for the event are registered
-by Emacs.  @xref{Key Sequence Input}.
+在一种特殊情况下，@var{pos-or-area}是一个包含符号（上面列出的符号之一）的列表，
+而不仅仅是符号。这发生在Emacs注册了事件的虚前缀键之后。@xref{键序列输入}。
 
 @item @var{x}, @var{y}
-The relative pixel coordinates of the click.  For clicks in the text
-area of a window, the coordinate origin @code{(0 . 0)} is taken to be
-the top left corner of the text area.  @xref{Window Sizes}.  For
-clicks in a mode line, header line or tab line, the coordinate origin
-is the top left corner of the window itself.  For fringes, margins,
-and the vertical border, @var{x} does not have meaningful data.
-For fringes and margins, @var{y} is relative to the bottom edge of the
-header line.  In all cases, the @var{x} and @var{y} coordinates
-increase rightward and downward respectively.
+点击的相对像素坐标。对于窗口文字区域的点击，坐标原点@code{(0 . 0)}取为文字区域
+的左上角。@xref{窗口大小}。对于模式行、标题行或标签行中的点击，坐标原点为窗口本
+身的左上角。对于边缘、边框和垂直边框，@var{x}没有有意义的数据。对于边缘和边框，
+@var{y}是相对于页眉线的底边而言的。在所有情况下，@var{x}和@var{y}的坐标分别向
+右和向下增加。
 
 @item @var{timestamp}
-The time at which the event occurred, as an integer number of
-milliseconds since a system-dependent initial time.
+事件发生的时间，为系统初始时间后的整数毫秒。
 
 @item @var{object}
-Either @code{nil}, which means the click occurred on buffer text, or a
-cons cell of the form @w{(@var{string} . @var{string-pos})} if there
-is a string from a text property or an overlay at the click position.
+要么是@code{nil}，表示点击发生在缓冲区文本上，要么是
+@w{(@var{string} .@var{string-pos})}形式的cons单元格，如果点击位置有文本属
+性的字符串或覆盖层。
 
 @table @asis
 @item @var{string}
-The string which was clicked on, including any properties.
+被点击的字符串，包括任何属性。
 
 @item @var{string-pos}
-The position in the string where the click occurred.
+字符串中发生点击的位置。
 @end table
 
 @item @var{text-pos}
-For clicks on a marginal area or on a fringe, this is the buffer
-position of the first visible character in the corresponding line in
-the window.  For clicks on the mode line, the header line or the tab
-line, this is @code{nil}.  For other events, it is the buffer position
-closest to the click.
+对于在边缘区域或边缘线上的点击，这是窗口中相应行中第一个可见字符的缓冲位置。对于
+模式行、页眉行或标签行的点击，是@code{nil}。对于其他事件，它是最接近点击的缓冲
+区位置。
 
 @item @var{col}, @var{row}
-These are the actual column and row coordinate numbers of the glyph
-under the @var{x}, @var{y} position.  If @var{x} lies beyond the last
-column of actual text on its line, @var{col} is reported by adding
-fictional extra columns that have the default character width.
-Row 0 is taken to be the header line if the window has one, or Row 1
-if the window also has the tab line, or the topmost row of
-the text area otherwise.  Column 0 is taken to be the leftmost
-column of the text area for clicks on a window text area, or the
-leftmost mode line or header line column for clicks there.  For clicks
-on fringes or vertical borders, these have no meaningful data.  For
-clicks on margins, @var{col} is measured from the left edge of the
-margin area and @var{row} is measured from the top of the margin area.
+这些是@var{x}、@var{y}位置下字型的实际列和行坐标号。如果@var{x}位于其行上实际
+文本的最后一列之外，@var{col}则通过添加虚构的额外列来报告，这些列具有默认的字符
+宽度。如果窗口有页眉行，则第0行被视为页眉行，如果窗口有标签行，则第1行被视为页眉
+行，否则被视为文本区域的最上面一行。第0列是指在窗口文本区域上点击的文本区域最左
+边的一列，或者在那里点击的最左边的模式线或页眉线列。对于边缘或垂直边界上的点击，
+这些没有有意义的数据。对于在边框上的点击，@var{col}是从边框区域的左边缘开始测量
+的，@var{row}是从边框区域的顶部开始测量的。
 
 @item @var{image}
-If there is an image at the click location, this is the image object
-as returned by @code{find-image} (@pxref{Defining Images}); otherwise
-this is @code{nil}.
+如果点击位置有图像，则是@code{find-image}返回的图像对象。(@pxref{定义图像})；
+否则就是@code{nil}。
 
 @item @var{dx}, @var{dy}
-These are the pixel coordinates of the click, relative to the top left
-corner of @var{object}, which is @code{(0 . 0)}.  If @var{object} is
-@code{nil}, which stands for a buffer, the coordinates are relative to
-the top left corner of the character glyph clicked on.
+这些是点击的像素坐标，相对于@var{object}的左上角，也就是@code{(0 . 0)}。如果
+@var{object}是@code{nil}，代表缓冲区，则坐标是相对于被点击的字符字形的左上角。
 
 @item @var{width}, @var{height}
-These are the pixel width and height of @var{object} or, if this is
-@code{nil}, those of the character glyph clicked on.
+这些是@var{object}的像素宽度和高度，如果是@code{nil}，则是被点击的字符字形的宽
+度和高度。
 @end table
 
-For clicks on a scroll bar, @var{position} has this form:
+对于滚动条上的点击，@var{position}有这样的形式：
 
 @example
 (@var{window} @var{area} (@var{portion} . @var{whole}) @var{timestamp} @var{part})
@@ -1286,47 +1197,39 @@ For clicks on a scroll bar, @var{position} has this form:
 
 @table @asis
 @item @var{window}
-The window whose scroll bar was clicked on.
+其滚动条被点击的窗口。
 
 @item @var{area}
-This is the symbol @code{vertical-scroll-bar}.
+这是符号@code{vertical-scroll-bar}。
 
 @item @var{portion}
-The number of pixels from the top of the scroll bar to the click
-position.  On some toolkits, including GTK+, Emacs cannot extract this
-data, so the value is always @code{0}.
+从滚动条的顶部到点击位置的像素数，在一些工具包中，包括GTK+，Emacs不能提取这个数据
+，所以总是@code{0}。
 
 @item @var{whole}
-The total length, in pixels, of the scroll bar.  On some toolkits,
-including GTK+, Emacs cannot extract this data, so the value is always
-@code{0}.
+滚动条的总长度，以像素为单位。在一些工具包中，包括GTK+，Emacs不能提取这个数据，所
+以值总是@code{0}。
 
 @item @var{timestamp}
-The time at which the event occurred, in milliseconds.  On some
-toolkits, including GTK+, Emacs cannot extract this data, so the value
-is always @code{0}.
+事件发生的时间，以毫秒为单位。在某些工具包中，包括GTK+，Emacs不能提取这个数据，所
+以值总是@code{0}。
 
 @item @var{part}
-The part of the scroll bar on which the click occurred.  It is one of
-the symbols @code{handle} (the scroll bar handle), @code{above-handle}
-(the area above the handle), @code{below-handle} (the area below the
-handle), @code{up} (the up arrow at one end of the scroll bar), or
-@code{down} (the down arrow at one end of the scroll bar).
-@c The 'top', 'bottom', and 'end-scroll' codes don't seem to be used.
+点击发生在滚动条上的部分。它是@code{handle}(滚动条抓手)，@code{above-handle}(
+抓手上方的区域)，@code{below-handle}(抓手下面的区域)，@code{up}(滚动条一端的向
+上箭头)，或@code{down}(滚动条一端的向下箭头)符号之一。
+@c 'top'、'bottom'和'end-scroll'代码似乎没有被使用。
 @end table
 
 
-@node Drag Events
+@node 拖动事件
 @subsection Drag Events
 @cindex drag event
 @cindex mouse drag event
 
-With Emacs, you can have a drag event without even changing your
-clothes.  A @dfn{drag event} happens every time the user presses a mouse
-button and then moves the mouse to a different character position before
-releasing the button.  Like all mouse events, drag events are
-represented in Lisp as lists.  The lists record both the starting mouse
-position and the final position, like this:
+使用Emacs，你甚至不用换衣服就可以发生拖动事件。每当用户按下鼠标按钮，然后在释放按
+钮之前将鼠标移动到不同的字符位置时，都会发生@dfn{拖动事件}。像所有的鼠标事件一样，
+拖动事件在Lisp中以列表的形式表示。列表同时记录了鼠标的起始位置和最终位置，就像这样：
 
 @example
 (@var{event-type}
@@ -1334,300 +1237,230 @@ position and the final position, like this:
  (@var{window2} END-POSITION))
 @end example
 
-For a drag event, the name of the symbol @var{event-type} contains the
-prefix @samp{drag-}.  For example, dragging the mouse with button 2
-held down generates a @code{drag-mouse-2} event.  The second and third
-elements of the event give the starting and ending position of the
-drag, as mouse position lists (@pxref{Click Events}).  You can access
-the second element of any mouse event in the same way.  However, the
-drag event may end outside the boundaries of the frame that was
-initially selected.  In that case, the third element's position list
-contains that frame in place of a window.
+对于拖动事件，符号@var{event-type}的名称包含@samp{drag-}的前缀。例如，在按住
+按钮2的情况下拖动鼠标会产生@code{drag-mouse-2}事件。事件的第二个和第三个元素给
+出了拖动的开始和结束位置，作为鼠标位置列表(@pxref{点击事件})。您可以以同样的方式
+访问任何鼠标事件的第二个元素。然而，拖动事件可能会在最初选择的窗框边界之外结束。在
+这种情况下，第三个元素的位置列表将包含该窗框而不是窗口。
 
-The @samp{drag-} prefix follows the modifier key prefixes such as
-@samp{C-} and @samp{M-}.
+@samp{drag-}前缀跟随修饰键前缀，如@samp{C-}和@samp{M-}。
 
-If @code{read-key-sequence} receives a drag event that has no key
-binding, and the corresponding click event does have a binding, it
-changes the drag event into a click event at the drag's starting
-position.  This means that you don't have to distinguish between click
-and drag events unless you want to.
+如果@code{read-key-sequence}接收到一个没有键绑定的拖动事件，而对应的点击事件有
+绑定，它就会在拖动的起始位置将拖动事件变为点击事件。这意味着您不必区分点击和拖动
+事件，除非您想这样做。
 
-@node Button-Down Events
+@node 按下按钮事件
 @subsection Button-Down Events
 @cindex button-down event
 
-Click and drag events happen when the user releases a mouse button.
-They cannot happen earlier, because there is no way to distinguish a
-click from a drag until the button is released.
+点击和拖动事件发生在用户释放鼠标按钮时。它们不可能在更早的时候发生，因为在释放按
+钮之前，无法区分点击和拖动。
 
-If you want to take action as soon as a button is pressed, you need to
-handle @dfn{button-down} events.@footnote{Button-down is the
-conservative antithesis of drag.}  These occur as soon as a button is
-pressed.  They are represented by lists that look exactly like click
-events (@pxref{Click Events}), except that the @var{event-type} symbol
-name contains the prefix @samp{down-}.  The @samp{down-} prefix follows
-modifier key prefixes such as @samp{C-} and @samp{M-}.
+如果你想在按钮被按下后立即采取行动，你需要处理@dfn{按下按钮}事件。@footnote{按
+下按钮是拖动的保守反义词}。这些事件在按钮被按下后立即发生。它们由看起来与点击事件
+完全相同的列表来表示(@pxref{点击事件})，只是@var{event-type}符号名包含
+@samp{down-}的前缀。@samp{down-} 前缀跟随修饰键前缀，如@samp{C-}和@samp{M-}。
 
-The function @code{read-key-sequence} ignores any button-down events
-that don't have command bindings; therefore, the Emacs command loop
-ignores them too.  This means that you need not worry about defining
-button-down events unless you want them to do something.  The usual
-reason to define a button-down event is so that you can track mouse
-motion (by reading motion events) until the button is released.
-@xref{Motion Events}.
+函数@code{read-key-sequence}忽略任何没有命令绑定的按钮式事件；因此，Emacs命令
+循环也会忽略它们。这意味着，除非你想让它们做一些事情，否则你不需要担心定义按下按
+钮事件。通常定义一个向下按钮事件的原因是为了让您可以跟踪鼠标运动（通过读取运动事
+件），直到按钮被释放。@xref{运动事件}。
 
-@node Repeat Events
+@node 重复事件
 @subsection Repeat Events
 @cindex repeat events
 @cindex double-click events
 @cindex triple-click events
 @cindex mouse events, repeated
 
-If you press the same mouse button more than once in quick succession
-without moving the mouse, Emacs generates special @dfn{repeat} mouse
-events for the second and subsequent presses.
+如果您在没有移动鼠标的情况下，连续多次按下同一个鼠标按钮，Emacs会为第二次和后续
+的按压生成特殊的@dfn{重复}鼠标事件。
 
-The most common repeat events are @dfn{double-click} events.  Emacs
-generates a double-click event when you click a button twice; the event
-happens when you release the button (as is normal for all click
-events).
+最常见的重复事件是@dfn{双击}事件。Emacs会在您点击一个按钮两次时生成一个双击事件
+；当您释放按钮时，该事件就会发生（与所有点击事件一样正常）。
 
-The event type of a double-click event contains the prefix
-@samp{double-}.  Thus, a double click on the second mouse button with
-@key{meta} held down comes to the Lisp program as
-@code{M-double-mouse-2}.  If a double-click event has no binding, the
-binding of the corresponding ordinary click event is used to execute
-it.  Thus, you need not pay attention to the double click feature
-unless you really want to.
+双击事件的事件类型包含前缀@samp{double-}。因此，双击第二个鼠标按钮，按住
+@key{meta}，在Lisp程序中就会显示为@code{M-double-mouse-2}。如果双击事件没有
+绑定，则使用对应的普通点击事件的绑定来执行。因此，除非你真的想关注双击功能，否则
+你不需要关注。
 
-When the user performs a double click, Emacs generates first an ordinary
-click event, and then a double-click event.  Therefore, you must design
-the command binding of the double click event to assume that the
-single-click command has already run.  It must produce the desired
-results of a double click, starting from the results of a single click.
+当用户执行双击时，Emacs会先生成一个普通的点击事件，然后再生成一个双击事件。因此
+，你必须设计双击事件的命令绑定，假设单击命令已经运行。它必须从单次点击的结果出发
+，产生双击的预期结果。
 
-This is convenient, if the meaning of a double click somehow builds
-on the meaning of a single click---which is recommended user interface
-design practice for double clicks.
+这很方便，如果双击的意义某种程度上建立在单击的意义上------这是推荐的双击的用户
+界面设计实践。
 
-If you click a button, then press it down again and start moving the
-mouse with the button held down, then you get a @dfn{double-drag} event
-when you ultimately release the button.  Its event type contains
-@samp{double-drag} instead of just @samp{drag}.  If a double-drag event
-has no binding, Emacs looks for an alternate binding as if the event
-were an ordinary drag.
+如果你点击一个按钮，然后再按下按钮，并开始按住按钮移动鼠标，那么当你最终释放按钮
+时，你会得到一个@dfn{双拖}事件。其事件类型包含@samp{double-drag}而不是
+@samp{drag}。如果一个双拖事件没有绑定，Emacs 就会像普通的拖拽事件一样寻找替代
+绑定。
 
-Before the double-click or double-drag event, Emacs generates a
-@dfn{double-down} event when the user presses the button down for the
-second time.  Its event type contains @samp{double-down} instead of just
-@samp{down}.  If a double-down event has no binding, Emacs looks for an
-alternate binding as if the event were an ordinary button-down event.
-If it finds no binding that way either, the double-down event is
-ignored.
+在双击或双拖事件之前，当用户第二次按下按钮时，Emacs会产生一个@dfn{double-down}
+事件。它的事件类型包含@samp{double-down}，而不是只包含@samp{down}。如果双击事
+件没有绑定，Emacs会寻找一个替代绑定，就像该事件是一个普通的按下按钮事件一样。如
+果它也没有找到这样的绑定，则忽略双击事件。
 
-To summarize, when you click a button and then press it again right
-away, Emacs generates a down event and a click event for the first
-click, a double-down event when you press the button again, and finally
-either a double-click or a double-drag event.
+总结一下，当你点击一个按钮，然后马上再按一次，Emacs会产生一个按下按钮事件和第一
+次点击的点击事件，当你再次按下按钮时，会产生一个双向下事件，最后不是双击就是双拖
+事件。
 
-If you click a button twice and then press it again, all in quick
-succession, Emacs generates a @dfn{triple-down} event, followed by
-either a @dfn{triple-click} or a @dfn{triple-drag}.  The event types of
-these events contain @samp{triple} instead of @samp{double}.  If any
-triple event has no binding, Emacs uses the binding that it would use
-for the corresponding double event.
+如果您点击一个按钮两次，然后再按一次，所有这些都是连续的，Emacs会产生一个
+@dfn{triple-down}事件，然后是@dfn{triple-click}或@dfn{triple-dag}事件，这
+些事件类型包含@samp{triple}而不是@samp{double}。如果任何三重事件没有绑定，
+Emacs会使用对应的双重事件的绑定。
 
-If you click a button three or more times and then press it again, the
-events for the presses beyond the third are all triple events.  Emacs
-does not have separate event types for quadruple, quintuple, etc.@:
-events.  However, you can look at the event list to find out precisely
-how many times the button was pressed.
+如果你点击一个按钮三次或三次以上，然后再按一次，第三次以后的按压事件都是三重事件。
+Emacs没有为四倍、五倍等@: 事件单独设置事件类型。但是，你可以通过查看事件列表来精
+确地了解按钮被按下的次数。
 
 @defun event-click-count event
-This function returns the number of consecutive button presses that led
-up to @var{event}.  If @var{event} is a double-down, double-click or
-double-drag event, the value is 2.  If @var{event} is a triple event,
-the value is 3 or greater.  If @var{event} is an ordinary mouse event
-(not a repeat event), the value is 1.
+此函数返回导致@var{event}的连续按键次数。如果@var{event}是一个双击、双击或双拖
+事件，则返回值为2。如果@var{event}是一个三重事件，则返回值为3或更大。如果
+@var{event}是一个普通的鼠标事件 (不是重复事件)，值为 1。
 @end defun
 
 @defopt double-click-fuzz
-To generate repeat events, successive mouse button presses must be at
-approximately the same screen position.  The value of
-@code{double-click-fuzz} specifies the maximum number of pixels the
-mouse may be moved (horizontally or vertically) between two successive
-clicks to make a double-click.
+要生成重复事件，连续的鼠标按键必须在屏幕上大约相同的位置。
+@code{double-click-fuzz}的值指定了鼠标在两次连续点击之间可以移动（水平或垂直）
+的最大像素数，以实现双击。
 
-This variable is also the threshold for motion of the mouse to count
-as a drag.
+这个变量也是鼠标运动算作拖动的阈值。
 @end defopt
 
 @defopt double-click-time
-To generate repeat events, the number of milliseconds between
-successive button presses must be less than the value of
-@code{double-click-time}.  Setting @code{double-click-time} to
-@code{nil} disables multi-click detection entirely.  Setting it to
-@code{t} removes the time limit; Emacs then detects multi-clicks by
-position only.
+要产生重复事件，连续按下按钮之间的毫秒数必须小于@code{double-click-time}的值。
+将@code{double-click-time}设置为@code{nil}会完全禁止多点击检测。将其设置为
+@code{t}则会取消时间限制，Emacs 将仅通过位置检测多点击。
 @end defopt
 
-@node Motion Events
+@node 运动事件
 @subsection Motion Events
 @cindex motion event
 @cindex mouse motion events
 
-Emacs sometimes generates @dfn{mouse motion} events to describe motion
-of the mouse without any button activity.  Mouse motion events are
-represented by lists that look like this:
+Emacs有时会生成@dfn{鼠标运动}事件来描述没有任何按钮活动的鼠标运动。鼠标运
+动事件用类似这样的列表来表示：
 
 @example
 (mouse-movement POSITION)
 @end example
 
 @noindent
-@var{position} is a mouse position list (@pxref{Click Events}),
-specifying the current position of the mouse cursor.  As with the
-end-position of a drag event, this position list may represent a
-location outside the boundaries of the initially selected frame, in
-which case the list contains that frame in place of a window.
+@var{position}是一个鼠标位置列表(@pxref{点击事件})，指定了鼠标光标的当前
+位置。与拖动事件的结束位置一样，该位置列表可能代表最初选定的窗框边界之外的位
+置，在这种情况下，列表中包含该窗框，而不是窗口。
 
-The special form @code{track-mouse} enables generation of motion
-events within its body.  Outside of @code{track-mouse} forms, Emacs
-does not generate events for mere motion of the mouse, and these
-events do not appear.  @xref{Mouse Tracking}.
+特殊形式@code{track-mouse}可以在其主体中生成运动事件。在
+@code{track-mouse}窗体之外，Emacs不会为单纯的鼠标运动生成事件，这些事件
+也不会出现。@xref{鼠标追踪}。
 
 @defvar mouse-fine-grained-tracking
-When non-@code{nil}, mouse motion events are generated even for very
-small movements.  Otherwise, motion events are not generated as long
-as the mouse cursor remains pointing to the same glyph in the text.
+当非@code{nil}时，即使是非常小的运动，也会产生鼠标运动事件，否则，只要鼠标
+光标仍然指向文本中的同一个字型，就不会产生运动事件。否则，只要鼠标光标仍然指
+向文本中的同一个字型，就不会产生运动事件。
 @end defvar
 
-@node Focus Events
+@node 焦点事件
 @subsection Focus Events
 @cindex focus event
 
-Window systems provide general ways for the user to control which window
-gets keyboard input.  This choice of window is called the @dfn{focus}.
-When the user does something to switch between Emacs frames, that
-generates a @dfn{focus event}.  The normal definition of a focus event,
-in the global keymap, is to select a new frame within Emacs, as the user
-would expect.  @xref{Input Focus}, which also describes hooks related
-to focus events.
+窗口系统为用户提供了控制哪个窗口获得键盘输入的一般方法。这种窗口的选择称为
+@dfn{focus}。当用户在Emacs框架之间进行切换时，会产生一个@dfn{focus事件}。在
+全局键图中，焦点事件的正常定义是在Emacs中选择一个新的窗框，正如用户所期望的那样
+。@xref{输入焦点}，它还描述了与焦点事件相关的钩子。
 
-Focus events are represented in Lisp as lists that look like this:
+焦点事件在Lisp中表示为类似这样的列表：
 
 @example
 (switch-frame @var{new-frame})
 @end example
 
 @noindent
-where @var{new-frame} is the frame switched to.
+其中@var{new-frame}是切换到的窗框。
 
-Some X window managers are set up so that just moving the mouse into a
-window is enough to set the focus there.  Usually, there is no need
-for a Lisp program to know about the focus change until some other
-kind of input arrives.  Emacs generates a focus event only when the
-user actually types a keyboard key or presses a mouse button in the
-new frame; just moving the mouse between frames does not generate a
-focus event.
+一些X窗口管理器的设置使得只需将鼠标移动到一个窗口中就足以将焦点设置在那里。通常
+情况下，在其他类型的输入到来之前，Lisp程序没有必要知道焦点的变化。Emacs只有当用
+户在新的窗框中实际输入键盘键或按下鼠标按钮时才会产生焦点事件；仅仅在窗框之间移动
+鼠标不会产生焦点事件。
 
-A focus event in the middle of a key sequence would garble the
-sequence.  So Emacs never generates a focus event in the middle of a key
-sequence.  If the user changes focus in the middle of a key
-sequence---that is, after a prefix key---then Emacs reorders the events
-so that the focus event comes either before or after the multi-event key
-sequence, and not within it.
+在键序列中间的焦点事件会使序列混乱。所以Emacs从来不会在键序列的中间产生一个焦点
+事件。如果用户在键序列中间改变焦点--也就是在前缀键之后--那么Emacs会重新排列事件
+，使焦点事件出现在多事件键序列之前或之后，而不是在其内部。
 
-@node Misc Events
+@node 杂项事件
 @subsection Miscellaneous System Events
 
-A few other event types represent occurrences within the system.
+其他一些事件类型代表在系统内的发生。
 
 @table @code
 @cindex @code{delete-frame} event
 @item (delete-frame (@var{frame}))
-This kind of event indicates that the user gave the window manager
-a command to delete a particular window, which happens to be an Emacs frame.
+这种事件表明用户给窗口管理器下达了删除某个窗口的命令，而这个窗口恰好是一个Emacs窗
+框。
 
-The standard definition of the @code{delete-frame} event is to delete @var{frame}.
+@code{delete-frame}事件的标准定义是删除@var{frame}。
 
 @cindex @code{iconify-frame} event
 @item (iconify-frame (@var{frame}))
-This kind of event indicates that the user iconified @var{frame} using
-the window manager.  Its standard definition is @code{ignore}; since the
-frame has already been iconified, Emacs has no work to do.  The purpose
-of this event type is so that you can keep track of such events if you
-want to.
+这种事件表示用户使用窗口管理器对@var{frame}进行了图标化。它的标准定义是
+@code{ignore}；因为窗框已经被图标化了，所以Emacs没有工作要做。这种事件类型的目的
+是为了让您在需要的时候可以跟踪这种事件。
 
 @cindex @code{make-frame-visible} event
 @item (make-frame-visible (@var{frame}))
-This kind of event indicates that the user deiconified @var{frame} using
-the window manager.  Its standard definition is @code{ignore}; since the
-frame has already been made visible, Emacs has no work to do.
+这种事件表明用户使用窗口管理器对@var{frame}进行了去图标化处理，它的标准定义是
+@code{ignore}。它的标准定义是@code{ignore}；由于窗框已经被显示，Emacs没有工作要做。
 
 @cindex @code{wheel-up} event
 @cindex @code{wheel-down} event
 @item (wheel-up @var{position})
 @itemx (wheel-down @var{position})
-These kinds of event are generated by moving a mouse wheel.  The
-@var{position} element is a mouse position list (@pxref{Click
-Events}), specifying the position of the mouse cursor when the event
-occurred.
+这类事件是通过移动鼠标滚轮产生的。@var{position}元素是一个鼠标位置列表（
+@pxref{点击事件}），指定事件发生时鼠标光标的位置。
 
 @vindex mouse-wheel-up-event
 @vindex mouse-wheel-down-event
-This kind of event is generated only on some kinds of systems.  On some
-systems, @code{mouse-4} and @code{mouse-5} are used instead.  For
-portable code, use the variables @code{mouse-wheel-up-event} and
-@code{mouse-wheel-down-event} defined in @file{mwheel.el} to determine
-what event types to expect for the mouse wheel.
+这类事件只在某些系统上产生，在某些系统上使用@code{mouse-4}和@code{mouse-5}代替。
+在某些系统中，会使用@code{mouse-4}和@code{mouse-5}来代替。对于可移植的代码，请使
+用在@file{mwheel.el}中定义的@code{mouse-wheel-up-event}和
+@code{mouse-wheel-down-event}变量来确定鼠标滚轮的事件类型。
 
 @cindex @code{drag-n-drop} event
 @item (drag-n-drop @var{position} @var{files})
-This kind of event is generated when a group of files is
-selected in an application outside of Emacs, and then dragged and
-dropped onto an Emacs frame.
+当在Emacs以外的应用程序中选择一组文件，然后将其拖放到一个Emacs窗框上时，就会产生这
+种事件。
 
-The element @var{position} is a list describing the position of the
-event, in the same format as used in a mouse-click event (@pxref{Click
-Events}), and @var{files} is the list of file names that were dragged
-and dropped.  The usual way to handle this event is by visiting these
-files.
+元素@var{position}是描述事件位置的列表，格式与鼠标点击事件中使用的相同 (
+@pxref{点击事件})，@var{files}是被拖放的文件名列表。通常处理该事件的方法是访问这
+些文件。
 
-This kind of event is generated, at present, only on some kinds of
-systems.
+这种事件的产生，目前只在某些种类的系统上。
 
 @cindex @code{help-echo} event
 @item help-echo
-This kind of event is generated when a mouse pointer moves onto a
-portion of buffer text which has a @code{help-echo} text property.
-The generated event has this form:
+当鼠标指针移动到具有@code{help-echo}文本属性的缓冲区文本部分时，就会产生这种事件。
+生成的事件有这样的形式：
 
 @example
 (help-echo @var{frame} @var{help} @var{window} @var{object} @var{pos})
 @end example
 
 @noindent
-The precise meaning of the event parameters and the way these
-parameters are used to display the help-echo text are described in
-@ref{Text help-echo}.
+事件参数的确切含义以及这些参数用于显示帮助-回声文本的方式将在以下章节中描述
+@ref{Text help-echo}。
 
 @cindex @code{sigusr1} event
 @cindex @code{sigusr2} event
 @cindex user signals
 @item sigusr1
 @itemx sigusr2
-These events are generated when the Emacs process receives
-the signals @code{SIGUSR1} and @code{SIGUSR2}.  They contain no
-additional data because signals do not carry additional information.
-They can be useful for debugging (@pxref{Error Debugging}).
+当Emacs进程收到信号@code{SIGUSR1}和@code{SIGUSR2}时，会产生这些事件。它们不包含
+额外的数据，因为信号不携带额外的信息。它们对调试很有用（@pxref{Error Debugging}）。
 
-To catch a user signal, bind the corresponding event to an interactive
-command in the @code{special-event-map} (@pxref{Controlling Active Maps}).
-The command is called with no arguments, and the specific signal event is
-available in @code{last-input-event} (@pxref{Event Input Misc}.  For
-example:
+要捕捉用户信号，请将相应的事件绑定到@code{special-event-map}中的一个交互式命令上。
+(@pxref{控制活动映射})。调用该命令时没有任何参数，具体的信号事件可以在
+@code{last-input-event}（@pxref{Event Input Misc}.例如：
 
 @smallexample
 (defun sigusr-handler ()
@@ -1637,7 +1470,7 @@ example:
 (define-key special-event-map [sigusr1] 'sigusr-handler)
 @end smallexample
 
-To test the signal handler, you can make Emacs send a signal to itself:
+为了测试信号处理程序，你可以让Emacs向自己发送一个信号：
 
 @smallexample
 (signal-process (emacs-pid) 'sigusr1)
@@ -1645,25 +1478,20 @@ To test the signal handler, you can make Emacs send a signal to itself:
 
 @cindex @code{language-change} event
 @item language-change
-This kind of event is generated on MS-Windows when the input language
-has changed.  This typically means that the keyboard keys will send to
-Emacs characters from a different language.  The generated event has
-this form:
+当输入语言发生变化时，MS-Windows上就会产生这种事件，通常这意味着键盘键会向Emacs
+发送不同语言的字符。生成的事件有这样的形式：
 
 @smallexample
 (language-change @var{frame} @var{codepage} @var{language-id})
 @end smallexample
 
 @noindent
-Here @var{frame} is the frame which was current when the input
-language changed; @var{codepage} is the new codepage number; and
-@var{language-id} is the numerical ID of the new input language.  The
-coding-system (@pxref{Coding Systems}) that corresponds to
-@var{codepage} is @code{cp@var{codepage}} or
-@code{windows-@var{codepage}}.  To convert @var{language-id} to a
-string (e.g., to use it for various language-dependent features, such
-as @code{set-language-environment}), use the
-@code{w32-get-locale-info} function, like this:
+这里@var{frame}是输入语言改变时当前的窗框；@var{codepage}是新的代码页号；
+@var{language-id}是新输入语言的数字ID。与@var{codepage}对应的编码系统（
+@pxref{编码系统}）是@code{cp@var{codepage}}或@code{windows-@var{codepage}}
+。要将@var{language-id}转换为字符串(例如，将它用于各种语言相关的功能，如
+@code{set-language-environment})，请使用@code{w32-get-locale-info}函数，
+像这样：
 
 @smallexample
 ;; Get the abbreviated language name, such as "ENU" for English
@@ -1676,16 +1504,14 @@ as @code{set-language-environment}), use the
 @end smallexample
 @end table
 
-  If one of these events arrives in the middle of a key sequence---that
-is, after a prefix key---then Emacs reorders the events so that this
-event comes either before or after the multi-event key sequence, not
-within it.
+  如果这些事件中的一个事件出现在一个键序列的中间--也就是在一个前缀键之后--那么
+Emacs就会重新安排事件的顺序，使这个事件出现在多事件键序列之前或之后，而不是在其内
+部。
 
-@node Event Examples
+@node 事件示例
 @subsection Event Examples
 
-If the user presses and releases the left mouse button over the same
-location, that generates a sequence of events like this:
+如果用户在同一位置上按下并释放鼠标左键，就会产生一连串类似这样的事件：
 
 @smallexample
 (down-mouse-1 (#<window 18 on NEWS> 2613 (0 . 38) -864320))
@@ -1731,7 +1557,7 @@ bind it to the @code{signal usr1} event sequence:
 (global-set-key [signal usr1] 'usr1-handler)
 @end smallexample
 
-@node Classifying Events
+@node 分类事件
 @subsection Classifying Events
 @cindex event type
 @cindex classifying events
@@ -1848,7 +1674,7 @@ must be the last element of the list.  For example,
 @end example
 @end defun
 
-@node Accessing Mouse
+@node 访问鼠标
 @subsection Accessing Mouse Events
 @cindex mouse events, data in
 @cindex keyboard events, data in
@@ -2021,7 +1847,7 @@ to the window text area, otherwise they are relative to
 the entire window area including scroll bars, margins and fringes.
 @end defun
 
-@node Accessing Scroll
+@node 访问滚动条
 @subsection Accessing Scroll Bar Events
 @cindex scroll bar events, data in
 
@@ -2054,7 +1880,7 @@ Recall that scroll bar events have two integers forming a ratio, in place
 of a pair of x and y coordinates.
 @end defun
 
-@node Strings of Events
+@node 事件字符串
 @subsection Putting Keyboard Events in Strings
 @cindex keyboard events in strings
 @cindex strings with keyboard events
@@ -2218,7 +2044,7 @@ with a mouse event is read using the keymaps of the buffer in the
 window that the mouse was in, not the current buffer.)
 
 If the events are all characters and all can fit in a string, then
-@code{read-key-sequence} returns a string (@pxref{Strings of Events}).
+@code{read-key-sequence} returns a string (@pxref{事件字符串}).
 Otherwise, it returns a vector, since a vector can hold all kinds of
 events---characters, symbols, and lists.  The elements of the string or
 vector are the events in the key sequence.
@@ -2272,7 +2098,7 @@ and does not set @code{quit-flag}.  @xref{Quitting}.
 @defun read-key-sequence-vector prompt &optional continue-echo dont-downcase-last switch-frame-ok command-loop
 This is like @code{read-key-sequence} except that it always
 returns the key sequence as a vector, never as a string.
-@xref{Strings of Events}.
+@xref{事件字符串}.
 @end defun
 
 @cindex upper case key sequence
