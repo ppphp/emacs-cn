@@ -1000,8 +1000,7 @@ Emacs提供了各种函数用于查找窗口的高度和宽度。这些函数中
 么它将从屏幕上消失。如果该窗口是内部窗口，那么它的子窗口也会被删除。
 
   即使在一个窗口被删除之后，它仍然作为一个Lisp对象继续存在，直到没有更多的
-引用。窗口的删除可以通过恢复已保存的窗口配置
-（@pxref{Window Configurations}）来逆转。
+引用。窗口的删除可以通过恢复已保存的窗口配置（@pxref{窗口配置}）来逆转。
 
 @deffn Command delete-window &optional window
 此函数从显示窗口中删除@var{window}并返回@code{nil}。如果省略了@var{window}
@@ -1026,9 +1025,9 @@ Emacs提供了各种函数用于查找窗口的高度和宽度。这些函数中
 @deffn Command delete-other-windows &optional window
 此函数使@var{window}填充其窗框，必要时删除其他窗口。如果省略了
 @var{window}或 @code{nil}，则默认为选定的窗口。如果@var{window}是一个侧边
-窗口，则会发出错误信号(@pxref{Side Windows})。如果@var{window}是一个原子窗
-口(@pxref{原子窗口})的一部分，这个函数会尝试让该原子窗口的根填充其窗框。返
-回值是@code{nil}。
+窗口，则会发出错误信号(@pxref{侧边窗口})。如果@var{window}是一个原子窗口(
+@pxref{原子窗口})的一部分，这个函数会尝试让该原子窗口的根填充其窗框。返回值
+是@code{nil}。
 
 只要@code{ignore-window-parameters}变量为@code{nil}，本函数的行为就可以被
 @var{window}的窗口参数所改变。如果@code{delete-other-windows}窗口参数的值
@@ -1397,137 +1396,107 @@ Emacs提供了各种函数用于查找窗口的高度和宽度。这些函数中
 @cindex selecting a window
 
 @defun select-window window &optional norecord
-This function makes @var{window} the selected window and the window
-selected within its frame (@pxref{基本窗口}), and selects that
-frame.  It also makes @var{window}'s buffer (@pxref{Buffers and
-Windows}) current and sets that buffer's value of @code{point} to the
-value of @code{window-point} (@pxref{Window Point}) in @var{window}.
-@var{window} must be a live window.  The return value is @var{window}.
+这个函数使@var{window}成为被选中的窗口和在其窗框(@pxref{基本窗口})中被
+选中的窗口，并选择该窗框。它也使@var{window}的缓冲区(
+@pxref{缓冲区和窗口})成为当前状态，并将该缓冲区中@code{point}的值设置为
+@var{window}(@pxref{窗口点})中@code{window-point}的值。@var{window}必
+须是一个实时窗口。返回值是@var{window}。
 
-By default, this function also moves @var{window}'s buffer to the front
-of the buffer list (@pxref{Buffer List}) and makes @var{window} the most
-recently selected window.  If the optional argument @var{norecord} is
-non-@code{nil}, these additional actions are omitted.
+默认情况下，这个函数也会将@var{window}的缓冲区移动到缓冲区列表的前面 (
+@pxref{缓冲区列表})，并使@var{window}成为最近选中的窗口。如果可选的参数
+@var{norecord}是非@code{nil}，那么这些额外的操作将被省略。
 
-In addition, this function by default also tells the display engine to
-update the display of @var{window} when its frame gets redisplayed the
-next time.  If @var{norecord} is non-@code{nil}, such updates are
-usually not performed.  If, however, @var{norecord} equals the special
-symbol @code{mark-for-redisplay}, the additional actions mentioned above
-are omitted but @var{window} will be nevertheless updated.
+此外，这个函数默认情况下还会告诉显示引擎，当@var{window}的窗框下一次被重
+新显示时，要更新其显示。如果@var{norecord}是非@code{nil}，那么通常不会进
+行这样的更新。但是，如果@var{norecord}等于特殊符号
+@code{mark-for-redisplay}，那么上面提到的附加操作就会被省略，但
+@var{window} 还是会被更新。
 
-Note that sometimes selecting a window is not enough to show it, or
-make its frame the top-most frame on display: you may also need to
-raise the frame or make sure input focus is directed to that frame.
-@xref{Input Focus}.
+请注意，有时选择一个窗口并不足以显示它，或者使它的窗框成为显示的最上层窗
+框：您可能还需要提高窗框或确保输入焦点指向该窗框。@xref{输入焦点}。
 @end defun
 
 @cindex select window hooks
 @cindex running a hook when a window gets selected
-For historical reasons, Emacs does not run a separate hook whenever a
-window gets selected.  Applications and internal routines often
-temporarily select a window to perform a few actions on it.  They do
-that either to simplify coding---because many functions by default
-operate on the selected window when no @var{window} argument is
-specified---or because some functions did not (and still do not) take a
-window as argument and always operate(d) on the selected window instead.
-Running a hook every time a window gets selected for a short time and
-once more when the previously selected window gets restored is not
-useful.
+由于历史原因，Emacs不会在窗口被选中时运行一个单独的钩子。应用程序和内部
+例程经常会临时选择一个窗口来执行一些操作。他们这样做的目的是为了简化编
+码--因为许多函数在没有指定@var{window}参数时默认在选定的窗口上操作--或
+者因为一些函数没有（现在也没有）采用窗口作为参数，而总是在选定的窗口上操
+作。每当一个窗口在短时间内被选中时运行一个钩子，而当之前选中的窗口被恢复
+时再运行一次钩子是没有用的。
 
-  However, when its @var{norecord} argument is @code{nil},
-@code{select-window} updates the buffer list and thus indirectly runs
-the normal hook @code{buffer-list-update-hook} (@pxref{Buffer List}).
-Consequently, that hook provides one way to run a function whenever a
-window gets selected more ``permanently''.
+然而，当它的@var{norecord}参数为@code{nil}时，@code{select-window}会
+更新缓冲区列表，从而间接运行正常的钩子@code{buffer-list-update-hook}。
+(@pxref{缓冲区列表})。因此，该钩子提供了一种方法来运行一个函数，每当一
+个窗口被更多的"永久"选中时，该函数就会运行。
 
-  Since @code{buffer-list-update-hook} is also run by functions that are
-not related to window management, it will usually make sense to save the
-value of the selected window somewhere and compare it with the value of
-@code{selected-window} while running that hook.  Also, to avoid false
-positives when using @code{buffer-list-update-hook}, it is good practice
-that every @code{select-window} call supposed to select a window only
-temporarily passes a non-@code{nil} @var{norecord} argument.  If
-possible, the macro @code{with-selected-window} (see below) should be
-used in such cases.
+因为@code{buffer-list-update-hook}也会被与窗口管理无关的函数运行，所以
+通常在运行该钩子时，将所选窗口的值保存在某个地方并与
+@code{selected-window}的值进行比较是有意义的。另外，为了避免在使用
+@code{buffer-list-update-hook} 时出现误报，好的做法是，每一次
+@code{select-window}调用都应该选择一个窗口，只是暂时传递一个非@code{nil}
+的值。@var{norecord}参数。如果可能，在这种情况下，应使用宏
+@code{with-selected-window}（见下文）。
 
-  Emacs also runs the hook @code{window-selection-change-functions}
-whenever the redisplay routine detects that another window has been
-selected since last redisplay.  @xref{Window Hooks}, for a detailed
-explanation.  @code{window-state-change-functions} (described in the
-same section) is another abnormal hook run after a different window
-has been selected but is triggered by other window changes as well.
+Emacs还会在重新显示例程检测到自上次重新显示后有另一个窗口被选中时运行钩子
+@code{window-selection-change-functions}。详细解释请参见
+@xref{窗口钩子}。@code{window-state-change-functions}(在同一节中描述)
+是在选择了不同的窗口后运行的另一个异常钩子，但也是由其他窗口变化触发的。
 
 @cindex most recently selected windows
-  The sequence of calls to @code{select-window} with a non-@code{nil}
-@var{norecord} argument determines an ordering of windows by their
-selection time.  The function @code{get-lru-window} can be used to
-retrieve the least recently selected live window (@pxref{Cyclic Window
-Ordering}).
+  有非@code{nil}的@var{norecord}参数的对@code{select-window}的调用序列，
+决定了按窗口的选择时间进行排序。函数@code{get-lru-window}可以用来检索最
+不近选择的的实时窗口（@pxref{循环窗口排序}）。
 
 @defmac save-selected-window forms@dots{}
-This macro records the selected frame, as well as the selected window
-of each frame, executes @var{forms} in sequence, then restores the
-earlier selected frame and windows.  It also saves and restores the
-current buffer.  It returns the value of the last form in @var{forms}.
+这个宏记录了所选的窗框，以及每个窗框所选的窗口，依次执行@var{forms}，然
+后恢复之前所选的窗框和窗口。它还保存和恢复当前的缓冲区。它返回
+@var{forms}中最后一个窗体的值。
 
-This macro does not save or restore anything about the sizes,
-arrangement or contents of windows; therefore, if @var{forms} change
-them, the change persists.  If the previously selected window of some
-frame is no longer live at the time of exit from @var{forms}, that
-frame's selected window is left alone.  If the previously selected
-window is no longer live, then whatever window is selected at the end of
-@var{forms} remains selected.  The current buffer is restored if and
-only if it is still live when exiting @var{forms}.
+这个宏不会保存或恢复任何关于窗口的大小、排列或内容的信息；因此，如果
+@var{forms}改变了这些内容，则改变的内容会持续存在。如果在退出@var{forms}
+时，某个窗框的先前选择的窗口不再有效，那么该窗框的选择窗口将被单独保留。
+如果之前选中的窗口不再有效，那么在@var{forms}结束时选中的任何窗口都会保
+持选中状态。只有当退出@var{forms}时，当前的缓冲区仍然有效时，才会被恢复。
 
-This macro changes neither the ordering of recently selected windows nor
-the buffer list.
+这个宏既不改变最近选择的窗口的顺序，也不改变缓冲区列表。
 @end defmac
 
 @defmac with-selected-window window forms@dots{}
-This macro selects @var{window}, executes @var{forms} in sequence, then
-restores the previously selected window and current buffer.  The
-ordering of recently selected windows and the buffer list remain
-unchanged unless you deliberately change them within @var{forms}; for
-example, by calling @code{select-window} with argument @var{norecord}
-@code{nil}.  Hence, this macro is the preferred way to temporarily work
-with @var{window} as the selected window without needlessly running
-@code{buffer-list-update-hook}.
+这个宏选择@var{window}，依次执行@var{forms}，然后恢复之前选择的窗口和当
+前缓冲区。最近选中的窗口和缓冲区列表的顺序保持不变，除非你故意在
+@var{forms}中改变它们；例如，通过调用@code{select-window}，参数
+@var{norecord}为@code{nil}。因此，这个宏是暂时使用@var{window}作为选定
+窗口的首选方法，而不需要运行@code{buffer-list-update-hook}。
 @end defmac
 
 @defun frame-selected-window &optional frame
-This function returns the window on @var{frame} that is selected
-within that frame.  @var{frame} should be a live frame; if omitted or
-@code{nil}, it defaults to the selected frame.
+此函数返回在@var{frame}上选择的窗口。@var{frame}应该是一个实时窗框；如果
+省略或@code{nil}，则默认为选定的窗框。
 @end defun
 
 @defun set-frame-selected-window frame window &optional norecord
-This function makes @var{window} the window selected within the frame
-@var{frame}.  @var{frame} should be a live frame; if @code{nil}, it
-defaults to the selected frame.  @var{window} should be a live window;
-if @code{nil}, it defaults to the selected window.
+此函数使@var{window}成为在@var{frame}窗框内选择的窗口。@var{frame}应该
+是一个实时窗框；如果@code{nil}，则默认为选中的窗框。@var{window}应该是
+一个实时窗口；如果@code{nil}，则默认为选中的窗口。
 
-If @var{frame} is the selected frame, this makes @var{window} the
-selected window.
+如果@var{frame}是被选中的窗框，那么这将使@var{window}成为被选中的窗口。
 
-If the optional argument @var{norecord} is non-@code{nil}, this
-function does not alter the list of most recently selected windows,
-nor the buffer list.
+如果可选参数@var{norecord}是非@code{nil}，则该函数不会改变最近选中的窗
+口列表，也不会改变缓冲区列表。
 @end defun
 
 @cindex window use time
 @cindex use time of window
 @cindex window order by time of last use
 @defun window-use-time &optional window
-This functions returns the use time of window @var{window}.
-@var{window} must be a live window and defaults to the selected one.
+此函数返回@var{window}窗口的使用时间。@var{window}必须是一个实时窗口，
+默认为选定的窗口。
 
-The @dfn{use time} of a window is not really a time value, but an
-integer that does increase monotonically with each call of
-@code{select-window} with a @code{nil} @var{norecord} argument.  The
-window with the lowest use time is usually called the least recently
-used window while the window with the highest use time is called the
-most recently used one (@pxref{Cyclic Window Ordering}).
+窗口的@dfn{使用时间}并不是真正的时间值，而是一个整数，它确实随着
+@code{select-window}的每一次调用而单调增加，并带有@code{nil}的
+@var{norecord}参数。使用时间最少的窗口通常称为最不近使用的窗口，而使用
+时间最多的窗口称为最近使用的窗口（@pxref{循环窗口排序}）。
 @end defun
 
 
@@ -1537,16 +1506,15 @@ most recently used one (@pxref{Cyclic Window Ordering}).
 @cindex ordering of windows, cyclic
 @cindex window ordering, cyclic
 
-  When you use the command @w{@kbd{C-x o}} (@code{other-window}) to select
-some other window, it moves through live windows in a specific order.
-For any given configuration of windows, this order never varies.  It
-is called the @dfn{cyclic ordering of windows}.
+  当您使用@w{@kbd{C-x o}}命令时，您会发现，在您的电脑中，有很多人在使用
+@w{@kbd{C-x o}(@code{other-window})来选择其他窗口，它按照特定的顺序在
+实时窗口中移动。对于任何给定的窗口配置，这个顺序永远不会变化。这就是所谓
+的@dfn{窗口的循环排序}。
 
-  The ordering is determined by a depth-first traversal of each frame's
-window tree, retrieving the live windows which are the leaf nodes of the
-tree (@pxref{窗口和窗框}).  If the minibuffer is active, the
-minibuffer window is included too.  The ordering is cyclic, so the last
-window in the sequence is followed by the first one.
+顺序是通过对每个窗框的窗口树进行深度优先遍历来确定的，检索作为树叶节点的
+实时窗口（@pxref{窗口和窗框}）。如果minibuffer是活动的，那么minibuffer
+窗口也会被包含在内。顺序是循环的，所以序列中的最后一个窗口后面是第一个窗
+口。
 
 @defun next-window &optional window minibuf all-frames
 @cindex minibuffer window, and @code{next-window}
