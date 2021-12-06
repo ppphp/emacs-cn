@@ -1518,131 +1518,110 @@ Emacs还会在重新显示例程检测到自上次重新显示后有另一个窗
 
 @defun next-window &optional window minibuf all-frames
 @cindex minibuffer window, and @code{next-window}
-This function returns a live window, the one following @var{window} in
-the cyclic ordering of windows.  @var{window} should be a live window;
-if omitted or @code{nil}, it defaults to the selected window.
+此函数返回一个实时窗口，即在@var{window}之后的窗口，按照窗口的循环顺序
+排列。@var{window}应该是一个实时窗口；如果省略或@code{nil}，则默认为选
+定的窗口。
 
-The optional argument @var{minibuf} specifies whether minibuffer windows
-should be included in the cyclic ordering.  Normally, when @var{minibuf}
-is @code{nil}, a minibuffer window is included only if it is currently
-active; this matches the behavior of @w{@kbd{C-x o}}.  (Note that a
-minibuffer window is active as long as its minibuffer is in use; see
-@ref{Minibuffers}).
+可选参数@var{minibuf}指定了迷你缓冲区窗口是否应该被包含在循环排序中，通
+常情况下，当@var{minibuf}为@code{nil}时，迷你缓冲区窗口只有在当前处于
+活动状态时才会被包含。通常情况下，当@var{minibuf}为@code{nil}时，只有
+当minibuffer窗口当前处于活动状态时才会被包括在内；这与@w{@kbd{C-x o}}
+的行为一致。(请注意，只要一个迷你缓冲区窗口的迷你缓冲区在使用中，它就处
+于活动状态；参见@ref{迷你缓冲区}）。
 
-If @var{minibuf} is @code{t}, the cyclic ordering includes all
-minibuffer windows.  If @var{minibuf} is neither @code{t} nor
-@code{nil}, minibuffer windows are not included even if they are active.
+如果@var{minibuf}是@code{t}，则循环排序包括所有迷你缓冲区窗口。如果
+@var{minibuf}既不是@code{t}，也不是@code{nil}，则即使迷你缓冲区窗口处
+于活动状态，也不会被包括在内。
 
-The optional argument @var{all-frames} specifies which frames to
-consider:
+可选参数@var{all-frames}指定要考虑的窗框：
 
 @itemize @bullet
 @item @code{nil}
-means to consider windows on @var{window}'s frame.  If the minibuffer
-window is considered (as specified by the @var{minibuf} argument),
-then frames that share the minibuffer window are considered too.
+意味着要考虑@var{window}窗框上的窗口。如果minibuffer窗口被考虑（如
+@var{minibuf}参数所指定），那么共享minibuffer窗口的窗框也会被考虑。
 
 @item @code{t}
-means to consider windows on all existing frames.
+是指考虑在所有现有窗框上的窗口。
 
 @item @code{visible}
-means to consider windows on all visible frames.
+是指在所有可见的窗框上考虑窗口。
 
 @item 0
-means to consider windows on all visible or iconified frames.
+是指在所有可见或图标化的窗框上考虑窗口。
 
 @item A frame
-means to consider windows on that specific frame.
+是指在该特定窗框上考虑窗口。
 
 @item Anything else
-means to consider windows on @var{window}'s frame, and no others.
+意味着要考虑@var{window}窗框上的窗口，而不考虑其他窗口。
 @end itemize
 
-If more than one frame is considered, the cyclic ordering is obtained
-by appending the orderings for those frames, in the same order as the
-list of all live frames (@pxref{Finding All Frames}).
+如果考虑了一个以上的窗框，则通过追加这些窗框的排序，获得循环排序，顺序与
+所有实时窗框的列表相同（@pxref{寻找所有窗框}）。
 @end defun
 
 @defun previous-window &optional window minibuf all-frames
-This function returns a live window, the one preceding @var{window} in
-the cyclic ordering of windows.  The other arguments are handled like
-in @code{next-window}.
+这个函数返回一个实时窗口，也就是窗口循环排序中@var{window}之前的那个窗口。
+其他参数的处理方式和@code{next-window}一样。
 @end defun
 
 @deffn Command other-window count &optional all-frames
-This function selects a live window, one @var{count} places from the
-selected window in the cyclic ordering of windows.  If @var{count} is
-a positive number, it skips @var{count} windows forwards; if
-@var{count} is negative, it skips @minus{}@var{count} windows
-backwards; if @var{count} is zero, that simply re-selects the selected
-window.  When called interactively, @var{count} is the numeric prefix
-argument.
+该函数选择一个实时窗口，从被选中的窗口中按窗口的循环排序选出一个
+@var{count}位。如果@var{count}为正数，则向前跳过@var{count}窗口；如果
+@var{count}为负数，则向后跳过@minus{}@var{count}窗口；如果@var{count}为
+零，则简单地重新选择所选窗口。当交互式调用时，@var{count}是数字前缀参数。
 
-The optional argument @var{all-frames} has the same meaning as in
-@code{next-window}, like a @code{nil} @var{minibuf} argument to
-@code{next-window}.
+可选参数@var{all-frames}与@code{next-window}的含义相同，就像
+@code{nil}一样。@var{minibuf}参数到@code{next-window}。
 
-This function does not select a window that has a non-@code{nil}
-@code{no-other-window} window parameter (@pxref{Window Parameters}),
-provided that @code{ignore-window-parameters} is @code{nil}.
+该函数不会选择一个非@code{nil}的窗口。@code{no-other-window}窗口参数（
+@pxref{窗口参数}），前提是@code{ignore-window-parameters}是@code{nil}。
 
-If the @code{other-window} parameter of the selected window is a
-function, and @code{ignore-window-parameters} is @code{nil}, that
-function will be called with the arguments @var{count} and
-@var{all-frames} instead of the normal operation of this function.
+如果所选窗口的@code{other-window}参数是一个函数，而
+@code{ignore-window-parameters}是@code{nil}，那么该函数将以@var{count}
+和@var{all-frames}为参数被调用，而不是该函数的正常操作。
 @end deffn
 
 @defun walk-windows fun &optional minibuf all-frames
-This function calls the function @var{fun} once for each live window,
-with the window as the argument.
+这个函数对每个实时窗口调用一次函数@var{fun}，以窗口为参数。
 
-It follows the cyclic ordering of windows.  The optional arguments
-@var{minibuf} and @var{all-frames} specify the set of windows
-included; these have the same arguments as in @code{next-window}.  If
-@var{all-frames} specifies a frame, the first window walked is the
-first window on that frame (the one returned by
-@code{frame-first-window}), not necessarily the selected window.
+它遵循窗口的循环排序。可选参数@var{minibuf}和@var{all-frames}指定了所包
+含的窗口集；这些参数与@code{next-window}中的参数相同。如果
+@var{all-frames}指定了一个窗框，那么走过的第一个窗口就是该窗框上的第一个
+窗口（由@code{frame-first-window}返回的窗口），而不一定是选定的窗口。
 
-If @var{fun} changes the window configuration by splitting or deleting
-windows, that does not alter the set of windows walked, which is
-determined prior to calling @var{fun} for the first time.
+如果@var{fun}通过拆分或删除窗口来改变窗口配置，那么不会改变走过的窗口集，
+这是在第一次调用@var{fun}之前确定的。
 @end defun
 
 @defun one-window-p &optional no-mini all-frames
-This function returns @code{t} if the selected window is the only live
-window, and @code{nil} otherwise.
+如果选中的窗口是唯一的实时窗口，则该函数返回@code{t}，否则返回@code{nil}。
 
-If the minibuffer window is active, it is normally considered (so that
-this function returns @code{nil}).  However, if the optional argument
-@var{no-mini} is non-@code{nil}, the minibuffer window is ignored even
-if active.  The optional argument @var{all-frames} has the same
-meaning as for @code{next-window}.
+如果minibuffer窗口处于活动状态，通常会被考虑（因此本函数返回@code{nil}）。
+但是，如果可选参数@var{no-mini}是非@code{nil}，那么即使minibuffer窗口处
+于活动状态，也会被忽略。可选参数@var{all-frames}的含义与
+@code{next-window}相同。
 @end defun
 
 @cindex finding windows
-  The following functions return a window which satisfies some
-criterion, without selecting it:
+  下面的函数返回一个符合某种标准的窗口，而不选择它：
 
 @cindex least recently used window
 @defun get-lru-window &optional all-frames dedicated not-selected
-This function returns a live window which is heuristically the least
-recently used.  The optional argument @var{all-frames} has
-the same meaning as in @code{next-window}.
+这个函数返回一个实时窗口，这个窗口是最近使用次数最少的。可选参数
+@var{all-frames}与@code{next-window}的这个参数含义相同。
 
-If any full-width windows are present, only those windows are
-considered.  A minibuffer window is never a candidate.  A dedicated
-window (@pxref{Dedicated Windows}) is never a candidate unless the
-optional argument @var{dedicated} is non-@code{nil}.  The selected
-window is never returned, unless it is the only candidate.  However, if
-the optional argument @var{not-selected} is non-@code{nil}, this
-function returns @code{nil} in that case.
+如果存在任何全宽窗口，则只考虑这些窗口。minibuffer窗口永远不会成为候选者。
+专用窗口 (@pxref{专用窗口}) 绝不是候选窗口，除非可选参数@var{dedicated}
+是非@code{nil}。被选中的窗口永远不会返回，除非它是唯一的候选者。但是，如
+果可选参数@var{not-selected}是非@code{nil}，那么在这种情况下，这个函数
+将返回@code{nil}。
 @end defun
 
 @cindex most recently used window
 @defun get-mru-window &optional all-frames dedicated not-selected
-This function is like @code{get-lru-window}, but it returns the most
-recently used window instead.  The meaning of the arguments is the
-same as described for @code{get-lru-window}.
+这个函数和@code{get-lru-window}类似，但是它返回的是最近使用的窗口。参数
+的含义与@code{get-lru-window}相同。
 @end defun
 
 @cindex largest window
