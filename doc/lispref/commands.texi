@@ -1803,20 +1803,16 @@ POSITION is assumed to lie in a window text area."
   这些功能对解码滚动条事件很有用。
 
 @defun scroll-bar-event-ratio event
-This function returns the fractional vertical position of a scroll bar
-event within the scroll bar.  The value is a cons cell
-@code{(@var{portion} . @var{whole})} containing two integers whose ratio
-is the fractional position.
+该函数返回滚动条事件在滚动条中的垂直位置的分数。值是一个包含两个整数的单元格
+@code{(@var{portion} . @var{whole})}，其比例是分数位置。
 @end defun
 
 @defun scroll-bar-scale ratio total
-This function multiplies (in effect) @var{ratio} by @var{total},
-rounding the result to an integer.  The argument @var{ratio} is not a
-number, but rather a pair @code{(@var{num} . @var{denom})}---typically a
-value returned by @code{scroll-bar-event-ratio}.
+这个函数将@var{ratio}乘以@var{total}，并将结果取整。参数@var{ratio}不是一个数字，
+而是一对@code{(@var{num} . @var{denom})}---典型的是由
+@code{scroll-bar-event-ratio} 返回的值。
 
-This function is handy for scaling a position on a scroll bar into a
-buffer position.  Here's how to do that:
+这个功能可以方便地将滚动条上的一个位置缩放到缓冲区的位置。这里是如何做到这一点：
 
 @example
 (+ (point-min)
@@ -1825,8 +1821,7 @@ buffer position.  Here's how to do that:
       (- (point-max) (point-min))))
 @end example
 
-Recall that scroll bar events have two integers forming a ratio, in place
-of a pair of x and y coordinates.
+记得滚动条事件有两个整数组成一个比率，代替一对x和y坐标。
 @end defun
 
 @node 事件字符串
@@ -1834,198 +1829,156 @@ of a pair of x and y coordinates.
 @cindex keyboard events in strings
 @cindex strings with keyboard events
 
-  In most of the places where strings are used, we conceptualize the
-string as containing text characters---the same kind of characters found
-in buffers or files.  Occasionally Lisp programs use strings that
-conceptually contain keyboard characters; for example, they may be key
-sequences or keyboard macro definitions.  However, storing keyboard
-characters in a string is a complex matter, for reasons of historical
-compatibility, and it is not always possible.
+  在大多数使用字符串的地方，我们将字符串概念化为包含文本字符--与缓冲区或文件中的字
+符相同。偶尔Lisp程序会使用一些概念上包含键盘字符的字符串，例如，它们可能是键序列或
+键盘宏定义。然而，由于历史兼容性的原因，在字符串中存储键盘字符是一件复杂的事情，而且
+并不总是可能的。
 
-  We recommend that new programs avoid dealing with these complexities
-by not storing keyboard events in strings.  Here is how to do that:
+  我们建议新程序不要将键盘事件存储在字符串中，以避免处理这些复杂的问题。下面是如何做
+到这一点：
 
 @itemize @bullet
 @item
-Use vectors instead of strings for key sequences, when you plan to use
-them for anything other than as arguments to @code{lookup-key} and
-@code{define-key}.  For example, you can use
-@code{read-key-sequence-vector} instead of @code{read-key-sequence}, and
-@code{this-command-keys-vector} instead of @code{this-command-keys}.
+当您打算将向量用作@code{lookup-key}和@code{define-key}的参数以外的其他用途时，
+请使用向量而不是字符串来表示键序列。例如，您可以使用
+@code{read-key-sequence-vector}来代替@code{read-key-sequence}，使用
+@code{this-command-keys-vector} 来代替 @code{this-command-keys}。
 
 @item
-Use vectors to write key sequence constants containing meta characters,
-even when passing them directly to @code{define-key}.
+使用向量来编写包含元字符的密钥序列常量，即使是直接传递给@code{define-key}。
 
 @item
-When you have to look at the contents of a key sequence that might be a
-string, use @code{listify-key-sequence} (@pxref{Event Input Misc})
-first, to convert it to a list.
+当你需要查看一个可能是字符串的键序列的内容时，使用
+@code{listify-key-sequence}。(@pxref{事件输入杂项})，先将其转换为一个列表。
 @end itemize
 
-  The complexities stem from the modifier bits that keyboard input
-characters can include.  Aside from the Meta modifier, none of these
-modifier bits can be included in a string, and the Meta modifier is
-allowed only in special cases.
+  复杂性源于键盘输入字符可以包含的修饰位。除了Meta修饰位，这些修饰位都不能包含在字
+符串中，Meta修饰位只允许在特殊情况下使用。
 
-  The earliest GNU Emacs versions represented meta characters as codes
-in the range of 128 to 255.  At that time, the basic character codes
-ranged from 0 to 127, so all keyboard character codes did fit in a
-string.  Many Lisp programs used @samp{\M-} in string constants to stand
-for meta characters, especially in arguments to @code{define-key} and
-similar functions, and key sequences and sequences of events were always
-represented as strings.
+最早的GNU Emacs版本将元字符表示为128到255范围内的代码。当时，基本字符代码的范围是
+0到127，所以所有的键盘字符代码都可以放在一个字符串中。许多Lisp程序在字符串常量中使
+用@samp{/M-}来代表元字符，特别是在@code{define-key}和类似函数的参数中，按键序列
+和事件序列总是用字符串表示。
 
-  When we added support for larger basic character codes beyond 127, and
-additional modifier bits, we had to change the representation of meta
-characters.  Now the flag that represents the Meta modifier in a
-character is
+当我们增加了对超过127的更大的基本字符代码的支持，以及额外的修饰位时，我们不得不改变
+元字符的表示方法。现在，在一个字符中表示元修饰符的标志是
 @tex
 @math{2^{27}}
 @end tex
 @ifnottex
 2**27
 @end ifnottex
-and such numbers cannot be included in a string.
+而这样的数字不能包含在一个字符串中。
 
-  To support programs with @samp{\M-} in string constants, there are
-special rules for including certain meta characters in a string.
-Here are the rules for interpreting a string as a sequence of input
-characters:
+为了支持字符串常量中带有@samp{\M-}的程序，有一些特殊的规则可以在字符串中包含某些元
+字符。以下是将字符串解释为输入字符序列的规则：
 
 @itemize @bullet
 @item
-If the keyboard character value is in the range of 0 to 127, it can go
-in the string unchanged.
+如果键盘字符值在0到127的范围内，它可以不变地进入字符串。
 
 @item
-The meta variants of those characters, with codes in the range of
+这些字符的元变体，其代码范围是
 @tex
 @math{2^{27}}
 @end tex
 @ifnottex
 2**27
 @end ifnottex
-to
+到
 @tex
 @math{2^{27} + 127},
 @end tex
 @ifnottex
 2**27+127,
 @end ifnottex
-can also go in the string, but you must change their
-numeric values.  You must set the
+也可以放在字符串中，但你必须改变它们的数值。你必须设置
 @tex
 @math{2^{7}}
 @end tex
 @ifnottex
 2**7
 @end ifnottex
-bit instead of the
+位，而不是
 @tex
 @math{2^{27}}
 @end tex
 @ifnottex
 2**27
 @end ifnottex
-bit, resulting in a value between 128 and 255.  Only a unibyte string
-can include these codes.
+位，结果是一个介于128和255之间的值。只有一个单字节的字符串才能包含这些代码。
 
 @item
-Non-@acronym{ASCII} characters above 256 can be included in a multibyte string.
+256以上的非@acronym{ASCII}字符可以包含在多字节字符串中。
 
 @item
-Other keyboard character events cannot fit in a string.  This includes
-keyboard events in the range of 128 to 255.
+其他键盘字符事件不能放入字符串中。这包括128到255范围内的键盘事件。
 @end itemize
 
-  Functions such as @code{read-key-sequence} that construct strings of
-keyboard input characters follow these rules: they construct vectors
-instead of strings, when the events won't fit in a string.
+  像@code{read-key-sequence}这样构造键盘输入字符字符串的函数遵循这些规则：当事
+件无法放入字符串时，它们会构造向量而不是字符串。
 
-  When you use the read syntax @samp{\M-} in a string, it produces a
-code in the range of 128 to 255---the same code that you get if you
-modify the corresponding keyboard event to put it in the string.  Thus,
-meta events in strings work consistently regardless of how they get into
-the strings.
+  当你在字符串中使用读取语法@samp{M-}时，它会产生一个128到255范围内的代码--也就
+是你修改相应的键盘事件以将其放入字符串中得到的相同代码。 因此，在字符串中的元事件
+的工作是一致的，无论它们是如何进入字符串的。
 
-  However, most programs would do well to avoid these issues by
-following the recommendations at the beginning of this section.
+然而，大多数程序都可以通过遵循本节开头的建议来避免这些问题。
 
 @node 读取输入
 @section Reading Input
 @cindex read input
 @cindex keyboard input
 
-  The editor command loop reads key sequences using the function
-@code{read-key-sequence}, which uses @code{read-event}.  These and other
-functions for event input are also available for use in Lisp programs.
-See also @code{momentary-string-display} in @ref{Temporary Displays},
-and @code{sit-for} in @ref{Waiting}.  @xref{Terminal Input}, for
-functions and variables for controlling terminal input modes and
-debugging terminal input.
+  编辑器命令循环使用函数@code{read-key-sequence}读取键序列，该函数使用
+@code{read-event}。这些函数和其他用于事件输入的函数也可以在Lisp程序中使用。另请
+参见@ref{临时显示}中的@code{momentary-string-display}，以及@ref{Waiting}中
+的@code{sit-for}。@xref{终端输入}，用于控制终端输入模式和调试终端输入的函数和变量。
 
-  For higher-level input facilities, see @ref{Minibuffers}.
+  关于更高级别的输入设施，请参见@ref{迷你缓冲区}。
 
 @menu
-* Key Sequence Input::          How to read one key sequence.
-* Reading One Event::           How to read just one event.
-* Event Mod::                   How Emacs modifies events as they are read.
-* Invoking the Input Method::   How reading an event uses the input method.
-* Quoted Character Input::      Asking the user to specify a character.
-* Event Input Misc::            How to reread or throw away input events.
+* 键序列输入::          如何读取一个关键序列。
+* 读取一个事件::        如何只读取一个事件。
+* 事件修改::            Emacs如何在读取事件时修改它们。
+* 调用输入法::          读取一个事件如何使用输入法。
+* 引用字符输入::        要求用户指定一个字符。
+* 事件输入杂项::        如何重读或丢弃输入事件。
 @end menu
 
-@node Key Sequence Input
+@node 键序列输入
 @subsection Key Sequence Input
 @cindex key sequence input
 
-  The command loop reads input a key sequence at a time, by calling
-@code{read-key-sequence}.  Lisp programs can also call this function;
-for example, @code{describe-key} uses it to read the key to describe.
+  命令循环通过调用@code{read-key-sequence}，每次读取输入一个键序列。Lisp程序也可
+以调用这个函数，例如，@code{describe-key}就用它来读取要描述的键。
 
 @defun read-key-sequence prompt &optional continue-echo dont-downcase-last switch-frame-ok command-loop
-This function reads a key sequence and returns it as a string or
-vector.  It keeps reading events until it has accumulated a complete key
-sequence; that is, enough to specify a non-prefix command using the
-currently active keymaps.  (Remember that a key sequence that starts
-with a mouse event is read using the keymaps of the buffer in the
-window that the mouse was in, not the current buffer.)
+这个函数读取一个键序列并以字符串或向量的形式返回。它不断地读取事件，直到积累了一个完
+整的键序，也就是说，足够使用当前活动的键位图来指定一个非前缀命令。(请记住，一个以鼠
+标事件开始的键序列是使用鼠标所在窗口的缓冲区的键映射来读取的，而不是当前缓冲区。)
 
-If the events are all characters and all can fit in a string, then
-@code{read-key-sequence} returns a string (@pxref{事件字符串}).
-Otherwise, it returns a vector, since a vector can hold all kinds of
-events---characters, symbols, and lists.  The elements of the string or
-vector are the events in the key sequence.
+如果事件都是字符，而且都能装进一个字符串，那么@code{read-key-sequence}返回一个字符
+串(@pxref{事件字符串})。否则，它将返回一个向量，因为向量可以容纳所有类型的事件--字符
+、符号和列表。字符串或向量的元素是键序列中的事件。
 
-Reading a key sequence includes translating the events in various
-ways.  @xref{Translation Keymaps}.
+读取一个键序列包括以各种方式翻译事件。@xref{翻译键图}。
 
-The argument @var{prompt} is either a string to be displayed in the
-echo area as a prompt, or @code{nil}, meaning not to display a prompt.
-The argument @var{continue-echo}, if non-@code{nil}, means to echo
-this key as a continuation of the previous key.
+参数@var{prompt}是要在回音区显示的字符串作为提示，或者@code{nil}，意思是不显示提示。
+参数@var{continue-echo}，如果是非@code{nil}，则表示将此键作为前一个键的延续进行回显。
 
-Normally any upper case event is converted to lower case if the
-original event is undefined and the lower case equivalent is defined.
-The argument @var{dont-downcase-last}, if non-@code{nil}, means do not
-convert the last event to lower case.  This is appropriate for reading
-a key sequence to be defined.
+通常情况下，如果原来的事件没有定义，而定义了等价的小写字母，那么任何大写字母事件都会被
+转换为小写字母。参数@var{dont-downcase-last}，如果是非@code{nil}，则表示不要将最后
+一个事件转换为小写。这适用于读取待定义的键序列。
 
-The argument @var{switch-frame-ok}, if non-@code{nil}, means that this
-function should process a @code{switch-frame} event if the user
-switches frames before typing anything.  If the user switches frames
-in the middle of a key sequence, or at the start of the sequence but
-@var{switch-frame-ok} is @code{nil}, then the event will be put off
-until after the current key sequence.
+参数@var{switch-frame-ok}如果是非@code{nil}，意味着如果用户在输入任何东西之前切换窗
+框，这个函数应该处理@code{switch-frame}事件。如果用户在按键序列的中间，或者在序列开始
+时切换窗框，但@var{switch-frame-ok}为@code{nil}，那么该事件将被推迟到当前按键序列之
+后。
 
-The argument @var{command-loop}, if non-@code{nil}, means that this
-key sequence is being read by something that will read commands one
-after another.  It should be @code{nil} if the caller will read just
-one key sequence.
+参数@var{command-loop}，如果是非@code{nil}，则表示这个键序列被一个接一个的读取命令的
+东西所读取。如果调用者只读取一个键序列，那么应该是@code{nil}。
 
-In the following example, Emacs displays the prompt @samp{?} in the
-echo area, and then the user types @kbd{C-x C-f}.
+在下面的例子中，Emacs在回音区显示提示符@samp{?}，然后用户输入@kbd{C-x C-f}。
 
 @example
 (read-key-sequence "?")
@@ -2039,39 +1992,32 @@ echo area, and then the user types @kbd{C-x C-f}.
 @end group
 @end example
 
-The function @code{read-key-sequence} suppresses quitting: @kbd{C-g}
-typed while reading with this function works like any other character,
-and does not set @code{quit-flag}.  @xref{Quitting}.
+函数@code{read-key-sequence}可以抑制退出。在使用该函数读取时输入的@kbd{C-g}与其他
+字符一样，不会设置@code{quit-flag}。@xref{退出}。
 @end defun
 
 @defun read-key-sequence-vector prompt &optional continue-echo dont-downcase-last switch-frame-ok command-loop
-This is like @code{read-key-sequence} except that it always
-returns the key sequence as a vector, never as a string.
-@xref{事件字符串}.
+这和@code{read-key-sequence}类似，只是它总是以向量的形式返回键序列，而不是以字符串
+的形式。@xref{事件字符串}。
 @end defun
 
 @cindex upper case key sequence
 @cindex downcasing in @code{lookup-key}
 @cindex shift-translation
-If an input character is upper-case (or has the shift modifier) and
-has no key binding, but its lower-case equivalent has one, then
-@code{read-key-sequence} converts the character to lower case.  Note
-that @code{lookup-key} does not perform case conversion in this way.
+如果一个输入字符是大写的（或者有shift修饰符），并且没有键绑定，但是它的小写字符有键
+绑定，那么@code{read-key-sequence}就会把这个字符转换为小写。请注意，
+@code{lookup-key}不会以这种方式进行大小写转换。
 
 @vindex this-command-keys-shift-translated
-When reading input results in such a @dfn{shift-translation}, Emacs
-sets the variable @code{this-command-keys-shift-translated} to a
-non-@code{nil} value.  Lisp programs can examine this variable if they
-need to modify their behavior when invoked by shift-translated keys.
-For example, the function @code{handle-shift-selection} examines the
-value of this variable to determine how to activate or deactivate the
-region (@pxref{The Mark, handle-shift-selection}).
+当读取输入结果出现这样的@dfn{shift-translation}时，Emacs会将变量
+@code{this-command-keys-shift-translated}设置为一个非@code{nil}值。如果Lisp程
+序需要修改被shift-translation键调用时的行为，可以检查这个变量。例如，函数
+@code{handle-shift-selection}检查这个变量的值，以决定如何激活或停用该区域（
+@pxref{The Mark，handle-shift-selection}）。
 
-The function @code{read-key-sequence} also transforms some mouse events.
-It converts unbound drag events into click events, and discards unbound
-button-down events entirely.  It also reshuffles focus events and
-miscellaneous window events so that they never appear in a key sequence
-with any other events.
+函数@code{read-key-sequence}也会转换一些鼠标事件。它将未绑定的拖动事件转换为点击事
+件，并完全丢弃未绑定的按键事件。它还会对焦点事件和其他窗口事件进行重新组合，使它们不
+会与其他事件一起出现在键序中。
 
 @cindex @code{tab-line} prefix key
 @cindex @code{header-line} prefix key
@@ -2082,20 +2028,16 @@ with any other events.
 @cindex @code{menu-bar} prefix key
 @cindex @code{tab-bar} prefix key
 @cindex mouse events, in special parts of frame
-When mouse events occur in special parts of a window, such as a mode
-line or a scroll bar, the event type shows nothing special---it is the
-same symbol that would normally represent that combination of mouse
-button and modifier keys.  The information about the window part is kept
-elsewhere in the event---in the coordinates.  But
-@code{read-key-sequence} translates this information into imaginary
-prefix keys, all of which are symbols: @code{tab-line}, @code{header-line},
-@code{horizontal-scroll-bar}, @code{menu-bar}, @code{tab-bar}, @code{mode-line},
-@code{vertical-line}, and @code{vertical-scroll-bar}.  You can define
-meanings for mouse clicks in special window parts by defining key
-sequences using these imaginary prefix keys.
+当鼠标事件发生在窗口的特殊部分，如模式线或滚动条时，事件类型并没有显示出什么特别的东
+西------它与通常代表鼠标按钮和修饰键组合的符号相同。窗口部分的信息被保存在事件的其他
+地方---坐标中。但是@code{read-key-sequence}将这些信息翻译成了虚构的前缀键，所有这
+些都是符号：@code{tab-line}，@code{header-line}，@code{horizontal-scroll-bar}
+，@code{menu-bar}，@code{tab-bar}，@code{module-line}，@code{vertical-line}，
+和@code{vertical-scroll-bar}。您可以通过使用这些假想的前缀键定义的键序列来定义特殊
+窗口部分中鼠标点击的含义。
 
-For example, if you call @code{read-key-sequence} and then click the
-mouse on the window's mode line, you get two events, like this:
+例如，如果你调用@code{read-key-sequence}，然后在窗口的模式行上点击鼠标，你会得到两
+个事件，就像这样：
 
 @example
 (read-key-sequence "Click on the mode line: ")
@@ -2106,72 +2048,57 @@ mouse on the window's mode line, you get two events, like this:
 @end example
 
 @defvar num-input-keys
-This variable's value is the number of key sequences processed so far in
-this Emacs session.  This includes key sequences read from the terminal
-and key sequences read from keyboard macros being executed.
+这个变量的值是迄今为止在这个Emacs会话中处理过的键序列的数目。这包括从终端读取的键序和
+从正在执行的键盘宏读取的键序。
 @end defvar
 
-@node Reading One Event
+@node 读取一个事件
 @subsection Reading One Event
 @cindex reading a single event
 @cindex event, reading only one
 
-  The lowest level functions for command input are @code{read-event},
-@code{read-char}, and @code{read-char-exclusive}.
+  命令输入的最低级别函数是@code{read-event}、@code{read-char}和
+@code{read-char-exclusive}。
 
-If you need a function to read a character using the minibuffer, use
-@code{read-char-from-minibuffer} (@pxref{Multiple Queries}).
+  如果你需要一个使用迷你缓冲区读取字符的函数，请使用
+@code{read-char-from-minibuffer}。
+(@pxref{多重查询})。
 
 @defun read-event &optional prompt inherit-input-method seconds
-This function reads and returns the next event of command input,
-waiting if necessary until an event is available.
+该函数读取并返回命令输入的下一个事件，必要时等待，直到有事件可用。
 
-The returned event may come directly from the user, or from a keyboard
-macro.  It is not decoded by the keyboard's input coding system
-(@pxref{Terminal I/O Encoding}).
+返回的事件可能直接来自用户，或者来自键盘宏。它不会被键盘的输入编码系统解码（
+@pxref{终端I/O编码}）。
 
-If the optional argument @var{prompt} is non-@code{nil}, it should be
-a string to display in the echo area as a prompt.  If @var{prompt} is
-@code{nil} or the string @samp{""}, @code{read-event} does not display
-any message to indicate it is waiting for input; instead, it prompts
-by echoing: it displays descriptions of the events that led to or were
-read by the current command.  @xref{The Echo Area}.
+如果可选参数@var{prompt}是非@code{nil}，那么它应该是一个字符串，作为提示显示在回显
+区。如果@var{prompt}是非@code{nil}或字符串@samp{""}，则@code{read-event}不显示
+任何消息来表示它正在等待输入；相反，它通过回显来提示：它显示导致当前命令或被当前命令
+读取的事件的描述。@xref{回声区}。
 
-If @var{inherit-input-method} is non-@code{nil}, then the current input
-method (if any) is employed to make it possible to enter a
-non-@acronym{ASCII} character.  Otherwise, input method handling is disabled
-for reading this event.
+如果@var{inherit-input-method}是非@code{nil}，则采用当前的输入法（如果有的话），
+以便能够输入一个非@acronym{ASCII}字符。否则，读取该事件时，输入法处理将被禁用。
 
-If @code{cursor-in-echo-area} is non-@code{nil}, then @code{read-event}
-moves the cursor temporarily to the echo area, to the end of any message
-displayed there.  Otherwise @code{read-event} does not move the cursor.
+如果@code{cursor-in-echo-area}是非@code{nil}，那么@code{read-event}会将光标暂时
+移动到回声区，并显示在回声区的任何消息的末尾。否则，@code{read-event}不会移动光标。
 
-If @var{seconds} is non-@code{nil}, it should be a number specifying
-the maximum time to wait for input, in seconds.  If no input arrives
-within that time, @code{read-event} stops waiting and returns
-@code{nil}.  A floating point @var{seconds} means to wait
-for a fractional number of seconds.  Some systems support only a whole
-number of seconds; on these systems, @var{seconds} is rounded down.
-If @var{seconds} is @code{nil}, @code{read-event} waits as long as
-necessary for input to arrive.
+如果@var{seconds}是非@code{nil}，那么它应该是一个数字，指定等待输入的最大时间，以秒
+为单位。如果在这段时间内没有输入，@code{read-event}将停止等待并返回@code{nil}。浮点
+数@var{seconds}的意思是等待一个小数的秒数。有些系统只支持整数秒，在这些系统中，
+@var{seconds}会被四舍五入。如果@var{seconds}是@code{nil}，则@code{read-event}会
+尽可能久地等待输入的到来。
 
-If @var{seconds} is @code{nil}, Emacs is considered idle while waiting
-for user input to arrive.  Idle timers---those created with
-@code{run-with-idle-timer} (@pxref{Idle Timers})---can run during this
-period.  However, if @var{seconds} is non-@code{nil}, the state of
-idleness remains unchanged.  If Emacs is non-idle when
-@code{read-event} is called, it remains non-idle throughout the
-operation of @code{read-event}; if Emacs is idle (which can happen if
-the call happens inside an idle timer), it remains idle.
+如果@var{seconds}是@code{nil}，Emacs在等待用户输入时被视为空闲。空闲计时器---用
+@code{run-with-idle-timer}创建的计时器。(@pxref{空闲计时器})---可以在这段时间内运
+行。但是，如果@var{seconds}是非@code{nil}，则闲置状态保持不变。如果Emacs在调用
+@code{read-event}时是非空闲状态，那么在@code{read-event}的整个运行过程中，它都保持
+非空闲状态；如果Emacs是空闲状态（如果调用发生在空闲定时器内，则可能发生这种情况），则保
+持空闲状态。
 
-If @code{read-event} gets an event that is defined as a help character,
-then in some cases @code{read-event} processes the event directly without
-returning.  @xref{Help Functions}.  Certain other events, called
-@dfn{special events}, are also processed directly within
-@code{read-event} (@pxref{Special Events}).
+如果@code{read-event}得到一个被定义为帮助字符的事件，那么在某些情况下，
+@code{read-event}直接处理该事件而不返回。@xref{帮助函数}。某些其他事件，称为
+@dfn{特殊事件}，也是直接在@code{read-event}内部处理的。(@pxref{Special Events})。
 
-Here is what happens if you call @code{read-event} and then press the
-right-arrow function key:
+以下是调用@code{read-event}后按右键功能键的情况：
 
 @example
 @group
@@ -2182,31 +2109,22 @@ right-arrow function key:
 @end defun
 
 @defun read-char &optional prompt inherit-input-method seconds
-This function reads and returns a character input event.  If the
-user generates an event which is not a character (i.e., a mouse click or
-function key event), @code{read-char} signals an error.  The arguments
-work as in @code{read-event}.
+这个函数读取并返回一个字符输入事件。如果用户产生的事件不是字符（例如，鼠标点击或函
+数键事件），@code{read-char}将发出错误信号。参数的作用与@code{read-event}相同。
 
-If the event has modifiers, Emacs attempts to resolve them and return
-the code of the corresponding character.  For example, if the user
-types @kbd{C-a}, the function returns 1, which is the @acronym{ASCII}
-code of the @samp{C-a} character.  If some of the modifiers cannot be
-reflected in the character code, @code{read-char} leaves the
-unresolved modifier bits set in the returned event.  For example, if
-the user types @kbd{C-M-a}, the function returns 134217729, 8000001 in
-hex, i.e.@: @samp{C-a} with the Meta modifier bit set.  This value is
-not a valid character code: it fails the @code{characterp} test
-(@pxref{Character Codes}).  Use @code{event-basic-type}
-(@pxref{Classifying Events}) to recover the character code with the
-modifier bits removed; use @code{event-modifiers} to test for
-modifiers in the character event returned by @code{read-char}.
+如果事件中有修饰符，Emacs会尝试解析这些修饰符并返回相应字符的代码。例如，如果用户
+键入@kbd{C-a}，函数返回1，即@samp{C-a}字符的@acronym{ASCII}代码。如果有些修饰
+符不能反映在字符代码中，@code{read-char}就会在返回的事件中留下未解决的修饰符位设
+置。例如，如果用户输入@kbd{C-M-a}，函数返回134217729，十六进制是8000001，即
+@: @samp{C-a}，并设置了Meta修饰位。这个值不是有效的字符代码：它没有通过
+@code{characterp}测试（@pxref{Character Codes}）。使用
+@code{event-basic-type}(@pxref{Classifying Events})来恢复去掉修饰位的字符代
+码；使用@code{event-modifiers}来测试@code{read-char}返回的字符事件中的修饰位。
 
-In the first example below, the user types the character @kbd{1}
-(@acronym{ASCII} code 49).  The second example shows a keyboard macro
-definition that calls @code{read-char} from the minibuffer using
-@code{eval-expression}.  @code{read-char} reads the keyboard macro's
-very next character, which is @kbd{1}.  Then @code{eval-expression}
-displays its return value in the echo area.
+在下面的第一个例子中，用户输入字符@kbd{1}(@acronym{ASCII}代码49)。第二个例子显
+示了一个键盘宏定义，它使用@code{eval-expression}从minibuffer中调用
+@code{read-char}。@code{read-char}读取键盘宏的下一个字符，即@kbd{1}。然后
+@code{eval-expression}在回声区显示其返回值。
 
 @example
 @group
@@ -2215,7 +2133,7 @@ displays its return value in the echo area.
 @end group
 
 @group
-;; @r{We assume here you use @kbd{M-:} to evaluate this.}
+;; @r{我们假设您在这里使用@kbd{M-:}来评估这个函数。}
 (symbol-function 'foo)
      @result{} "^[:(read-char)^M1"
 @end group
@@ -2228,18 +2146,15 @@ displays its return value in the echo area.
 @end defun
 
 @defun read-char-exclusive &optional prompt inherit-input-method seconds
-This function reads and returns a character input event.  If the
-user generates an event which is not a character event,
-@code{read-char-exclusive} ignores it and reads another event, until it
-gets a character.  The arguments work as in @code{read-event}.  The
-returned value may include modifier bits, as with @code{read-char}.
+这个函数读取并返回一个字符输入事件。如果用户生成的事件不是字符事件，
+@code{read-char-exclusive}会忽略它，并读取另一个事件，直到得到一个字符。参数的工
+作原理和@code{read-event}一样。返回的值可以包括修饰位，就像@code{read-char}一样。
 @end defun
 
-  None of the above functions suppress quitting.
+  以上功能都不抑制退出。
 
 @defvar num-nonmacro-input-events
-This variable holds the total number of input events received so far
-from the terminal---not counting those generated by keyboard macros.
+这个变量保存了迄今为止从终端接收到的输入事件的总数------不包括键盘宏产生的事件。
 @end defvar
 
   We emphasize that, unlike @code{read-key-sequence}, the functions
@@ -2296,7 +2211,7 @@ matching characters in the name string on graphical terminals.
 
 @end defun
 
-@node Event Mod
+@node 事件修改
 @subsection Modifying and Translating Input Events
 @cindex modifiers of events
 @cindex translating input events
@@ -2380,7 +2295,7 @@ same usual meaning.
   @xref{Translation Keymaps}, for mechanisms that translate event sequences
 at the level of @code{read-key-sequence}.
 
-@node Invoking the Input Method
+@node 调用输入法
 @subsection Invoking the Input Method
 @cindex invoking input method
 
@@ -2422,7 +2337,7 @@ test the values of @code{overriding-local-map} and
 non-@code{nil}, the input method should put its argument into a list and
 return that list with no further processing.
 
-@node Quoted Character Input
+@node 引用字符输入
 @subsection Quoted Character Input
 @cindex quoted character input
 
@@ -2467,7 +2382,7 @@ What character @kbd{1 7 7}-
 @end defun
 
 @need 2000
-@node Event Input Misc
+@node 事件输入杂项
 @subsection Miscellaneous Event Input Features
 
 This section describes how to peek ahead at events without using
