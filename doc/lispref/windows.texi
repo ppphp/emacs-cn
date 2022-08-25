@@ -1626,36 +1626,28 @@ Emacs还会在重新显示例程检测到自上次重新显示后有另一个窗
 
 @cindex largest window
 @defun get-largest-window &optional all-frames dedicated not-selected
-This function returns the window with the largest area (height times
-width).  The optional argument @var{all-frames} specifies the windows to
-search, and has the same meaning as in @code{next-window}.
+这个函数返回面积最大的窗口（高度乘以宽度）。可选参数@var{all-frames}指定
+了要搜索的窗口，与@code{next-window}的含义相同。
 
-A minibuffer window is never a candidate.  A dedicated window
-(@pxref{Dedicated Windows}) is never a candidate unless the optional
-argument @var{dedicated} is non-@code{nil}.  The selected window is not
-a candidate if the optional argument @var{not-selected} is
-non-@code{nil}.  If the optional argument @var{not-selected} is
-non-@code{nil} and the selected window is the only candidate, this
-function returns @code{nil}.
+迷你缓冲区窗口永远不会成为候选者。专用窗口(@pxref{专用窗口})永远不是候选
+者，除非可选参数@var{dedicated}是非@code{nil}。如果可选参数
+@var{not-selected}是非@code{nil}，则选定的窗口不是候选者。如果可选参数
+@var{not-selected}是非@code{nil}，并且选中的窗口是唯一的候选窗口，那么这
+个函数返回@code{nil}。
 
-If there are two candidate windows of the same size, this function
-prefers the one that comes first in the cyclic ordering of windows,
-starting from the selected window.
+如果有两个相同大小的候选窗口，该函数从所选窗口开始，在窗口的循环排序中优先
+选择先到的那个。
 @end defun
 
 @cindex window that satisfies a predicate
 @cindex conditional selection of windows
 @defun get-window-with-predicate predicate &optional minibuf all-frames default
-This function calls the function @var{predicate} for each of the
-windows in the cyclic order of windows in turn, passing it the window
-as an argument.  If the predicate returns non-@code{nil} for any
-window, this function stops and returns that window.  If no such
-window is found, the return value is @var{default} (which defaults to
-@code{nil}).
+该函数按照窗口的循环顺序依次调用@var{predicate}函数，将窗口作为参数传递
+给它。如果任何一个窗口的谓词返回非@code{nil}，这个函数就停止并返回该窗
+口。如果没有找到该窗口，则返回值为@var{default}(默认为@code{nil})。
 
-The optional arguments @var{minibuf} and @var{all-frames} specify the
-windows to search, and have the same meanings as in
-@code{next-window}.
+可选参数@var{minibuf}和@var{all-frames}指定了要搜索的窗口，其含义与
+@code{next-window}相同。
 @end defun
 
 
@@ -1665,100 +1657,83 @@ windows to search, and have the same meanings as in
 @cindex windows, controlling precisely
 @cindex buffers, controlled in windows
 
-  This section describes low-level functions for examining and setting
-the contents of windows.  @xref{Switching Buffers}, for higher-level
-functions for displaying a specific buffer in a window.
+  本节介绍了用于检查和设置窗口内容的底层函数。@xref{切换缓冲区}，用于在
+窗口中显示特定缓冲区的高级函数。
 
 @defun window-buffer &optional window
-This function returns the buffer that @var{window} is displaying.  If
-@var{window} is omitted or @code{nil} it defaults to the selected
-window.  If @var{window} is an internal window, this function returns
-@code{nil}.
+该函数返回@var{window}正在显示的缓冲区。如果省略了@var{window}或者
+@code{nil}，则默认为选中的窗口。如果@var{window}是一个内部窗口，则此函数
+返回@code{nil}。
 @end defun
 
 @defun set-window-buffer window buffer-or-name &optional keep-margins
-This function makes @var{window} display @var{buffer-or-name}.
-@var{window} should be a live window; if @code{nil}, it defaults to
-the selected window.  @var{buffer-or-name} should be a buffer, or the
-name of an existing buffer.  This function does not change which
-window is selected, nor does it directly change which buffer is
-current (@pxref{Current Buffer}).  Its return value is @code{nil}.
+该函数使@var{window}显示@var{buffer-or-name}。@var{window}应该是一个实
+时窗口，如果@code{nil}，则默认为选定的窗口。@var{buffer-or-name}应该是
+一个缓冲区，或者是一个现有缓冲区的名称。这个函数不会改变被选中的窗口，也
+不会直接改变当前的缓冲区（@pxref{Current Buffer}）。它的返回值是@code{nil}。
 
-If @var{window} is @dfn{strongly dedicated} to a buffer and
-@var{buffer-or-name} does not specify that buffer, this function
-signals an error.  @xref{Dedicated Windows}.
+如果@var{window}是一个缓冲区的@dfn{strongly dedicated}，而
+@var{buffer-or-name}没有指定这个缓冲区，那么这个函数会发出错误信号。
+@xref{专用窗口}。
 
-By default, this function resets @var{window}'s position, display
-margins, fringe widths, and scroll bar settings, based on the local
-variables in the specified buffer.  However, if the optional argument
-@var{keep-margins} is non-@code{nil}, it leaves @var{window}'s display
-margins, fringes and scroll bar settings alone.
+默认情况下，这个函数会根据指定缓冲区中的本地变量，重置@var{window}的位置、
+显示边距、边框宽度和滚动条设置。然而，如果可选的参数@var{keep-margins}是
+非@code{nil}，那么它就会保留@var{window}的显示边距、边框和滚动条的设置。
 
-When writing an application, you should normally use
-@code{display-buffer} (@pxref{Choosing Window}) or the higher-level
-functions described in @ref{Switching Buffers}, instead of calling
-@code{set-window-buffer} directly.
+在编写应用程序时，通常应该使用@code{display-buffer}。(@pxref{选择窗口})
+或@ref{切换缓冲区}中描述的更高级别的函数，而不是直接调用
+@code{set-window-buffer}。
 
-This runs @code{window-scroll-functions}, followed by
-@code{window-configuration-change-hook}.  @xref{Window Hooks}.
+这将运行@code{window-scroll-function}，然后是
+@code{window-configuration-change-hook}。@xref{窗口钩子}。
 @end defun
 
 @defvar buffer-display-count
-This buffer-local variable records the number of times a buffer has been
-displayed in a window.  It is incremented each time
-@code{set-window-buffer} is called for the buffer.
+这个缓冲区本地变量记录了缓冲区在窗口中的显示次数，每次
+@code{set-window-buffer}被调用时，它都会递增。
 @end defvar
 
 @defvar buffer-display-time
-This buffer-local variable records the time at which a buffer was last
-displayed in a window.  The value is @code{nil} if the buffer has
-never been displayed.  It is updated each time
-@code{set-window-buffer} is called for the buffer, with the value
-returned by @code{current-time} (@pxref{Time of Day}).
+这个缓冲区本地变量记录了缓冲区最后一次在窗口中显示的时间。如果缓冲区从来没
+有被显示过，那么它的值是@code{nil}，每次调用@code{set-window-buffer}时都
+会更新，其值由@code{current-time}返回(@pxref{Time of Day})。
 @end defvar
 
 @defun get-buffer-window &optional buffer-or-name all-frames
-This function returns the first window displaying @var{buffer-or-name}
-in the cyclic ordering of windows, starting from the selected window
-(@pxref{Cyclic Window Ordering}).  If no such window exists, the
-return value is @code{nil}.
+该函数从选定的窗口开始，返回窗口循环排序中显示@var{buffer-or-name}的第一
+个窗口（@pxref{循环窗口排序}）。如果不存在这样的窗口，则返回值为@code{nil}。
 
-@var{buffer-or-name} should be a buffer or the name of a buffer; if
-omitted or @code{nil}, it defaults to the current buffer.  The
-optional argument @var{all-frames} specifies which windows to
-consider:
+@var{buffer-or-name}应该是一个缓冲区或缓冲区的名称；如果省略或@code{nil}，
+则默认为当前的缓冲区。可选参数@var{all-frames}指定了要考虑的窗口，如果省略
+或@code{nil}，则默认为当前的缓冲区：
 
 @itemize @bullet
 @item
-@code{t} means consider windows on all existing frames.
+@code{t}的意思是在所有现有的窗框上考虑窗口。
 @item
-@code{visible} means consider windows on all visible frames.
+@code{visible}意思是在所有可见的窗框上考虑窗口。
 @item
-0 means consider windows on all visible or iconified frames.
+0表示在所有可见或图标化的窗框上考虑窗口。
 @item
-A frame means consider windows on that frame only.
+一个窗框意味着只考虑该窗框上的窗口。
 @item
-Any other value means consider windows on the selected frame.
+任何其他值都意味着考虑所选窗框上的窗口。
 @end itemize
 
-Note that these meanings differ slightly from those of the
-@var{all-frames} argument to @code{next-window} (@pxref{Cyclic Window
-Ordering}).  This function may be changed in a future version of Emacs
-to eliminate this discrepancy.
+请注意，这些含义与@code{next-window}的@var{all-frames}参数的含义略有不同。
+(@pxref{循环窗口排序})。这个功能可能会在未来的Emacs版本中被修改，以消除这种
+差异。
 @end defun
 
 @defun get-buffer-window-list &optional buffer-or-name minibuf all-frames
-This function returns a list of all windows currently displaying
-@var{buffer-or-name}.  @var{buffer-or-name} should be a buffer or the
-name of an existing buffer.  If omitted or @code{nil}, it defaults to
-the current buffer.  If the currently selected window displays
-@var{buffer-or-name}, it will be the first in the list returned by
-this function.
+此函数返回当前显示@var{buffer-or-name}的所有窗口的列表。@var{buffer-or-name}
+应该是一个缓冲区或一个现有缓冲区的名称。如果省略或@code{nil}，则默认为当前的
+缓冲区。如果当前选中的窗口显示@var{buffer-or-name}，那么它将是函数返回的列表
+中的第一个。
 
-The arguments @var{minibuf} and @var{all-frames} have the same
-meanings as in the function @code{next-window} (@pxref{Cyclic Window
-Ordering}).  Note that the @var{all-frames} argument does @emph{not}
-behave exactly like in @code{get-buffer-window}.
+参数@var{minibuf}和@var{all-frames}与函数@code{next-window}的含义相同。(
+@pxref{循环窗口排序})。请注意，@var{all-frames}参数的行为与
+@code{get-buffer-window}中的行为@emph{不}完全相同。
 @end defun
 
 @deffn Command replace-buffer-in-windows &optional buffer-or-name
