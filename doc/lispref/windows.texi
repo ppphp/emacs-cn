@@ -23,7 +23,7 @@
 * 缓冲区和窗口::      每个窗口都会显示一个缓冲区的内容。
 * 切换缓冲区::        切换缓冲区的高级功能。
 * 显示缓冲区::        在合适的窗口中显示缓冲区。
-* 窗口历史记录::      每个窗口都会记住显示在窗口中的缓冲区。
+* 窗口历史::         每个窗口都会记住显示在窗口中的缓冲区。
 * 专用窗口::         如何避免在特定窗口中显示另一个缓冲区。
 * 退出窗口::         如何恢复显示缓冲区前的状态。
 * 侧边窗口::         在窗框侧面的特殊窗口。
@@ -1737,18 +1737,14 @@ Emacs还会在重新显示例程检测到自上次重新显示后有另一个窗
 @end defun
 
 @deffn Command replace-buffer-in-windows &optional buffer-or-name
-This command replaces @var{buffer-or-name} with some other buffer, in
-all windows displaying it.  @var{buffer-or-name} should be a buffer, or
-the name of an existing buffer; if omitted or @code{nil}, it defaults to
-the current buffer.
+该命令在所有显示@var{buffer-or-name}的窗口中，用其他的缓冲区来替换
+@var{buffer-or-name}。@var{buffer-or-name}应该是一个缓冲区，或者是一个现有
+缓冲区的名称；如果省略或@code{nil}，则默认为当前的缓冲区。
 
-The replacement buffer in each window is chosen via
-@code{switch-to-prev-buffer} (@pxref{Window History}).  Any dedicated
-window displaying @var{buffer-or-name} is deleted if possible
-(@pxref{Dedicated Windows}).  If such a window is the only window on its
-frame and there are other frames on the same terminal, the frame is
-deleted as well.  If the dedicated window is the only window on the only
-frame on its terminal, the buffer is replaced anyway.
+通过@code{switch-to-prev-buffer}来选择每个窗口的替换缓冲区(@pxref{窗口历史})。
+任何显示@var{buffer-or-name}的专用窗口都会尽可能地被删除（@pxref{专用窗口}）。
+如果这样的窗口是其窗框上唯一的窗口，而同一终端上还有其他窗框，则该窗框也会被删
+除。如果专用窗口是其终端上唯一窗框上的唯一窗口，则无论如何都会替换缓冲区。
 @end deffn
 
 
@@ -1756,98 +1752,79 @@ frame on its terminal, the buffer is replaced anyway.
 @section Switching to a Buffer in a Window
 @cindex switching to a buffer
 
-This section describes high-level functions for switching to a specified
-buffer in some window.  In general, ``switching to a buffer'' means to
-(1) show the buffer in some window, (2) make that window the selected
-window (and its frame the selected frame), and (3) make the buffer the
-current buffer.
+本节介绍了在某个窗口中切换到指定缓冲区的高级函数。一般来说，"切换到缓冲区"的
+意思是：(1)在某个窗口中显示缓冲区，(2)使该窗口成为选定的窗口(其窗框成为选定
+的窗框)，(3)使缓冲区成为当前的缓冲区。
 
-  Do @emph{not} use these functions to make a buffer temporarily
-current just so a Lisp program can access or modify it.  They have
-side-effects, such as changing window histories (@pxref{Window
-History}), which will surprise the user if used that way.  If you want
-to make a buffer current to modify it in Lisp, use
-@code{with-current-buffer}, @code{save-current-buffer}, or
-@code{set-buffer}.  @xref{Current Buffer}.
+@emph{不要}使用这些函数使一个缓冲区暂时处于当前状态，以便Lisp程序可以访问或
+修改它。它们有一些副作用，比如改变窗口历史记录(@pxref{窗口历史})，如果这样使
+用，会让用户感到惊讶。如果你想在Lisp中让一个缓冲区成为当前缓冲区来修改它，可
+以使用@code{with-current-buffer}，@code{save-current-buffer}，或者
+@code{set-buffer}。@xref{当前缓冲区}。
 
 @deffn Command switch-to-buffer buffer-or-name &optional norecord force-same-window
-This command attempts to display @var{buffer-or-name} in the selected
-window and make it the current buffer.  It is often used interactively
-(as the binding of @kbd{C-x b}), as well as in Lisp programs.  The
-return value is the buffer switched to.
+该命令试图在所选窗口中显示@var{buffer-or-name}，并使其成为当前的缓冲区。
+它经常被用于交互式操作（如@kbd{C-x b}的绑定），在Lisp程序中也是如此。返回
+值是切换到的缓冲区。
 
-If @var{buffer-or-name} is @code{nil}, it defaults to the buffer
-returned by @code{other-buffer} (@pxref{Buffer List}).  If
-@var{buffer-or-name} is a string that is not the name of any existing
-buffer, this function creates a new buffer with that name; the new
-buffer's major mode is determined by the variable @code{major-mode}
-(@pxref{Major Modes}).
+如果@var{buffer-or-name}是@code{nil}，则默认为@code{other-buffer}返回的
+缓冲区。(@pxref{Buffer List})。如果@var{buffer-or-name}是一个不是现有缓
+冲区名称的字符串，那么这个函数就会创建一个新的缓冲区，新缓冲区的主要模式由
+变量@code{major-mode}决定。(@pxref{主要模式})。
 
-Normally, the specified buffer is put at the front of the buffer
-list---both the global buffer list and the selected frame's buffer
-list (@pxref{Buffer List}).  However, this is not done if the
-optional argument @var{norecord} is non-@code{nil}.
+通常，指定的缓冲区会被放在缓冲区列表的前面--包括全局缓冲区列表和所选窗框的
+缓冲区列表（@pxref{Buffer List}）。但是，如果可选参数@var{norecord}是非
+@code{nil}，则不会这样做。
 
-Sometimes, the selected window may not be suitable for displaying the
-buffer.  This happens if the selected window is a minibuffer window, or
-if the selected window is strongly dedicated to its buffer
-(@pxref{Dedicated Windows}).  In such cases, the command normally tries
-to display the buffer in some other window, by invoking
-@code{pop-to-buffer} (see below).
+有时，所选窗口可能不适合显示缓冲区。如果所选窗口是迷你缓冲区窗口，或者所选
+窗口对缓冲区有很强的专用性，就会发生这种情况（@pxref{专用窗口}）。在这种情
+况下，命令通常会通过调用@code{pop-to-buffer}来尝试在其他窗口中显示缓冲区。
+(见下文)。
 
-If the optional argument @var{force-same-window} is non-@code{nil} and
-the selected window is not suitable for displaying the buffer, this
-function always signals an error when called non-interactively.  In
-interactive use, if the selected window is a minibuffer window, this
-function will try to use some other window instead.  If the selected
-window is strongly dedicated to its buffer, the option
-@code{switch-to-buffer-in-dedicated-window} described next can be used
-to proceed.
+如果可选参数@var{force-same-window}是非@code{nil}，并且所选窗口不适合显
+示缓冲区，那么在非交互式调用时，该函数总是发出错误信号。在交互式使用时，如
+果选择的窗口是一个迷你缓冲区窗口，这个函数将尝试使用其他窗口来代替。如果所
+选窗口对其缓冲区有很强的专用性，可以使用接下来描述的
+@code{switch-to-buffer-in-dedicated-window}选项进行操作。
 @end deffn
 
 @defopt switch-to-buffer-in-dedicated-window
-This option, if non-@code{nil}, allows @code{switch-to-buffer} to
-proceed when called interactively and the selected window is strongly
-dedicated to its buffer.
+这个选项，如果是非@code{nil}，则允许@code{switch-to-buffer}在交互式调用
+时继续进行，并且所选窗口强烈地专用于其缓冲区。
 
-The following values are respected:
+以下值有效：
 
 @table @code
 @item nil
-Disallows switching and signals an error as in non-interactive use.
+在非交互式使用中，禁止切换并发出错误信号。
 
 @item prompt
-Prompts the user whether to allow switching.
+提示用户是否允许切换。
 
 @item pop
-Invokes @code{pop-to-buffer} to proceed.
+调用@code{pop-to-buffer}进行操作。
 
 @item t
-Marks the selected window as non-dedicated and proceeds.
+将所选窗口标记为非专用窗口，并继续进行。
 @end table
 
-This option does not affect non-interactive calls of
-@code{switch-to-buffer}.
+这个选项不影响对@code{switch-to-buffer}的非交互式调用。
 @end defopt
 
-By default, @code{switch-to-buffer} tries to preserve
-@code{window-point}.  This behavior can be tuned using the following
-option.
+默认情况下，@code{switch-to-buffer}会尝试保留@code{window-point}。这个行为
+可以通过下面的选项进行调整。
 
 @defopt switch-to-buffer-preserve-window-point
-If this variable is @code{nil}, @code{switch-to-buffer} displays the
-buffer specified by @var{buffer-or-name} at the position of that
-buffer's @code{point}.  If this variable is @code{already-displayed}, it
-tries to display the buffer at its previous position in the selected
-window, provided the buffer is currently displayed in some other window
-on any visible or iconified frame.  If this variable is @code{t},
-@code{switch-to-buffer} unconditionally tries to display the buffer at
-its previous position in the selected window.
+如果这个变量是@code{nil}，那么@code{switch-to-buffer}就会在
+@var{buffer-or-name}指定的缓冲区的@code{point}的位置显示该缓冲区。如果这个
+变量是@code{already-displayed}，那么它就会尝试在所选窗口的前一个位置显示缓冲
+区，前提是该缓冲区目前显示在任何可见的或图标化的框架的其他窗口中。如果这个变
+量是@code{t}，那么@code{switch-to-buffer}将无条件地尝试将缓冲区显示在所选窗
+口的前一个位置。
 
-This variable is ignored if the buffer is already displayed in the
-selected window or never appeared in it before, or if
-@code{switch-to-buffer} calls @code{pop-to-buffer} to display the
-buffer.
+如果缓冲区已经显示在选定的窗口中，或者从未出现在窗口中，或者
+@code{switch-to-buffer}调用@code{pop-to-buffer}来显示缓冲区，那么这个变量将
+被忽略。
 @end defopt
 
 @defopt switch-to-buffer-obey-display-actions
@@ -3428,7 +3405,7 @@ full-fledged frames as inflicted by @code{display-buffer-pop-up-frame}.
 @end table
 
 
-@node 窗口历史记录
+@node 窗口历史
 @section Window History
 @cindex window history
 
