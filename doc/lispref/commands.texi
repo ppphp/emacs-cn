@@ -588,7 +588,7 @@ Put them into three windows, selecting the last one."
 加载指定的库，然后重新检查符号的定义来处理的。
 
 如果给定参数@var{special}，意味着忽略前缀参数，而且不清除它。这用于执行特殊事件（
-@pxref{Special Events}）。
+@pxref{特殊事件}）。
 @end defun
 
 @deffn Command execute-extended-command prefix-argument
@@ -2436,14 +2436,9 @@ What character @kbd{1 7 7}-
 @cindex discarding input
 @cindex keyboard macro, terminating
 这个函数丢弃终端输入缓冲区的内容，并取消任何可能正在定义的键盘宏。返回@code{nil}。
-This function discards the contents of the terminal input buffer and
-cancels any keyboard macro that might be in the process of definition.
-It returns @code{nil}.
 
-In the following example, the user may type a number of characters right
-after starting the evaluation of the form.  After the @code{sleep-for}
-finishes sleeping, @code{discard-input} discards any characters typed
-during the sleep.
+在下面的例子中，用户可以在开始评估表单后立即键入一些字符。在@code{sleep-for}完成
+睡眠后，@code{discard-input}会丢弃睡眠期间输入的任何字符。
 
 @example
 (progn (sleep-for 2)
@@ -2456,90 +2451,69 @@ during the sleep.
 @section Special Events
 
 @cindex special events
-Certain @dfn{special events} are handled at a very low level---as soon
-as they are read.  The @code{read-event} function processes these
-events itself, and never returns them.  Instead, it keeps waiting for
-the first event that is not special and returns that one.
+某些@dfn{特殊事件}在非常低的层次上被处理----只要它们被读取。@code{read-event}函
+数自己处理这些事件，并且从不返回它们。相反，它一直在等待第一个非特殊事件，并返回该
+事件。
 
-  Special events do not echo, they are never grouped into key
-sequences, and they never appear in the value of
-@code{last-command-event} or @code{(this-command-keys)}.  They do not
-discard a numeric argument, they cannot be unread with
-@code{unread-command-events}, they may not appear in a keyboard macro,
-and they are not recorded in a keyboard macro while you are defining
-one.
+  特殊事件不会有回音，它们从不被分组为按键序列，也不会出现在
+@code{last-command-event}或@code{(this-command-keys)}的值中。它们不会丢弃数
+字参数，不能用@code{unread-command-events}取消读取，它们可能不会出现在键盘宏中，
+而且在你定义键盘宏时，它们不会被记录在键盘宏中。
 
-  Special events do, however, appear in @code{last-input-event}
-immediately after they are read, and this is the way for the event's
-definition to find the actual event.
+  然而，特殊事件确实在读取后立即出现在@code{last-input-event}中，这也是事件的定
+义找到实际事件的方法。
 
-  The events types @code{iconify-frame}, @code{make-frame-visible},
-@code{delete-frame}, @code{drag-n-drop}, @code{language-change}, and
-user signals like @code{sigusr1} are normally handled in this way.
-The keymap which defines how to handle special events---and which
-events are special---is in the variable @code{special-event-map}
-(@pxref{Controlling Active Maps}).
+  事件类型@code{iconify-frame},@code{make-frame-visible},@code{delete-frame}
+,@code{drag-n-drop},@code{language-change},以及用户信号如@code{sigusr1}通常
+以这种方式处理。定义如何处理特殊事件的按键图--以及哪些事件是特殊的--在变量
+@code{special-event-map}中（@pxref{Controlling Active Maps}）。
 
 @node 等待
 @section Waiting for Elapsed Time or Input
 @cindex waiting
 
-  The wait functions are designed to wait for a certain amount of time
-to pass or until there is input.  For example, you may wish to pause in
-the middle of a computation to allow the user time to view the display.
-@code{sit-for} pauses and updates the screen, and returns immediately if
-input comes in, while @code{sleep-for} pauses without updating the
-screen.
+  等待功能的设计是为了等待一定时间的过去或直到有输入。例如，您可能希望在计算过程中
+暂停，以便让用户有时间查看显示。@code{sit-for}暂停并更新屏幕，如果有输入则立即返回，
+而@code{sleep-for}则暂停而不更新屏幕。
 
 @defun sit-for seconds &optional nodisp
-This function performs redisplay (provided there is no pending input
-from the user), then waits @var{seconds} seconds, or until input is
-available.  The usual purpose of @code{sit-for} is to give the user
-time to read text that you display.  The value is @code{t} if
-@code{sit-for} waited the full time with no input arriving
-(@pxref{Event Input Misc}).  Otherwise, the value is @code{nil}.
+该函数执行重新显示（前提是没有来自用户的待定输入），然后等待@var{seconds}秒，或直到
+输入可用。通常，@code{sit-for}的目的是给用户时间来阅读你所显示的文本。如果
+@code{sit-for}在没有输入的情况下等待了整整一段时间（@pxref{Event Input Misc}），
+其值就是@code{t}。否则，该值为@code{nil}。
 
-The argument @var{seconds} need not be an integer.  If it is floating
-point, @code{sit-for} waits for a fractional number of seconds.
-Some systems support only a whole number of seconds; on these systems,
-@var{seconds} is rounded down.
+参数@var{seconds}不需要是一个整数。如果是浮点数，@code{sit-for}会等待一个小数的秒
+数。有些系统只支持整数秒；在这些系统中，@var{seconds}会被向下取整。
 
-The expression @code{(sit-for 0)} is equivalent to @code{(redisplay)},
-i.e., it requests a redisplay, without any delay, if there is no pending input.
-@xref{Forcing Redisplay}.
+表达式@code{(sit-for 0)}等同于@code{(redisplay)}，也就是说，如果没有待处理的输入
+，它要求重新显示，没有任何延迟。@xref{强制重新显示}。
 
-If @var{nodisp} is non-@code{nil}, then @code{sit-for} does not
-redisplay, but it still returns as soon as input is available (or when
-the timeout elapses).
+如果@var{nodisp}不是@code{nil}，那么@code{sit-for}就不会重新显示，但它仍然会在有
+输入时（或超时后）立即返回。
 
-In batch mode (@pxref{Batch Mode}), @code{sit-for} cannot be
-interrupted, even by input from the standard input descriptor.  It is
-thus equivalent to @code{sleep-for}, which is described below.
+在批处理模式下（@pxref{Batch Mode}），@code{sit-for}不能被打断，即使是来自标准输
+入描述符的输入。因此，它等同于@code{sleep-for}，下面将介绍它。
 
-It is also possible to call @code{sit-for} with three arguments,
-as @code{(sit-for @var{seconds} @var{millisec} @var{nodisp})},
-but that is considered obsolete.
+可以用三个参数调用@code{sit-for}，如
+@code{(sit-for @var{seconds} @var{millisec} @var{nodisp})}，但这被认为已经过
+时了。
 @end defun
 
 @defun sleep-for seconds &optional millisec
-This function simply pauses for @var{seconds} seconds without updating
-the display.  It pays no attention to available input.  It returns
-@code{nil}.
+这个函数只是暂停了@var{seconds}秒，而没有更新显示。它不关注可用的输入。它返回
+@code{nil}。
 
-The argument @var{seconds} need not be an integer.  If it is floating
-point, @code{sleep-for} waits for a fractional number of seconds.
-Some systems support only a whole number of seconds; on these systems,
-@var{seconds} is rounded down.
+参数@var{seconds}不需要是一个整数。如果是浮点数，@code{sleep-for}会等待一个小
+数的秒数。有些系统只支持整数的秒数；在这些系统中，@var{seconds}被向下取整。
 
-The optional argument @var{millisec} specifies an additional waiting
-period measured in milliseconds.  This adds to the period specified by
-@var{seconds}.  If the system doesn't support waiting fractions of a
-second, you get an error if you specify nonzero @var{millisec}.
+可选参数@var{millisec}指定了一个以毫秒为单位的额外等待时间。这是对@var{seconds}所
+指定的周期的补充。如果系统不支持以秒为单位的等待，如果你指定了非零的@var{millisec}，
+你会得到一个错误。
 
-Use @code{sleep-for} when you wish to guarantee a delay.
+当你希望保证一个延迟时，请使用@code{sleep-for}。
 @end defun
 
-  @xref{Time of Day}, for functions to get the current time.
+  @xref{Time of Day}，用于获取当前时间的函数。
 
 @node 退出
 @section Quitting
@@ -2547,66 +2521,47 @@ Use @code{sleep-for} when you wish to guarantee a delay.
 @cindex quitting
 @cindex interrupt Lisp functions
 
-  Typing @kbd{C-g} while a Lisp function is running causes Emacs to
-@dfn{quit} whatever it is doing.  This means that control returns to the
-innermost active command loop.
+  在Lisp函数运行时输入@kbd{C-g}会导致Emacs@dfn{quit}不管它在做什么。这意味着控制
+权返回到最里面的活动指令循环。
 
-  Typing @kbd{C-g} while the command loop is waiting for keyboard input
-does not cause a quit; it acts as an ordinary input character.  In the
-simplest case, you cannot tell the difference, because @kbd{C-g}
-normally runs the command @code{keyboard-quit}, whose effect is to quit.
-However, when @kbd{C-g} follows a prefix key, they combine to form an
-undefined key.  The effect is to cancel the prefix key as well as any
-prefix argument.
+  在命令循环等待键盘输入时，输入@kbd{C-g}不会导致退出；它的作用是作为一个普通的输入
+字符。在最简单的情况下，你无法区分，因为@kbd{C-g}通常运行@code{keyboard-quit}命令
+，其效果是退出。然而，当@kbd{C-g}跟随一个前缀键时，它们结合起来形成一个未定义的键。
+其效果是取消前缀键以及任何前缀参数。
 
-  In the minibuffer, @kbd{C-g} has a different definition: it aborts out
-of the minibuffer.  This means, in effect, that it exits the minibuffer
-and then quits.  (Simply quitting would return to the command loop
-@emph{within} the minibuffer.)  The reason why @kbd{C-g} does not quit
-directly when the command reader is reading input is so that its meaning
-can be redefined in the minibuffer in this way.  @kbd{C-g} following a
-prefix key is not redefined in the minibuffer, and it has its normal
-effect of canceling the prefix key and prefix argument.  This too
-would not be possible if @kbd{C-g} always quit directly.
+  在minibuffer中，@kbd{C-g}有一个不同的定义：它退出minibuffer。这意味着，实际上，
+它退出了迷你缓冲区，然后退出。(简单的退出会返回到minibuffer@emph{内}的命令循环中)。
+@kbd{C-g}不直接退出的原因是当命令阅读机在读取输入时，它的含义可以在minibuffer中以
+这种方式重新定义。在前缀键之后的@kbd{C-g}不会在minibuffer中被重新定义，它的正常效
+果是取消前缀键和前缀参数。如果@kbd{C-g}总是直接退出，这也是不可能的。
 
-  When @kbd{C-g} does directly quit, it does so by setting the variable
-@code{quit-flag} to @code{t}.  Emacs checks this variable at appropriate
-times and quits if it is not @code{nil}.  Setting @code{quit-flag}
-non-@code{nil} in any way thus causes a quit.
+  当@kbd{C-g}直接退出时，它通过将变量@code{quit-flag}设置为@code{t}来实现。
+Emacs会在适当的时候检查这个变量，如果它不是@code{nil}就会退出。以任何方式将
+@code{quit-flag}设置为非@code{nil}，都会导致退出。
 
-  At the level of C code, quitting cannot happen just anywhere; only at the
-special places that check @code{quit-flag}.  The reason for this is
-that quitting at other places might leave an inconsistency in Emacs's
-internal state.  Because quitting is delayed until a safe place, quitting
-cannot make Emacs crash.
+  在C代码的层面上，退出不能随便发生；只能在检查@code{quit-flag}的特殊地方发生。这样
+做的原因是，在其他地方退出可能会在Emacs的内部状态中留下不一致的地方。因为退出被推迟到
+安全的地方，所以退出不能使Emacs崩溃。
 
-  Certain functions such as @code{read-key-sequence} or
-@code{read-quoted-char} prevent quitting entirely even though they wait
-for input.  Instead of quitting, @kbd{C-g} serves as the requested
-input.  In the case of @code{read-key-sequence}, this serves to bring
-about the special behavior of @kbd{C-g} in the command loop.  In the
-case of @code{read-quoted-char}, this is so that @kbd{C-q} can be used
-to quote a @kbd{C-g}.
+  某些函数，如@code{read-key-sequence}或@code{read-quoted-char}，即使等待输入，
+也不会完全退出。不退出，@kbd{C-g}反而作为请求的输入。在@code{read-key-sequence}的
+情况下，这有助于实现@kbd{C-g}在命令循环中的特殊行为。在@code{read-quoted-char}的
+情况下，这是为了让@kbd{C-q}能够被用来引用@kbd{C-g}。
 
 @cindex preventing quitting
-  You can prevent quitting for a portion of a Lisp function by binding
-the variable @code{inhibit-quit} to a non-@code{nil} value.  Then,
-although @kbd{C-g} still sets @code{quit-flag} to @code{t} as usual, the
-usual result of this---a quit---is prevented.  Eventually,
-@code{inhibit-quit} will become @code{nil} again, such as when its
-binding is unwound at the end of a @code{let} form.  At that time, if
-@code{quit-flag} is still non-@code{nil}, the requested quit happens
-immediately.  This behavior is ideal when you wish to make sure that
-quitting does not happen within a critical section of the program.
+  你可以通过将变量@code{inhibit-quit}绑定到一个非@code{nil}的值来防止Lisp函数的
+一部分退出。然后，尽管@kbd{C-g}仍然像往常一样将@code{quit-flag}设置为@code{t}，
+但其通常的结果--退出--是被阻止的。最终，@code{inhibit-quit}将再次成为@code{nil}，
+例如，当它在一个@code{let}表单的末尾被解除绑定时。那时，如果@code{quit-flag}仍然
+是非@code{nil}的，那么请求的退出就会立即发生。当你希望确保退出不会发生在程序的关键
+部分时，这种行为是理想的。
 
 @cindex @code{read-quoted-char} quitting
-  In some functions (such as @code{read-quoted-char}), @kbd{C-g} is
-handled in a special way that does not involve quitting.  This is done
-by reading the input with @code{inhibit-quit} bound to @code{t}, and
-setting @code{quit-flag} to @code{nil} before @code{inhibit-quit}
-becomes @code{nil} again.  This excerpt from the definition of
-@code{read-quoted-char} shows how this is done; it also shows that
-normal quitting is permitted after the first character of input.
+  在某些函数中（比如@code{read-quoted-char}），@kbd{C-g}被以一种特殊的方式处理，
+不涉及退出。这是通过在读取输入时将@code{inhibit-quit}与@code{t}绑定，并在
+@code{inhibit-quit}再次变成@code{nil}之前将@code{quit-flag}设置为@code{nil}。
+这段来自@code{read-quoted-char}定义的节选显示了这是如何做到的；它还显示了在输入
+的第一个字符后允许正常退出。
 
 @example
 (defun read-quoted-char (&optional prompt)
@@ -2623,49 +2578,41 @@ normal quitting is permitted after the first character of input.
 @end example
 
 @defvar quit-flag
-If this variable is non-@code{nil}, then Emacs quits immediately, unless
-@code{inhibit-quit} is non-@code{nil}.  Typing @kbd{C-g} ordinarily sets
-@code{quit-flag} non-@code{nil}, regardless of @code{inhibit-quit}.
+如果这个变量不是@code{nil}，那么Emacs会立即退出，除非@code{inhibit-quit}也不是
+@code{nil}。输入@kbd{C-g}通常会将@code{quit-flag}设置为非@code{nil}，与
+@code{inhibit-quit}无关。
 @end defvar
 
 @defvar inhibit-quit
-This variable determines whether Emacs should quit when @code{quit-flag}
-is set to a value other than @code{nil}.  If @code{inhibit-quit} is
-non-@code{nil}, then @code{quit-flag} has no special effect.
+这个变量决定了当@code{quit-flag}被设置为@code{nil}以外的值时，Emacs是否应该退出
+。如果@code{inhibit-quit}不是@code{nil}，那么@code{quit-flag}就没有特殊作用。
 @end defvar
 
 @defmac with-local-quit body@dots{}
-This macro executes @var{body} forms in sequence, but allows quitting, at
-least locally, within @var{body} even if @code{inhibit-quit} was
-non-@code{nil} outside this construct.  It returns the value of the
-last form in @var{body}, unless exited by quitting, in which case
-it returns @code{nil}.
+这个宏依次执行@var{body}中的表单，但允许在@var{body}中退出，至少是局部退出，即使
+@code{inhibit-quit}在这个结构之外是非@code{nil}。它返回@var{body}中最后一个表
+单的值，除非因退出而退出，在这种情况下，它会返回@code{nil}。
 
-If @code{inhibit-quit} is @code{nil} on entry to @code{with-local-quit},
-it only executes the @var{body}, and setting @code{quit-flag} causes
-a normal quit.  However, if @code{inhibit-quit} is non-@code{nil} so
-that ordinary quitting is delayed, a non-@code{nil} @code{quit-flag}
-triggers a special kind of local quit.  This ends the execution of
-@var{body} and exits the @code{with-local-quit} body with
-@code{quit-flag} still non-@code{nil}, so that another (ordinary) quit
-will happen as soon as that is allowed.  If @code{quit-flag} is
-already non-@code{nil} at the beginning of @var{body}, the local quit
-happens immediately and the body doesn't execute at all.
+如果@code{inhibit-quit}在进入@code{with-local-quit}时是@code{nil}，它只执行
+@var{body}，而设置@code{quit-flag}会导致普通退出。然而，如果
+@code{inhibit-quit}是非@code{nil}的，这样普通退出就会被延迟，非@code{nil}的
+@code{quit-flag} 会触发一种特殊的局部退出。这将结束@var{body}的执行，并退出
+@code{with-local-quit}主体，而@code{quit-flag}仍然是非@code{nil}的，因此一旦
+允许，另一个（普通）退出将发生。如果@code{quit-flag}在@var{body}的开头已经是非
+@code{nil}，那么本地退出就会立即发生，并且主体根本不会执行。
 
-This macro is mainly useful in functions that can be called from
-timers, process filters, process sentinels, @code{pre-command-hook},
-@code{post-command-hook}, and other places where @code{inhibit-quit} is
-normally bound to @code{t}.
+这个宏主要在可以从计时器、进程过滤器、进程哨兵、@code{pre-command-hook}、
+@code{post-command-hook}以及其他通常将@code{inhibit-quit}绑定到@code{t}的地
+方调用的函数中有用。
 @end defmac
 
 @deffn Command keyboard-quit
-This function signals the @code{quit} condition with @code{(signal 'quit
-nil)}.  This is the same thing that quitting does.  (See @code{signal}
-in @ref{Errors}.)
+这个函数用@code{quit}条件发出信号，@code{(signal 'quit nil)}。这与退出的作用相
+同。(参见@code{signal}在@ref{Errors}中的内容）。
 @end deffn
 
-  You can specify a character other than @kbd{C-g} to use for quitting.
-See the function @code{set-input-mode} in @ref{Input Modes}.
+  你可以指定一个除@kbd{C-g}以外的字符来用于退出。参见@ref{Input Modes}中的函数
+@code{set-input-mode}。
 
 @node 前缀命令参数
 @section Prefix Command Arguments
@@ -2673,43 +2620,35 @@ See the function @code{set-input-mode} in @ref{Input Modes}.
 @cindex raw prefix argument
 @cindex numeric prefix argument
 
-  Most Emacs commands can use a @dfn{prefix argument}, a number
-specified before the command itself.  (Don't confuse prefix arguments
-with prefix keys.)  The prefix argument is at all times represented by a
-value, which may be @code{nil}, meaning there is currently no prefix
-argument.  Each command may use the prefix argument or ignore it.
+  大多数Emacs命令可以使用@dfn{前缀参数}，即在命令本身之前指定的数字。(不要把前缀参
+数和前缀键混为一谈。)前缀参数在任何时候都由一个值表示，这个值可能是@code{nil}，意味
+着目前没有前缀参数。每个命令都可以使用前缀参数或忽略它。
 
-  There are two representations of the prefix argument: @dfn{raw} and
-@dfn{numeric}.  The editor command loop uses the raw representation
-internally, and so do the Lisp variables that store the information, but
-commands can request either representation.
+  前缀参数有两种表示方法：@dfn{raw}和@dfn{numeric}。编辑器命令循环在内部使用原始
+表示法，存储信息的Lisp变量也是如此，但命令可以要求任何一种表示法。
 
-  Here are the possible values of a raw prefix argument:
+  下面是一个原始前缀参数的可能值：
 
 @itemize @bullet
 @item
-@code{nil}, meaning there is no prefix argument.  Its numeric value is
-1, but numerous commands make a distinction between @code{nil} and the
-integer 1.
+@code{nil}，意味着没有前缀参数。它的数值是1，但许多命令对@code{nil}和整数1进行了区
+分。
 
 @item
-An integer, which stands for itself.
+一个整数，它代表自己。
 
 @item
-A list of one element, which is an integer.  This form of prefix
-argument results from one or a succession of @kbd{C-u}s with no
-digits.  The numeric value is the integer in the list, but some
-commands make a distinction between such a list and an integer alone.
+一个有一个元素的列表，这个元素是一个整数。这种形式的前缀参数是由一个或一连串没有数字
+的@kbd{C-u}产生的。数值是列表中的整数，但是有些命令对这样的列表和单独的整数进行了区分。
 
 @item
-The symbol @code{-}.  This indicates that @kbd{M--} or @kbd{C-u -} was
-typed, without following digits.  The equivalent numeric value is
-@minus{}1, but some commands make a distinction between the integer
-@minus{}1 and the symbol @code{-}.
+符号@code{-}。这表示输入了@kbd{M--}或@kbd{C-u -}，没有后面的数字。相应的数字值是
+@minus{}1，但有些命令对整数的{}进行了区分。
+
+@minus{}1和符号@code{-}。
 @end itemize
 
-We illustrate these possibilities by calling the following function with
-various prefixes:
+我们通过调用以下带有不同前缀的函数来说明这些可能性：
 
 @example
 @group
@@ -2721,8 +2660,7 @@ various prefixes:
 @end example
 
 @noindent
-Here are the results of calling @code{display-prefix} with various
-raw prefix arguments:
+下面是调用@code{display-prefix}中各种原始前缀参数的结果：
 
 @example
         M-x display-prefix  @print{} nil
