@@ -520,10 +520,10 @@ Put them into three windows, selecting the last one."
 如果@var{object}是一条命令，则该函数返回@code{t}。否则，返回@code{nil}。
 
 命令包括字符串和向量（被视为键盘宏）、包含顶级@code{interactive}表单的lambda表达
-式（@pxref{Using Interactive}）、由这些lambda表达式构成的字节码函数对象、被声
-明为交互式的自动加载对象（@code{autoload}的第四个参数非@code{nil}），以及一些原
-始函数。另外，如果一个符号有一个非@code{nil}的@code{interactive-form}属性，或者
-它的函数定义满足@code{commandp}，第四个参数，那么它就被认为是一个命令。
+式（@pxref{使用交互式}）、由这些lambda表达式构成的字节码函数对象、被声明为交互式的
+自动加载对象（@code{autoload}的第四个参数非@code{nil}），以及一些原始函数。另外，
+如果一个符号有一个非@code{nil}的@code{interactive-form}属性，或者它的函数定义满
+足@code{commandp}，第四个参数，那么它就被认为是一个命令。
 
 如果@var{for-call-interactively}是非@code{nil}，那么@code{commandp}只对
 @code{call-interactively}可以调用的对象返回@code{t}--因此，不对键盘宏返回。
@@ -2682,33 +2682,25 @@ C-u - 7 M-x display-prefix  @print{} -7
 M-- 7   M-x display-prefix  @print{} -7     ; @r{(Same as @code{C-u -7}.)}
 @end example
 
-  Emacs uses two variables to store the prefix argument:
-@code{prefix-arg} and @code{current-prefix-arg}.  Commands such as
-@code{universal-argument} that set up prefix arguments for other
-commands store them in @code{prefix-arg}.  In contrast,
-@code{current-prefix-arg} conveys the prefix argument to the current
-command, so setting it has no effect on the prefix arguments for future
-commands.
+  Emacs使用两个变量来存储前缀参数：@code{prefix-arg}和
+@code{current-prefix-arg}。像@code{universal-argument}这样为其他命令设置前缀
+参数的命令，会将它们存储在@code{prefix-arg}中。相比之下，
+@code{current-prefix-arg}将前缀参数传达给当前命令，因此设置它对未来命令的前缀参
+数没有影响。
 
-  Normally, commands specify which representation to use for the prefix
-argument, either numeric or raw, in the @code{interactive} specification.
-(@xref{Using Interactive}.)  Alternatively, functions may look at the
-value of the prefix argument directly in the variable
-@code{current-prefix-arg}, but this is less clean.
+  通常情况下，命令会在@code{interactive}规范中指定前缀参数的表示方法，无论是数字
+还是原始参数。(@xref{使用交互式}。)另外，函数可以直接在变量
+@code{current-prefix-arg}中查看前缀参数的值，但这不太干净。
 
 @defun prefix-numeric-value arg
-This function returns the numeric meaning of a valid raw prefix argument
-value, @var{arg}.  The argument may be a symbol, a number, or a list.
-If it is @code{nil}, the value 1 is returned; if it is @code{-}, the
-value @minus{}1 is returned; if it is a number, that number is returned;
-if it is a list, the @sc{car} of that list (which should be a number) is
-returned.
+该函数返回一个有效的原始前缀参数值@var{arg}的数字含义。该参数可以是一个符号，一个
+数字，或者一个列表。如果是@code{nil}，则返回数值1；如果是@code{-}，则返回数值
+@minus{}1；如果是数字，则返回该数字；如果是列表，则返回该列表的@sc{car}（应为数字）。
 @end defun
 
 @defvar current-prefix-arg
-This variable holds the raw prefix argument for the @emph{current}
-command.  Commands may examine it directly, but the usual method for
-accessing it is with @code{(interactive "P")}.
+这个变量保存@emph{当前}命令的原始前缀参数。命令可以直接检查它，但访问它的通常方法是
+使用@code{(interactive "P")}。
 @end defvar
 
 @defvar prefix-arg
